@@ -6,9 +6,11 @@ import {
   Sparkles,
   Download,
   AlertTriangle,
-  Target
+  Target,
+  Search
 } from 'lucide-react';
 import { Student } from '@/types';
+import { Button } from '@/components/ui/button';
 
 interface LearningPlanScreenProps {
   students: Student[];
@@ -22,6 +24,12 @@ export default function LearningPlanScreen({
   onSelectStudent
 }: LearningPlanScreenProps) {
   const [isRegenerating, setIsRegenerating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredStudents = useMemo(() => {
+    if (!searchQuery) return students;
+    return students.filter((s) => s.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [students, searchQuery]);
 
   const currentStudent = useMemo(() => {
     return students.find((s) => s.id === selectedStudentId) || students[0];
@@ -134,19 +142,36 @@ export default function LearningPlanScreen({
           <p className="text-xs text-slate-400 font-sans mt-0.5">Custom diagnostic profiles and AI enrichment models for individual students</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-slate-400 font-sans text-right hidden lg:block">Active Profile:</span>
-          <select
-            value={currentStudent.id}
-            onChange={(e) => onSelectStudent(e.target.value)}
-            className="bg-[#1E2130] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-orange-500 transition"
-          >
-            {students.map((stud) => (
-              <option key={stud.id} value={stud.id}>
-                {stud.name} ({stud.riskLevel})
-              </option>
-            ))}
-          </select>
+        <div className="relative w-64">
+          <Search className="absolute left-3 top-3 text-slate-500" size={14} />
+          <input
+            type="text"
+            placeholder="Search student..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg pl-9 pr-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-orange-500 transition font-sans"
+          />
+          {searchQuery && (
+            <div className="absolute left-0 right-0 top-10 mt-1 max-h-48 overflow-y-auto bg-[#1A1D27] border border-[#2A2D3A] rounded-lg z-20 shadow-xl divide-y divide-[#2A2D3A]/50">
+              {filteredStudents.length > 0 ? (
+                filteredStudents.map((student) => (
+                  <button
+                    key={student.id}
+                    onClick={() => {
+                      onSelectStudent(student.id);
+                      setSearchQuery('');
+                    }}
+                    className="w-full text-left p-2 hover:bg-slate-800 transition flex items-center gap-2.5 text-xs text-slate-350 border-0 bg-transparent cursor-pointer"
+                  >
+                    <img src={student.avatar} alt={student.name} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full object-cover" />
+                    <div className="flex-1 font-semibold">{student.name} ({student.grade})</div>
+                  </button>
+                ))
+              ) : (
+                <div className="p-2 text-xs text-slate-500 text-center">No students matched</div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -315,7 +340,7 @@ export default function LearningPlanScreen({
       </div>
 
       {/* Section 4 — Action Bar */}
-      <div className="bg-[#1E2130] p-4.5 rounded-xl border border-[#2A2D3A] flex flex-col sm:flex-row justify-between items-center gap-4" id="plan-action-bar">
+      <div className="bg-[#1E2130] p-4.5 rounded-xl border border-[#2A2D3A] flex flex-col sm:flex-row justify-between items-center gap-4">
         <span className="text-xs font-semibold text-slate-400 font-sans flex items-center gap-1.5 matches-saved">
           <Sparkles size={14} className="text-orange-500" />
           Last generated: June 15, 2026 at 4:32 PM via Student Diagnostics Core
@@ -329,15 +354,14 @@ export default function LearningPlanScreen({
             <Sparkles size={13} />
             {isRegenerating ? 'Analyzing scores...' : 'Regenerate Plan'}
           </button>
-          <button
+          <Button
             onClick={() => {
               alert(`Successfully downloaded Individual Learning Plan (PDF) dossier for ${currentStudent.name}!`);
             }}
-            className="px-4.5 py-2.5 bg-orange-500 hover:opacity-90 text-slate-900 font-bold text-xs rounded-lg transition duration-150 border-0 cursor-pointer flex items-center gap-1.5"
           >
             <Download size={13} strokeWidth={2.5} />
             Export as PDF
-          </button>
+          </Button>
         </div>
       </div>
     </div>

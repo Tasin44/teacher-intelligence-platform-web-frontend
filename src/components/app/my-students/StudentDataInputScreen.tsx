@@ -206,7 +206,7 @@ export default function StudentDataInputScreen({
       </div>
 
       {/* Bottom Sticky Saved Bar */}
-      <div className="fixed bottom-0 left-0 md:left-60 right-0 bg-[#1A1D27] border-t border-[#2A2D3A] px-6 py-4.5 flex justify-between items-center z-40 shadow-2xl" id="bottom-sticky-bar">
+      <div className='bg-[#1E2130] p-4.5 rounded-xl border border-[#2A2D3A] flex flex-col sm:flex-row justify-between items-center gap-4'>
         <span className="text-xs font-semibold text-slate-400 font-sans flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           Auto-synchronized with EduPulse Core • Last saved {lastSaved}

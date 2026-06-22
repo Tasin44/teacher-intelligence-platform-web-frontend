@@ -9,8 +9,8 @@ import BehaviorTab from './BehaviorTab';
 import AttendanceTab from './AttendanceTab';
 import ObservationsTab from './ObservationsTab';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
-import MyStudentsHeaderAction from './MyStudentsHeaderAction';
 import { Button } from '@/components/ui/button';
+import { MyStudentsHeaderAction } from './MyStudentsHeaderAction';
 
 interface StudentDataInputScreenProps {
   students: Student[];

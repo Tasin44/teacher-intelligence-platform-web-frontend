@@ -1,16 +1,10 @@
 "use client";
 import React, { useMemo, useState } from 'react';
-import {
-  CheckCircle,
-  Clock,
-  Sparkles,
-  Download,
-  AlertTriangle,
-  Target,
-  Search
-} from 'lucide-react';
+import { CheckCircle, Clock, Sparkles, Download, AlertTriangle, Target } from 'lucide-react';
 import { Student } from '@/types';
 import { Button } from '@/components/ui/button';
+import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
+import { MyStudentsHeaderAction2 } from './MyStudentsHeaderAction';
 
 interface LearningPlanScreenProps {
   students: Student[];
@@ -132,48 +126,18 @@ export default function LearningPlanScreen({
   };
 
   return (
-    <div className="space-y-6 pb-12 animate-fadeIn" id="learning-plan-container">
-      {/* Section 1 — Header Row */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" id="header-row">
-        <div>
-          <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
-            Individual Learning Plan
-          </h2>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">Custom diagnostic profiles and AI enrichment models for individual students</p>
-        </div>
-
-        <div className="relative w-64">
-          <Search className="absolute left-3 top-3 text-slate-500" size={14} />
-          <input
-            type="text"
-            placeholder="Search student..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg pl-9 pr-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-orange-500 transition font-sans"
-          />
-          {searchQuery && (
-            <div className="absolute left-0 right-0 top-10 mt-1 max-h-48 overflow-y-auto bg-[#1A1D27] border border-[#2A2D3A] rounded-lg z-20 shadow-xl divide-y divide-[#2A2D3A]/50">
-              {filteredStudents.length > 0 ? (
-                filteredStudents.map((student) => (
-                  <button
-                    key={student.id}
-                    onClick={() => {
-                      onSelectStudent(student.id);
-                      setSearchQuery('');
-                    }}
-                    className="w-full text-left p-2 hover:bg-slate-800 transition flex items-center gap-2.5 text-xs text-slate-350 border-0 bg-transparent cursor-pointer"
-                  >
-                    <img src={student.avatar} alt={student.name} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full object-cover" />
-                    <div className="flex-1 font-semibold">{student.name} ({student.grade})</div>
-                  </button>
-                ))
-              ) : (
-                <div className="p-2 text-xs text-slate-500 text-center">No students matched</div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
+    <DashboardChildrenLayout
+      title='Individual Learning Plan'
+      subtitle='Custom diagnostic profiles and AI enrichment models for individual students'
+      actionButtons={
+        <MyStudentsHeaderAction2
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          filteredStudents={filteredStudents}
+          onSelectStudent={onSelectStudent}
+        />
+      }
+    >
 
       {/* Section 2 — Student Summary Card */}
       <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] flex flex-col md:flex-row justify-between items-center gap-6" id="student-summary-card">
@@ -364,6 +328,6 @@ export default function LearningPlanScreen({
           </Button>
         </div>
       </div>
-    </div>
+    </DashboardChildrenLayout>
   );
 }

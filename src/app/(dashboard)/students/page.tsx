@@ -3,8 +3,8 @@
 import React, { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import StudentDataInputScreen from '@/components/app/my-students/StudentDataInputScreen';
-import LearningPlanScreen from '@/components/LearningPlanScreen';
+import StudentDataInputTab from '@/components/app/my-students/StudentDataInputTab';
+import LearningPlanTab from '@/components/app/my-students/LearningPlanTab';
 
 function StudentsPageContent() {
   const searchParams = useSearchParams();
@@ -36,7 +36,7 @@ function StudentsPageContent() {
           onClick={() => setSubtab('input')}
           className={`px-5 py-2.5 rounded-lg text-xs font-bold tracking-wider transition cursor-pointer border-0 ${
             subtab === 'input'
-              ? 'bg-[#F97316] text-slate-900 shadow-md shadow-orange-500/10'
+              ? 'bg-accent-orange text-slate-900 shadow-md shadow-orange-500/10'
               : 'text-slate-450 hover:text-slate-250 bg-transparent'
           }`}
         >
@@ -46,7 +46,7 @@ function StudentsPageContent() {
           onClick={() => setSubtab('ilp')}
           className={`px-5 py-2.5 rounded-lg text-xs font-bold tracking-wider transition cursor-pointer border-0 ${
             subtab === 'ilp'
-              ? 'bg-[#F97316] text-slate-900 shadow-md shadow-orange-500/10'
+              ? 'bg-accent-orange text-slate-900 shadow-md shadow-orange-500/10'
               : 'text-slate-450 hover:text-slate-250 bg-transparent'
           }`}
         >
@@ -55,7 +55,7 @@ function StudentsPageContent() {
       </div>
 
       {subtab === 'input' ? (
-        <StudentDataInputScreen
+        <StudentDataInputTab
           students={students}
           academicRecords={academicRecords}
           behaviorLogs={behaviorLogs}
@@ -68,7 +68,7 @@ function StudentsPageContent() {
           onOpenAddStudent={() => setIsAddStudentOpen(true)}
         />
       ) : (
-        <LearningPlanScreen
+        <LearningPlanTab
           students={students}
           selectedStudentId={selectedStudentId}
           onSelectStudent={setSelectedStudentId}

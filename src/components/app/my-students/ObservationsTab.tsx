@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { UserCheck, BookOpen, AlertCircle } from 'lucide-react';
 import { Student } from '@/types';
+import Card from '@/components/shared/Card';
+import { Button } from '@/components/ui/button';
 
 interface Observation {
   id: string;
@@ -41,10 +43,9 @@ export default function ObservationsTab({
   };
 
   return (
-    <div className="space-y-6 animate-fadeIn" id="tab-observations-content">
+    <div className="space-y-6 animate-fadeIn">
       {/* Input card */}
-      <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A]">
-        <h3 className="text-base font-bold text-slate-100 mb-4 font-heading">Record Teacher Observation</h3>
+      <Card title='Record Teacher Observation'>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-4">
           <div className="flex flex-col gap-2">
@@ -89,20 +90,18 @@ export default function ObservationsTab({
         </div>
 
         <div className="mt-4 flex justify-end">
-          <button
+          <Button
             type="button"
             onClick={handleAddObservation}
-            className="bg-orange-500 text-slate-900 font-semibold px-4 py-2 rounded-lg text-xs hover:opacity-90 inline-flex items-center gap-1.5 cursor-pointer border-0"
           >
             <UserCheck size={14} />
             Pin Observation
-          </button>
+          </Button>
         </div>
-      </div>
+      </Card>
 
       {/* Observations List */}
-      <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A]">
-        <h3 className="text-base font-bold text-slate-100 mb-3 font-heading">Observation Dossier</h3>
+      <Card title='Observation Dossier'>
         <div className="space-y-4" id="observations-checklist">
           {observations.length > 0 ? (
             observations.map((obs) => (
@@ -122,14 +121,44 @@ export default function ObservationsTab({
               </div>
             ))
           ) : (
-            <div className="p-8 text-center bg-[#0F1117]/30 rounded-xl border border-dashed border-[#2A2D3A]/50 text-slate-400">
-              <AlertCircle size={20} className="mx-auto text-orange-500/60 mb-2" />
-              <p className="text-xs font-semibold">No classroom observations pinned for {currentStudent.name} yet.</p>
-              <p className="text-[10px] text-slate-500 mt-1">Use the left input panel to pin observation details representing persistence, barriers, or milestones.</p>
-            </div>
+            <>
+              <div className="bg-[#0F1117]/60 p-4 rounded-xl border border-[#2A2D3A]/60 hover:border-orange-500/20 transition flex gap-3">
+                <div className="p-2 bg-orange-500/5 text-orange-500 rounded-lg h-fit">
+                  <BookOpen size={16} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[10px] text-slate-400 font-bold font-mono">06/15/2026</span>
+                    <span className="bg-orange-500/10 text-orange-500 border border-orange-500/10 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      1:1
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                    Demonstrates improved multiplication fluency when using base-ten manipulatives directly.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-[#0F1117]/60 p-4 rounded-xl border border-[#2A2D3A]/60 hover:border-orange-500/20 transition flex gap-3">
+                <div className="p-2 bg-orange-500/5 text-orange-500 rounded-lg h-fit">
+                  <BookOpen size={16} />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[10px] text-slate-400 font-bold font-mono">06/15/2026</span>
+                    <span className="bg-orange-500/10 text-orange-500 border border-orange-500/10 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                      1:1
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                    Demonstrates improved multiplication fluency when using base-ten manipulatives directly.
+                  </p>
+                </div>
+              </div>
+            </>
           )}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

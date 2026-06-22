@@ -8,6 +8,9 @@ import AcademicTab from './AcademicTab';
 import BehaviorTab from './BehaviorTab';
 import AttendanceTab from './AttendanceTab';
 import ObservationsTab from './ObservationsTab';
+import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
+import MyStudentsHeaderAction from './MyStudentsHeaderAction';
+import { Button } from '@/components/ui/button';
 
 interface StudentDataInputScreenProps {
   students: Student[];
@@ -38,7 +41,7 @@ export default function StudentDataInputScreen({
   const [activeTab, setActiveTab] = useState<'academic' | 'behavior' | 'attendance' | 'observations'>('academic');
 
   // Observations State
-  const [observationsList, setObservationsList] = useState<Array<{id: string, studentId: string, date: string, tag: string, text: string}>>([
+  const [observationsList, setObservationsList] = useState<Array<{ id: string, studentId: string, date: string, tag: string, text: string }>>([
     {
       id: 'o1',
       studentId: 's1',
@@ -122,29 +125,17 @@ export default function StudentDataInputScreen({
   };
 
   return (
-    <div className="space-y-6 pb-24 animate-fadeIn" id="students-data-input-container">
+    <DashboardChildrenLayout
+      title='Student Data Input'
+      subtitle='Enter and manage individual student academic, behavioral, and diagnostic records'
+      actionButtons={<MyStudentsHeaderAction onOpenAddStudent={onOpenAddStudent} />}
+    >
       {successToast && (
-        <div className="fixed top-5 right-5 bg-emerald-500 border border-emerald-400 text-slate-900 font-extrabold px-4 py-3 rounded-lg flex items-center gap-2 shadow-2xl z-[90] block animate-bounce">
+        <div className="fixed top-5 right-5 bg-emerald-500 border border-emerald-400 text-slate-900 font-extrabold px-4 py-3 rounded-lg items-center gap-2 shadow-2xl z-90 block animate-bounce">
           <Check size={18} strokeWidth={3} />
           <span>{successToastMessage}</span>
         </div>
       )}
-
-      {/* Section 1 — Header Row */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" id="header-row">
-        <div>
-          <h2 className="text-2xl font-bold font-heading text-slate-100" id="header-title">Student Data Input</h2>
-          <p className="text-sm text-slate-400 font-sans" id="header-subtext">Enter and manage individual student academic, behavioral, and diagnostic records</p>
-        </div>
-        <button
-          onClick={onOpenAddStudent}
-          className="bg-orange-500 text-slate-900 font-semibold px-4 py-2.5 rounded-lg text-sm tracking-wide shadow-md shadow-orange-500/10 hover:opacity-90 flex items-center gap-2 border-0 cursor-pointer"
-          id="btn-add-student"
-        >
-          <Plus size={16} strokeWidth={2.5} />
-          Add New Student
-        </button>
-      </div>
 
       {/* Section 2 — Student Selector Card */}
       <ProfileAndFilter
@@ -167,11 +158,10 @@ export default function StudentDataInputScreen({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`cursor-pointer px-6 py-3.5 text-sm font-semibold tracking-wide border-b-2 transition font-sans ${
-              activeTab === tab.id
+            className={`cursor-pointer px-6 py-3.5 text-sm font-semibold tracking-wide border-b-2 transition font-sans ${activeTab === tab.id
                 ? 'border-orange-500 text-orange-500 bg-orange-500/5'
                 : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/10'
-            }`}
+              }`}
           >
             {tab.label}
           </button>
@@ -228,17 +218,16 @@ export default function StudentDataInputScreen({
           >
             Cancel
           </button>
-          <button
+          <Button
             onClick={() => {
               setLastSaved('Just now');
               triggerSuccessToast(`Successfully synchronized and published student records for ${currentStudent.name}!`);
             }}
-            className="px-5 py-2 hover:opacity-90 text-slate-900 font-semibold text-xs rounded-lg transition bg-[#F97316] shadow-lg shadow-orange-500/10 cursor-pointer border-0"
           >
             Save & Update
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </DashboardChildrenLayout>
   );
 }

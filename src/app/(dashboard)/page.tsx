@@ -2,7 +2,6 @@
 import DashboardPage from '@/components/app/dashboard/DashboardPage';
 
 
-
 const page = () => {
   return (
     <div>

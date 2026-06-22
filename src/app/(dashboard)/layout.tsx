@@ -175,8 +175,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 className="p-2 hover:bg-slate-800 text-slate-400 hover:text-white rounded-full transition relative cursor-pointer bg-transparent border-0"
                 id="bell-button"
               >
-                <Bell size={18} />
-                <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-orange-600 rounded-full text-[8px] font-bold text-white flex items-center justify-center font-mono">
+                <Bell size={20} />
+                <span className="absolute top-1.5 right-1.5 size-3.5 bg-orange-600 rounded-full text-[8px] font-bold text-white! flex items-center justify-center">
                   {notifications.length}
                 </span>
               </button>

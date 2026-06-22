@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import StudentDataInputScreen from '@/components/StudentDataInputScreen';
+import StudentDataInputScreen from '@/components/app/my-students/StudentDataInputScreen';
 import LearningPlanScreen from '@/components/LearningPlanScreen';
 
 function StudentsPageContent() {

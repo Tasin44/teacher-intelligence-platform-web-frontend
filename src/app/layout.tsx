@@ -16,7 +16,7 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "EduPulse AI — Classroom Optimization Planner",
+  title: "EduPulse AI",
   description: "Advanced diagnostic grouping and student microplanning helper.",
 };
 

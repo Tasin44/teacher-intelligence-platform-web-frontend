@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Plus, Sparkles, X, Bot } from 'lucide-react';
 import { EduPulseProvider, useEduPulse } from '@/lib/context/EduPulseContext';
-import AuthScreen from '@/components/AuthScreen';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -20,27 +19,13 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const [newParentName, setNewParentName] = useState('');
   const [newParentEmail, setNewParentEmail] = useState('');
 
-  // Handle SSR hydration safety
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="min-h-screen bg-[#0F1117]" />;
-  }
-
-  // Auth Guard
-  if (!loggedInTeacher) {
-    return (
-      <AuthScreen
-        onLoginSuccess={(teacher) => {
-          // Relies on context provider to handle session storage
-          window.location.reload();
-        }}
-      />
-    );
-  }
+  const teacher = loggedInTeacher || {
+    name: 'Ms. Johnson',
+    email: 'johnson@oakwood.edu',
+    school: 'Oakwood Elementary School',
+    grade: 'Grade 4',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
+  };
 
   // Add new student submit
   const handleAddStudentSubmit = (e: React.FormEvent) => {
@@ -139,14 +124,14 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <div className="p-4 border-t border-[#2A2D3A] flex items-center justify-between bg-slate-900/10" id="sidebar-teacher-profile">
           <div className="flex items-center gap-3">
             <img
-              src={loggedInTeacher.avatar}
+              src={teacher.avatar}
               alt="Teacher"
               referrerPolicy="no-referrer"
               className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A]"
             />
             <div className="leading-tight">
-              <span className="font-bold text-xs text-white block">{loggedInTeacher.name}</span>
-              <span className="text-[10px] text-slate-500">{loggedInTeacher.grade} • {loggedInTeacher.school.split(' ')[0]}</span>
+              <span className="font-bold text-xs text-white block">{teacher.name}</span>
+              <span className="text-[10px] text-slate-500">{teacher.grade} • {teacher.school.split(' ')[0]}</span>
             </div>
           </div>
           <button
@@ -227,7 +212,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 title="Teacher Settings"
               >
                 <img
-                  src={loggedInTeacher.avatar}
+                  src={loggedInTeacher?.avatar}
                   alt="Teacher Profile"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"

@@ -1,9 +1,8 @@
 "use client";
-
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
 import DashboardScreen from '@/components/DashboardScreen';
+
 
 export default function DashboardPage() {
   const router = useRouter();

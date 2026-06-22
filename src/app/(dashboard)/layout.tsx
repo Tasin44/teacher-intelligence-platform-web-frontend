@@ -1,45 +1,16 @@
 "use client";
-
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import {
-  LayoutDashboard,
-  Users,
-  Boxes,
-  FileSpreadsheet,
-  HeartHandshake,
-  BookOpen,
-  TrendingUp,
-  MessageSquare,
-  Calendar,
-  Settings,
-  LogOut,
-  Bell,
-  Plus,
-  Sparkles,
-  X,
-  Bot
-} from 'lucide-react';
-
+import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Plus, Sparkles, X, Bot } from 'lucide-react';
 import { EduPulseProvider, useEduPulse } from '@/lib/context/EduPulseContext';
 import AuthScreen from '@/components/AuthScreen';
+
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-
-  const {
-    loggedInTeacher,
-    logout,
-    addStudent,
-    isAddStudentOpen,
-    setIsAddStudentOpen,
-    isNotificationOpen,
-    setIsNotificationOpen,
-    notifications,
-    setNotifications
-  } = useEduPulse();
+  const { loggedInTeacher, logout, addStudent, isAddStudentOpen, setIsAddStudentOpen, isNotificationOpen, setIsNotificationOpen, notifications, setNotifications} = useEduPulse();
 
   // Add Student Form Local States
   const [newName, setNewName] = useState('');
@@ -136,7 +107,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center font-black text-slate-900 shadow-lg shadow-orange-500/20">
               <Sparkles size={16} fill="#000" />
             </div>
-            <span className="font-heading font-black tracking-tight text-white text-[17px] tracking-wide">
+            <span className="font-heading font-black tracking-tight text-white text-[17px]">
               EduPulse <span className="text-orange-500 font-extrabold text-[15px] italic">AI</span>
             </span>
           </div>
@@ -154,7 +125,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.id}
                   href={item.path}
-                  className={`w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-xs tracking-wider transition duration-150 justify-start select-none cursor-pointer border-0 decoration-transparent ${activeClass}`}
+                  className={`w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-sm tracking-wider transition duration-150 justify-start select-none cursor-pointer border-0 decoration-transparent ${activeClass}`}
                 >
                   <Icon size={16} className={`${isActive ? 'text-orange-500' : 'text-slate-450'}`} />
                   <span>{item.label}</span>

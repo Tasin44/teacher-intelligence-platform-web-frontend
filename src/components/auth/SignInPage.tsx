@@ -54,10 +54,10 @@ const SignInPage = () => {
     };
 
     return (
-        <div className="flex flex-col w-full text-[#0F172A] font-sans">
+        <div className="flex flex-col w-full text-primary-text font-sans">
             {/* Header Title inside card */}
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold font-heading text-[#0F172A] mb-1">
+                <h2 className="text-2xl font-bold font-heading text-primary-text mb-1">
                     Welcome Back Ms. Johnson
                 </h2>
                 <p className="text-sm font-semibold text-slate-500">
@@ -107,7 +107,7 @@ const SignInPage = () => {
                 <div className="flex justify-end mt-1">
                     <Link
                         href="/auth/forgot-password"
-                        className="text-xs font-bold text-[#F97316] hover:underline"
+                        className="text-xs font-bold text-accent-orange hover:underline"
                     >
                         Forgot password?
                     </Link>
@@ -152,7 +152,7 @@ const SignInPage = () => {
             <div className="text-center mt-6">
                 <p className="text-xs text-slate-500">
                     Don&apos;t have an account?{' '}
-                    <Link href="/auth/sign-up" className="text-[#F97316] font-bold hover:underline">
+                    <Link href="/auth/sign-up" className="text-accent-orange font-bold hover:underline">
                         Sign Up
                     </Link>
                 </p>

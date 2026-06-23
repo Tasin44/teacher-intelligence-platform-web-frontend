@@ -44,10 +44,10 @@ const VerifyOtpPage = () => {
     };
 
     return (
-        <div className="flex flex-col w-full text-[#0F172A] font-sans">
+        <div className="flex flex-col w-full text-primary-text font-sans">
             {/* Header Title inside card */}
             <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold font-heading text-[#0F172A] mb-1">
+                <h2 className="text-2xl font-bold font-heading text-primary-text mb-1">
                     Verify Email
                 </h2>
             </div>

@@ -1,21 +1,17 @@
 "use client";
-
-import React from 'react';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import ParentCommsScreen from '@/components/ParentCommsScreen';
+import ParentCommsPage from '@/components/app/parent-comms/ParentCommsPage';
 
-export default function ParentCommsPage() {
-  const {
-    students,
-    commsHistory,
-    addHistoryItem
-  } = useEduPulse();
+const page = () => {
+  const { students, commsHistory, addHistoryItem } = useEduPulse();
 
   return (
-    <ParentCommsScreen
+    <ParentCommsPage
       students={students}
       commsHistory={commsHistory}
       onAddHistoryItem={addHistoryItem}
     />
   );
-}
+};
+
+export default page;

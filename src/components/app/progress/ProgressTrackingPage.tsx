@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
-import { AlertOctagon } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { AlertOctagon, Search, X } from 'lucide-react';
 import { Student } from '@/types';
 import ProgressTrackingStats from './ProgressTrackingStats';
 import ScoreOverTimeChart from './ScoreOverTimeChart';
@@ -22,43 +22,91 @@ const ProgressTrackingPage = ({
   onSelectStudent,
   onNavigate
 }: ProgressTrackingScreenProps) => {
-  const [dateRange, setDateRange] = useState('June 1 - June 15, 2026');
-
   const currentStudent = useMemo(() => {
     return students.find((s) => s.id === selectedStudentId) || students[0];
   }, [students, selectedStudentId]);
 
+  const [searchQuery, setSearchQuery] = useState(currentStudent?.name || '');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    if (currentStudent) {
+      setSearchQuery(currentStudent.name);
+    }
+  }, [currentStudent]);
+
+  const filteredStudents = useMemo(() => {
+    if (!searchQuery) return students;
+    return students.filter(st =>
+      st.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [students, searchQuery]);
+
   return (
     <DashboardChildrenLayout title='Progress Tracking' subtitle='Audit student performance trends, standards mastery progressions, and attendance cycles'>
       {/* Section 1 — Header Row */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="w-full max-w-2xl">
+          {/* Search Student Selector */}
+          <div className="relative">
+            <div className="relative flex items-center">
+              <Search size={14} className="absolute left-3 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search student..."
+                value={searchQuery}
+                onFocus={() => setIsDropdownOpen(true)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsDropdownOpen(true);
+                }}
+                className="bg-white border w-full border-slate-200 rounded-lg pl-9 pr-8 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:border-orange-500 shadow-sm"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setIsDropdownOpen(true);
+                  }}
+                  className="absolute right-3 text-slate-400 hover:text-slate-600 bg-transparent border-0 p-0 cursor-pointer flex items-center"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-          {/* Student Selector */}
-          <select
-            value={currentStudent.id}
-            onChange={(e) => onSelectStudent(e.target.value)}
-            className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 focus:outline-none focus:border-orange-500 cursor-pointer shadow-sm"
-          >
-            {students.map((st) => (
-              <option key={st.id} value={st.id}>
-                {st.name} — Progress Report
-              </option>
-            ))}
-          </select>
-
-          {/* Date Range Picker */}
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-650 focus:outline-none focus:border-orange-500 cursor-pointer shadow-sm"
-          >
-            <option value="June 1 - June 15, 2026">June 1 - June 15, 2026</option>
-            <option value="May 1 - May 30, 2026">May 1 - May 30, 2026</option>
-            <option value="Full Semester">Full Semester 2026</option>
-          </select>
+            {isDropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
+                <div className="absolute left-0 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg max-h-52 overflow-y-auto z-50 py-1">
+                  {filteredStudents.length > 0 ? (
+                    filteredStudents.map((st) => (
+                      <button
+                        key={st.id}
+                        type="button"
+                        onClick={() => {
+                          onSelectStudent(st.id);
+                          setSearchQuery(st.name);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 text-xs hover:bg-orange-500/10 hover:text-orange-600 font-semibold transition cursor-pointer flex items-center justify-between border-0 ${
+                          st.id === currentStudent.id ? 'bg-orange-500/5 text-orange-500' : 'text-slate-700'
+                        }`}
+                      >
+                        <span>{st.name}</span>
+                        <span className="text-[9px] uppercase font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-500">
+                          {st.riskLevel}
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-xs text-slate-400 italic">No students found</div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
 
       {/* Section 2 — Alert Banner */}
       <div className="bg-[#FEF2F2] border border-[#FEE2E2] p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs font-semibold text-[#991B1B] rounded-lg" id="progress-risk-banner">

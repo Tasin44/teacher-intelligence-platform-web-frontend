@@ -22,36 +22,41 @@ interface AddInterventionModalProps {
 }
 
 const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onSave }: AddInterventionModalProps) => {
-    const [studentId, setStudentId] = useState(defaultStudentId);
-    const [strategy, setStrategy] = useState<'1:1 Support' | 'Small Group' | 'Peer Support'>('1:1 Support');
-    const [duration, setDuration] = useState('June 16 → June 30, 2026');
-    const [status, setStatus] = useState<'Active' | 'Completed'>('Active');
-    const [progress, setProgress] = useState<number>(10);
-    const [activities, setActivities] = useState('');
+    const [studentName, setStudentName] = useState('');
+    const [studentRoll, setStudentRoll] = useState('');
+    const [interventionType, setInterventionType] = useState('extra tutoring');
+    const [reason, setReason] = useState('low reading score');
+    const [startDate, setStartDate] = useState('2026-06-16');
+    const [frequency, setFrequency] = useState('twice a week');
+    const [notes, setNotes] = useState('');
 
     useEffect(() => {
         if (isOpen) {
-            setStudentId(defaultStudentId || students[0]?.id || 's1');
-            setStrategy('1:1 Support');
-            setDuration('June 16 → June 30, 2026');
-            setStatus('Active');
-            setProgress(10);
-            setActivities('Daily 10-minute visual fractions mapping sessions\nWeekly partner division tracking checklists\nReflex response multiplication reviews');
+            const currentStudent = students.find(s => s.id === defaultStudentId) || students[0];
+            setStudentName(currentStudent?.name || '');
+            setStudentRoll('');
+            setInterventionType('extra tutoring');
+            setReason('low reading score');
+            setStartDate('2026-06-16');
+            setFrequency('twice a week');
+            setNotes('');
         }
     }, [isOpen, defaultStudentId, students]);
 
     if (!isOpen) return null;
 
     const handleSaveClick = () => {
-        const dates = duration.split('→').map((d) => d.trim());
+        const matchedStudent = students.find(s => s.name.toLowerCase() === studentName.toLowerCase());
+        const matchedStudentId = matchedStudent ? matchedStudent.id : (students[0]?.id || 's1');
+
         onSave({
-            studentId,
-            strategy,
-            activities: activities.split('\n').filter((x) => x.trim() !== ''),
-            startDate: dates[0] || '2026-06-16',
-            endDate: dates[1] || '2026-06-30',
-            progress,
-            status
+            studentId: matchedStudentId,
+            strategy: (interventionType || '1:1 Support') as any,
+            activities: notes ? [notes] : ['Daily Support'],
+            startDate: startDate || '2026-06-16',
+            endDate: startDate || '2026-06-30',
+            progress: 0,
+            status: 'Active'
         });
     };
 
@@ -71,83 +76,92 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
                 </h3>
 
                 <div className="space-y-4 text-xs">
+                    {/* Row 1: Student Name & Roll */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5 text-left">
                             <label className="font-bold text-slate-400">Target Student Name</label>
-                            <select
-                                value={studentId}
-                                onChange={(e) => setStudentId(e.target.value)}
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-semibold"
-                            >
-                                {students.map((st) => (
-                                    <option key={st.id} value={st.id}>
-                                        {st.name} ({st.riskLevel})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="flex flex-col gap-1.5 text-left">
-                            <label className="font-bold text-slate-400">Clinical Tier Method</label>
-                            <select
-                                value={strategy}
-                                onChange={(e) => setStrategy(e.target.value as any)}
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-semibold"
-                            >
-                                <option value="1:1 Support">1:1 Clinical Guidance</option>
-                                <option value="Small Group">Small Group Sync (Tier 2)</option>
-                                <option value="Peer Support">Structured Peer Mentorship</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1.5 text-left">
-                            <label className="font-bold text-slate-400">Active Duration Timelines</label>
                             <input
                                 type="text"
-                                value={duration}
-                                onChange={(e) => setDuration(e.target.value)}
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-medium"
+                                required
+                                placeholder="e.g. Alisha Patel"
+                                value={studentName}
+                                onChange={(e) => setStudentName(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
                             />
                         </div>
-
                         <div className="flex flex-col gap-1.5 text-left">
-                            <label className="font-bold text-slate-400">Intervention Status Setting</label>
-                            <select
-                                value={status}
-                                onChange={(e) => setStatus(e.target.value as any)}
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-semibold"
-                            >
-                                <option value="Active">Active Intervention Plan</option>
-                                <option value="Completed">Completed / Resolved Plan</option>
-                            </select>
+                            <label className="font-bold text-slate-400">Target Student Roll</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. 12345"
+                                value={studentRoll}
+                                onChange={(e) => setStudentRoll(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                            />
                         </div>
                     </div>
 
-                    {/* Progress Slider */}
-                    <div className="bg-[#0F1117]/50 rounded-xl p-3 border border-[#2A2D3A] space-y-2 text-left">
-                        <div className="flex justify-between items-center text-xs font-semibold">
-                            <span className="text-slate-400">Tactical Progress Checked Goal</span>
-                            <strong className="text-orange-400 font-mono text-xs">{progress}% Score</strong>
+                    {/* Row 2: Intervention Type & Reason */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5 text-left">
+                            <label className="font-bold text-slate-400">Intervention type</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g., extra tutoring, small-group support"
+                                value={interventionType}
+                                onChange={(e) => setInterventionType(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                            />
                         </div>
-                        <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            step="5"
-                            value={progress}
-                            onChange={(e) => setProgress(Number(e.target.value))}
-                            className="w-full accent-orange-500 cursor-pointer"
-                        />
+                        <div className="flex flex-col gap-1.5 text-left">
+                            <label className="font-bold text-slate-400">Reason for intervention</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g., low reading score"
+                                value={reason}
+                                onChange={(e) => setReason(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                            />
+                        </div>
                     </div>
 
+                    {/* Row 3: Start Date & Frequency */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5 text-left">
+                            <label className="font-bold text-slate-400">Start date</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="YYYY-MM-DD"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1.5 text-left">
+                            <label className="font-bold text-slate-400">Frequency</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g., twice a week"
+                                value={frequency}
+                                onChange={(e) => setFrequency(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Notes/Observations Textarea */}
                     <div className="flex flex-col gap-1.5 text-left">
-                        <label className="font-bold text-slate-400">Required Tactical Exercises (one per line)</label>
+                        <label className="font-bold text-slate-400">Notes / Observations</label>
                         <textarea
-                            rows={5}
-                            value={activities}
-                            onChange={(e) => setActivities(e.target.value)}
+                            rows={4}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="Enter notes or observations..."
                             className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-orange-500 resize-none leading-relaxed"
                         />
                     </div>
@@ -164,7 +178,7 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
                         onClick={handleSaveClick}
                     >
                         <CheckCircle size={14} strokeWidth={2.5} />
-                        Publish Intervention Plan
+                        Generate Intervention plan
                     </Button>
                 </div>
             </div>

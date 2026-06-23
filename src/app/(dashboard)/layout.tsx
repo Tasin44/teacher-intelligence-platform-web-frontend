@@ -57,9 +57,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         {/* Top: Logo section */}
         <div>
           <div className="h-16 flex items-center gap-2.5 px-6 border-b border-[#2A2D3A]/75 bg-slate-900/10" id="sidebar-logo">
-            <div className="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center font-black text-slate-900 shadow-lg shadow-orange-500/20">
-              <Sparkles size={16} fill="#000" />
-            </div>
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 shadow-md shadow-orange-500/10 rounded-xl">
+              <rect width="48" height="48" rx="12" fill="#F97316" />
+              <path d="M24 14L32.66 19V29L24 34L15.34 29V19L24 14Z" fill="white" />
+              <circle cx="24" cy="24" r="5" fill="#F97316" />
+            </svg>
             <span className="font-heading font-black tracking-tight text-white text-[17px]">
               EduPulse <span className="text-orange-500 font-extrabold text-[15px] italic">AI</span>
             </span>

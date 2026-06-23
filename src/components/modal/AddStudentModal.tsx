@@ -12,6 +12,7 @@ export default function AddStudentModal() {
 
     // Add Student Form Local States
     const [newName, setNewName] = useState('');
+    const [newRollNo, setNewRollNo] = useState('');
     const [newGrade, setNewGrade] = useState('Grade 4');
     const [newLevel, setNewLevel] = useState<'At Risk' | 'On Track' | 'Advanced' | 'Developing'>('On Track');
     const [newReading, setNewReading] = useState('4A');
@@ -37,6 +38,7 @@ export default function AddStudentModal() {
 
         // reset fields
         setNewName('');
+        setNewRollNo('');
         setNewParentName('');
         setNewParentEmail('');
 
@@ -65,17 +67,31 @@ export default function AddStudentModal() {
                 </h3>
 
                 <div className="space-y-4 text-xs">
-                    <div className="flex flex-col gap-1.5">
-                        <label className="font-bold text-slate-400">Student Name</label>
-                        <input
-                            type="text"
-                            required
-                            placeholder="e.g. Alisha Patel"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500"
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                            <label className="font-bold text-slate-400">Student Name</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. Alisha Patel"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500"
+                            />
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                            <label className="font-bold text-slate-400">Student Roll No</label>
+                            <input
+                                type="text"
+                                required
+                                placeholder="e.g. 12345"
+                                value={newRollNo}
+                                onChange={(e) => setNewRollNo(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500"
+                            />
+                        </div>
                     </div>
+
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">

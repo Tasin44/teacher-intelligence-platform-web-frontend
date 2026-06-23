@@ -2,13 +2,16 @@ import Card from '@/components/shared/Card'
 import { Button } from '@/components/ui/button'
 import { Boxes, FileSpreadsheet, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { useEduPulse } from '@/lib/context/EduPulseContext'
 
 
 const QuickActions = () => {
+    const { setIsAddStudentOpen } = useEduPulse();
+
     return (
         <Card className="lg:col-span-5" title='Quick Actions' subtitle='Common tasks with one-click routing'>
             <div className="flex flex-col gap-4">
-                <Button>
+                <Button onClick={() => setIsAddStudentOpen(true)} className="cursor-pointer">
                     <Plus size={18} strokeWidth={2.5} />
                     Add Student
                 </Button>

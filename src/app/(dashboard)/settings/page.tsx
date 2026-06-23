@@ -1,10 +1,8 @@
 "use client";
-
-import React from 'react';
+import SettingsPage from '@/components/app/settings/SettingsPage';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import SettingsScreen from '@/components/SettingsScreen';
 
-export default function SettingsPage() {
+const page = () => {
   const { loggedInTeacher, setLoggedInTeacher } = useEduPulse();
 
   const handleUpdateTeacher = (updated: {
@@ -29,9 +27,11 @@ export default function SettingsPage() {
   }
 
   return (
-    <SettingsScreen
+    <SettingsPage
       teacher={loggedInTeacher}
       onUpdateTeacher={handleUpdateTeacher}
     />
   );
 }
+
+export default page;

@@ -10,7 +10,7 @@ import AddStudentModal from '@/components/modal/AddStudentModal';
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { loggedInTeacher, logout, addStudent, isAddStudentOpen, setIsAddStudentOpen, isNotificationOpen, setIsNotificationOpen, notifications, setNotifications } = useEduPulse();
+  const { loggedInTeacher, logout, isNotificationOpen, setIsNotificationOpen, notifications, setNotifications } = useEduPulse();
 
   const teacher = loggedInTeacher || {
     name: 'Ms. Johnson',
@@ -103,7 +103,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <button
-            onClick={logout}
+            onClick={() => {
+              logout();
+              router.push('/auth/sign-in');
+            }}
             className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-rose-400 transition cursor-pointer bg-transparent border-0"
             title="Log out"
           >

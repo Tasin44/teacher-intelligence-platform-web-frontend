@@ -1,15 +1,13 @@
 "use client";
-
-import React from 'react';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import PacingCurriculumScreen from '@/components/PacingCurriculumScreen';
 import { initialPacingSuggestions, initialStandardsCoverage } from '@/lib/data';
+import PacingCurriculumPage from '@/components/app/pacing/PacingCurriculumPage';
 
-export default function PacingPage() {
+const page = () => {
   const { students } = useEduPulse();
 
   return (
-    <PacingCurriculumScreen
+    <PacingCurriculumPage
       students={students}
       pacingSuggestions={initialPacingSuggestions}
       standardsCoverageList={initialStandardsCoverage}
@@ -17,4 +15,6 @@ export default function PacingPage() {
       onToggleStandardCoverage={() => {}}
     />
   );
-}
+};
+
+export default page;

@@ -12,11 +12,11 @@ interface LearningPlanScreenProps {
   onSelectStudent: (id: string) => void;
 }
 
-export default function LearningPlanScreen({
+const LearningPlanPage = ({
   students,
   selectedStudentId,
   onSelectStudent
-}: LearningPlanScreenProps) {
+}: LearningPlanScreenProps) => {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -331,3 +331,5 @@ export default function LearningPlanScreen({
     </DashboardChildrenLayout>
   );
 }
+
+export default LearningPlanPage;

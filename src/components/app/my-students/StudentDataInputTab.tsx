@@ -1,8 +1,6 @@
 "use client";
-
-import React from 'react';
-import StudentDataInputScreen from './StudentDataInputScreen';
 import { Student, AcademicRecord, BehaviorLog } from '@/types';
+import StudentDataInputPage from './StudentDataInputPage';
 
 interface StudentDataInputTabProps {
   students: Student[];
@@ -18,5 +16,5 @@ interface StudentDataInputTabProps {
 }
 
 export default function StudentDataInputTab(props: StudentDataInputTabProps) {
-  return <StudentDataInputScreen {...props} />;
+  return <StudentDataInputPage {...props} />;
 }

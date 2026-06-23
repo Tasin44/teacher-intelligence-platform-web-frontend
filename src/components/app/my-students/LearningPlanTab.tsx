@@ -1,8 +1,6 @@
 "use client";
-
-import React from 'react';
-import LearningPlanScreen from '@/components/app/my-students/LearningPlanScreen';
 import { Student } from '@/types';
+import LearningPlanPage from './LearningPlanPage';
 
 interface LearningPlanTabProps {
   students: Student[];
@@ -11,5 +9,5 @@ interface LearningPlanTabProps {
 }
 
 export default function LearningPlanTab(props: LearningPlanTabProps) {
-  return <LearningPlanScreen {...props} />;
+  return <LearningPlanPage {...props} />;
 }

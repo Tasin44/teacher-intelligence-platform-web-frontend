@@ -25,7 +25,7 @@ interface StudentDataInputScreenProps {
   onOpenAddStudent: () => void;
 }
 
-export default function StudentDataInputScreen({
+const StudentDataInputPage = ({
   students,
   academicRecords,
   behaviorLogs,
@@ -36,7 +36,7 @@ export default function StudentDataInputScreen({
   onDeleteAcademicRecord,
   onAddBehaviorLog,
   onOpenAddStudent
-}: StudentDataInputScreenProps) {
+}: StudentDataInputScreenProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'academic' | 'behavior' | 'attendance' | 'observations'>('academic');
 
@@ -231,3 +231,6 @@ export default function StudentDataInputScreen({
     </DashboardChildrenLayout>
   );
 }
+
+
+export default StudentDataInputPage;

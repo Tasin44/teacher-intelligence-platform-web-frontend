@@ -6,11 +6,12 @@ type TProps = {
     children: React.ReactNode;
     actionButtons?: React.ReactNode;
     state?: React.ReactNode;
+    className?: string;
 }
 
-const DashboardChildrenLayout = ({ title, subtitle, children, actionButtons, state }: TProps) => {
+const DashboardChildrenLayout = ({ title, subtitle, children, actionButtons, state, className }: TProps) => {
     return (
-        <div className='space-y-4 md:space-y-6 animate-fadeIn'>
+        <div className={`space-y-4 md:space-y-6 animate-fadeIn ${className}`}>
             <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
                 {
                     title && subtitle && (<div>

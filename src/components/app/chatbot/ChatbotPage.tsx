@@ -1,13 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Bot,
-  Send,
-  Sparkles,
-  Trash2,
-  ArrowRight,
-  CheckCircle2,
-  AlertCircle
-} from "lucide-react";
+import { Bot, Send, ArrowRight, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+import DashboardChildrenLayout from "@/components/shared/DashboardChildrenLayout";
 
 interface Message {
   id: string;
@@ -21,11 +14,7 @@ interface ChatbotScreenProps {
   teacherAvatar: string;
 }
 
-export default function ChatbotScreen({
-  teacherName,
-  teacherEmail,
-  teacherAvatar
-}: ChatbotScreenProps) {
+const ChatbotPage = ({ teacherName, teacherAvatar }: ChatbotScreenProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
   const [input, setInput] = useState("");
@@ -161,28 +150,11 @@ export default function ChatbotScreen({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] animate-fadeIn text-slate-100" id="chatbot-screen-container">
-      {/* Upper banner info */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-        <div>
-          <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
-            AI Copilot Chat
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">Differentiate, scaffold, and construct standard lesson resources with smart context-aware suggestions</p>
-        </div>
-        <button
-          onClick={handleClearChat}
-          className="flex items-center gap-1.5 px-3 py-1.5 border border-rose-500/30 hover:border-rose-500/60 bg-transparent text-rose-400 hover:text-rose-300 rounded-lg text-xs font-bold transition cursor-pointer"
-        >
-          <Trash2 size={13} />
-          Clear Chat Logs
-        </button>
-      </div>
-
+    <DashboardChildrenLayout title="AI Copilot Chat" subtitle="Differentiate, scaffold, and construct standard lesson resources with smart context-aware suggestions" className="flex flex-col h-[calc(100vh-140px)] animate-fadeIn text-slate-100">
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-5 flex-1 min-h-0 bg-transparent" id="chatbot-main-layout">
 
         {/* Left column - Helper Prompts sidebar (1/4 space) */}
-        <div className="xl:col-span-1 bg-[#1E2130] p-5 rounded-xl border border-[#2A2D3A] flex flex-col justify-between" id="chatbot-prompts-card">
+        <div className="xl:col-span-1 bg-[#1E2130] p-5 rounded-xl border border-[#2A2D3A] flex flex-col justify-between" >
           <div className="space-y-4">
             <h3 className="text-xs font-extrabold text-orange-500 uppercase tracking-widest flex items-center gap-1.5 mb-2">
               <Sparkles size={13} fill="currentColor" />
@@ -239,15 +211,15 @@ export default function ChatbotScreen({
                       className="w-8 h-8 rounded-full border border-slate-700 object-cover shrink-0 mt-0.5"
                     />
                   ) : (
-                    <div className="w-8 h-8 rounded-lg bg-orange-500 text-slate-900 flex items-center justify-center shrink-0 mt-0.5 font-bold shadow shadow-orange-500/20">
-                      <Bot size={16} />
+                    <div className="w-8 h-8 rounded-lg bg-orange-500 text-white! flex items-center justify-center shrink-0 mt-0.5 font-bold shadow shadow-orange-500/20">
+                      <Bot size={16} className="text-white!" />
                     </div>
                   )}
 
                   {/* Message body text */}
                   <div className={`p-4 rounded-xl text-xs leading-relaxed border shadow-sm ${isUser
-                      ? "bg-orange-500 text-slate-900 border-orange-400/20 rounded-tr-none"
-                      : "bg-[#0F1117]/50 text-slate-200 border-[#2A2D3A]/50 rounded-tl-none whitespace-pre-wrap font-mono"
+                    ? "bg-orange-500 text-slate-900 border-orange-400/20 rounded-tr-none"
+                    : "bg-[#0F1117]/50 text-slate-200 border-[#2A2D3A]/50 rounded-tl-none whitespace-pre-wrap font-mono"
                     }`}>
                     <div className="prose prose-invert prose-xs max-w-none">
                       {msg.content}
@@ -259,8 +231,8 @@ export default function ChatbotScreen({
 
             {isThinking && (
               <div className="flex items-start gap-3 max-w-[80%] mr-auto">
-                <div className="w-8 h-8 rounded-lg bg-orange-500 text-slate-900 flex items-center justify-center shrink-0 mt-0.5 font-bold animate-pulse">
-                  <Bot size={16} />
+                <div className="w-8 h-8 rounded-lg bg-orange-500 text-white! flex items-center justify-center shrink-0 mt-0.5 font-bold animate-pulse">
+                  <Bot size={16} className="text-white!" />
                 </div>
                 <div className="bg-[#0F1117]/50 text-slate-400 border border-[#2A2D3A]/50 p-4 rounded-xl rounded-tl-none text-xs flex items-center gap-2 font-medium">
                   <div className="flex gap-1">
@@ -306,10 +278,10 @@ export default function ChatbotScreen({
               <button
                 type="submit"
                 disabled={isThinking || !input.trim()}
-                className="absolute right-2 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-450 text-slate-900 border-0 rounded-lg cursor-pointer flex items-center justify-center transition disabled:opacity-35 disabled:cursor-not-allowed"
+                className="absolute right-2 px-3.5 py-1.5 bg-orange-500 hover:bg-orange-450 text-white border-0 rounded-lg cursor-pointer flex items-center justify-center transition disabled:opacity-35 disabled:cursor-not-allowed"
                 title="Send Message"
               >
-                <Send size={14} className="stroke-[2.5]" />
+                <Send size={14} className="stroke-[2.5] text-white!" />
               </button>
             </form>
             <div className="flex justify-between items-center mt-2.5 px-1 text-[10px] text-slate-500">
@@ -321,6 +293,8 @@ export default function ChatbotScreen({
         </div>
 
       </div>
-    </div>
+    </DashboardChildrenLayout>
   );
 }
+
+export default ChatbotPage;

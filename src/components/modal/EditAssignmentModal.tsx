@@ -112,9 +112,9 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                                 onChange={(e) => setFormTargetType(e.target.value as any)}
                                 className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-medium"
                             >
-                                <option value="Level">Performance Level</option>
-                                <option value="Group">AI Student Group</option>
-                                <option value="Student">Individual Student</option>
+                                <option value="all_groups">All Groups</option>
+                                <option value="individual_group">Individual Group</option>
+                                <option value="individual_student">Individual Student</option>
                             </select>
                         </div>
 
@@ -199,7 +199,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                         onClick={handleSaveClick}
                     >
                         <CheckCircle size={14} strokeWidth={2.5} />
-                        Save Assignment
+                        Generate Assignment
                     </Button>
                 </div>
             </div>

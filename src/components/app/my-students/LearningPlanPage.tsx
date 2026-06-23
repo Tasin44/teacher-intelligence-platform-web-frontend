@@ -259,7 +259,7 @@ const LearningPlanPage = ({
           </div>
 
           {/* Card 4: Goals */}
-          <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-blue-500" id="goals-card">
+          {/* <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-blue-500" id="goals-card">
             <h4 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 mb-4">
               <Target size={16} className="text-blue-500" />
               Individualized Milestones
@@ -299,7 +299,7 @@ const LearningPlanPage = ({
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 

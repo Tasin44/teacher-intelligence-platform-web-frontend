@@ -21,14 +21,13 @@ interface ObservationsTabProps {
 }
 
 export default function ObservationsTab({
-  currentStudent,
   observations,
   onAddObservation
 }: ObservationsTabProps) {
   // Observations Local States
   const [observationText, setObservationText] = useState('');
   const [observationDate, setObservationDate] = useState('2026-06-15');
-  const [observationTag, setObservationTag] = useState<'small group' | '1:1' | 'whole class' | 'pull-out' | 'push-in'>('small group');
+  const [observationTag, setObservationTag] = useState<'small group' | '1:1' | 'whole class'>('small group');
 
   const handleAddObservation = () => {
     if (!observationText.trim()) return;
@@ -60,7 +59,7 @@ export default function ObservationsTab({
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-xs font-bold text-slate-400">Setting Tag</label>
             <div className="flex flex-wrap gap-2 text-xs font-semibold">
-              {(['small group', '1:1', 'whole class', 'pull-out', 'push-in'] as const).map((t) => (
+              {(['small group', '1:1', 'whole class'] as const).map((t) => (
                 <button
                   key={t}
                   type="button"

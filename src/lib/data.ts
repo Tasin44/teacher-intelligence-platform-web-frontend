@@ -575,8 +575,8 @@ export const initialGroups: Group[] = [
     avgScore: 74,
     studentIds: ['s11', 's12', 's13', 's14', 's15', 's16', 's17', 's18', 's19'],
     tag: 'At Grade Level',
-    color: '#22C55E',
-    borderColor: '#22C55E'
+    color: '#10B981',
+    borderColor: '#10B981'
   },
   {
     id: 'C',
@@ -585,8 +585,8 @@ export const initialGroups: Group[] = [
     avgScore: 61,
     studentIds: ['s20', 's21', 's22', 's23', 's24', 's25', 's26', 's27', 's28'],
     tag: 'Approaching Grade Level',
-    color: '#EAB308',
-    borderColor: '#EAB308'
+    color: '#F59E0B',
+    borderColor: '#F59E0B'
   },
   {
     id: 'D',

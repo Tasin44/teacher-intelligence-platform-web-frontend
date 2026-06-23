@@ -1,20 +1,12 @@
 "use client";
-
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import StudentGroupingScreen from '@/components/StudentGroupingScreen';
+import StudentGroupingPage from '@/components/app/grouping/StudentGroupingPage';
 import { initialGroupHistory } from '@/lib/data';
 
-export default function GroupingPage() {
+const page = () => {
   const router = useRouter();
-  const {
-    students,
-    groups,
-    setGroups,
-    regenerateGroups,
-    setSelectedStudentId
-  } = useEduPulse();
+  const { students, groups, setGroups, regenerateGroups, setSelectedStudentId } = useEduPulse();
 
   const handleNavigate = (screen: string, subtab?: string) => {
     let path = screen === 'dashboard' ? '/' : `/${screen}`;
@@ -25,7 +17,7 @@ export default function GroupingPage() {
   };
 
   return (
-    <StudentGroupingScreen
+    <StudentGroupingPage
       students={students}
       groups={groups}
       history={initialGroupHistory}
@@ -36,3 +28,5 @@ export default function GroupingPage() {
     />
   );
 }
+
+export default page;

@@ -293,7 +293,7 @@ export default function ParentCommsScreen({
             </button>
             <button
               onClick={handleSendEmail}
-              className="px-5 py-2 hover:opacity-90 text-slate-900 font-bold text-xs rounded-lg transition duration-150 bg-[#F97316] hover:bg-orange-600 cursor-pointer border-0 flex items-center gap-1.5"
+              className="px-5 py-2 hover:opacity-90 text-slate-900 font-bold text-xs rounded-lg transition duration-150 bg-accent-orange hover:bg-orange-600 cursor-pointer border-0 flex items-center gap-1.5"
             >
               <Send size={13} />
               Send via Email
@@ -425,7 +425,7 @@ export default function ParentCommsScreen({
               </button>
               <button
                 onClick={() => setViewingHistoryItem(null)}
-                className="px-5 py-2 hover:opacity-90 text-slate-900 font-bold text-xs rounded-lg transition duration-150 bg-[#F97316] hover:bg-orange-600 cursor-pointer border-0"
+                className="px-5 py-2 hover:opacity-90 text-slate-900 font-bold text-xs rounded-lg transition duration-150 bg-accent-orange hover:bg-orange-600 cursor-pointer border-0"
               >
                 Close View
               </button>

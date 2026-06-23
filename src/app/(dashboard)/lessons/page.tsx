@@ -1,21 +1,18 @@
 "use client";
-
-import React from 'react';
+import LessonModificationPage from '@/components/app/lesson-plans/LessonModificationPage';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import LessonModificationScreen from '@/components/LessonModificationScreen';
 import { initialLessonSuggestions } from '@/lib/data';
 
-export default function LessonsPage() {
-  const {
-    appliedModifications,
-    applyModification
-  } = useEduPulse();
+const page = () => {
+  const { appliedModifications, applyModification } = useEduPulse();
 
   return (
-    <LessonModificationScreen
+    <LessonModificationPage
       suggestions={initialLessonSuggestions}
       appliedModifications={appliedModifications}
       onApplyModification={applyModification}
     />
   );
 }
+
+export default page;

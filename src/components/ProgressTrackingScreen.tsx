@@ -36,7 +36,7 @@ export default function ProgressTrackingScreen({
           <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
             Progress Tracking
           </h2>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">Audit student performance trends, standards mastery progressions, and attendance cycles</p>
+          <p className="text-xs text-slate-400 mt-0.5">Audit student performance trends, standards mastery progressions, and attendance cycles</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -44,7 +44,7 @@ export default function ProgressTrackingScreen({
           <select
             value={currentStudent.id}
             onChange={(e) => onSelectStudent(e.target.value)}
-            className="bg-[#1E2130] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs font-semibold text-slate-200 focus:outline-none focus:border-orange-500 font-sans"
+            className="bg-[#1E2130] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs font-semibold text-slate-200 focus:outline-none focus:border-orange-500"
           >
             {students.map((st) => (
               <option key={st.id} value={st.id}>
@@ -57,7 +57,7 @@ export default function ProgressTrackingScreen({
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="bg-[#1E2130] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500 font-sans"
+            className="bg-[#1E2130] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs font-semibold text-slate-300 focus:outline-none focus:border-orange-500"
           >
             <option value="June 1 - June 15, 2026">June 1 - June 15, 2026</option>
             <option value="May 1 - May 30, 2026">May 1 - May 30, 2026</option>
@@ -68,7 +68,7 @@ export default function ProgressTrackingScreen({
 
       {/* Section 2 — Alert Banner */}
       <div className="bg-[#EF4444]/10 border border-[#EF4444]/40 p-4.5 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs font-semibold" id="progress-risk-banner">
-        <div className="flex items-center gap-3 text-rose-400 font-sans">
+        <div className="flex items-center gap-3 text-rose-400">
           <AlertOctagon size={18} className="text-rose-500 shrink-0" />
           <p className="leading-relaxed">
             <strong>Devon R.</strong> has shown a serious <strong>12% score decline</strong> over the last 3 weeks — Intervention and review recommended.
@@ -101,7 +101,7 @@ export default function ProgressTrackingScreen({
         {/* Card 2: Standards Mastered */}
         <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A]" id="progress-card-standards">
           <div className="flex justify-between items-start">
-            <span className="text-xs font-semibold text-slate-400 font-sans">Standards Mastered</span>
+            <span className="text-xs font-semibold text-slate-400">Standards Mastered</span>
             <span className="bg-orange-500/10 text-orange-400 font-bold px-2.5 py-0.5 rounded text-[10px] font-mono tracking-wide">
               12 of 20 Max
             </span>
@@ -179,8 +179,8 @@ export default function ProgressTrackingScreen({
                   currentStudent.riskLevel === 'At Risk'
                     ? "20,180 80,165 140,190 200,175 260,160 320,185 380,170 440,195 500,210"
                     : currentStudent.riskLevel === 'Advanced'
-                    ? "20,30 80,25 140,35 200,20 260,40 320,30 380,25 440,30 500,20"
-                    : "20,120 80,110 140,125 200,95 260,105 320,115 380,85 440,95 500,90"
+                      ? "20,30 80,25 140,35 200,20 260,40 320,30 380,25 440,30 500,20"
+                      : "20,120 80,110 140,125 200,95 260,105 320,115 380,85 440,95 500,90"
                 }
                 style={{ vectorEffect: 'non-scaling-stroke' }}
                 className="transition-all duration-500 drop-shadow-[0_2px_4px_rgba(249,115,22,0.15)]"
@@ -195,8 +195,8 @@ export default function ProgressTrackingScreen({
                   currentStudent.riskLevel === 'At Risk'
                     ? "20,150 80,155 140,140 200,145 260,130 320,145 380,135 440,150 500,160"
                     : currentStudent.riskLevel === 'Advanced'
-                    ? "20,50 80,45 140,40 200,35 260,50 320,30 380,45 440,30 500,40"
-                    : "20,110 80,105 140,95 200,100 260,85 320,90 380,80 440,85 500,75"
+                      ? "20,50 80,45 140,40 200,35 260,50 320,30 380,45 440,30 500,40"
+                      : "20,110 80,105 140,95 200,100 260,85 320,90 380,80 440,85 500,75"
                 }
                 style={{ vectorEffect: 'non-scaling-stroke' }}
                 className="transition-all duration-500"
@@ -211,15 +211,15 @@ export default function ProgressTrackingScreen({
                   currentStudent.riskLevel === 'At Risk'
                     ? "15,160 80,140 140,150 200,130 260,145 320,120 380,135 440,125 500,140"
                     : currentStudent.riskLevel === 'Advanced'
-                    ? "15,40 80,30 140,35 200,45 260,25 320,35 380,20 440,30 500,20"
-                    : "15,100 80,95 140,90 200,105 260,80 320,85 380,70 440,65 500,60"
+                      ? "15,40 80,30 140,35 200,45 260,25 320,35 380,20 440,30 500,20"
+                      : "15,100 80,95 140,90 200,105 260,80 320,85 380,70 440,65 500,60"
                 }
                 style={{ vectorEffect: 'non-scaling-stroke' }}
                 className="transition-all duration-500"
               />
 
               <circle cx="260" cy={currentStudent.riskLevel === 'At Risk' ? "160" : currentStudent.riskLevel === 'Advanced' ? "40" : "105"} r="6" fill="#F97316" stroke="#1E2130" strokeWidth="2" className="animate-pulse" />
-              
+
               <g transform={`translate(${currentStudent.riskLevel === 'At Risk' ? '250, 110' : '230, 65'})`} className="font-sans">
                 <rect width="90" height="36" rx="4" fill="#1A1D27" stroke="#F97316" strokeWidth="1" />
                 <text x="8" y="15" fill="#94A3B8" fontSize="8" fontWeight="bold">Week 5 Core Math</text>
@@ -251,7 +251,7 @@ export default function ProgressTrackingScreen({
             <Award size={16} className="text-orange-500" />
             Standards Mastery Progress
           </h3>
-          <p className="text-xs text-slate-400 mb-4 font-sans">Latest individual benchmarks tracked across current unit modules</p>
+          <p className="text-xs text-slate-400 mb-4">Latest individual benchmarks tracked across current unit modules</p>
 
           <div className="space-y-4" id="standards-progress-list">
             {[
@@ -292,7 +292,7 @@ export default function ProgressTrackingScreen({
               <Activity size={16} className="text-orange-500" />
               Attendance Trend
             </h3>
-            <p className="text-xs text-slate-400 mb-5 font-sans">Calculated ratios and weekday trend variations</p>
+            <p className="text-xs text-slate-400 mb-5">Calculated ratios and weekday trend variations</p>
 
             {/* Attendance Mini bar chart */}
             <div className="h-32 flex justify-around items-end gap-3 px-4 border-b border-[#2A2D3A]/40 pb-3" id="attendance-bar-chart">

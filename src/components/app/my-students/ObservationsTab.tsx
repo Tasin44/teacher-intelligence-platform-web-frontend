@@ -65,11 +65,10 @@ export default function ObservationsTab({
                   key={t}
                   type="button"
                   onClick={() => setObservationTag(t)}
-                  className={`px-3.5 py-1.5 rounded-full capitalize duration-100 cursor-pointer border ${
-                    observationTag === t
+                  className={`px-3.5 py-1.5 rounded-full capitalize duration-100 cursor-pointer border ${observationTag === t
                       ? 'bg-orange-500/10 text-orange-500 border-orange-500 font-bold'
                       : 'bg-[#0F1117] text-slate-400 border-[#2A2D3A] hover:text-slate-200'
-                  }`}
+                    }`}
                 >
                   {t}
                 </button>
@@ -79,7 +78,7 @@ export default function ObservationsTab({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-bold text-slate-400 font-sans">Observation Notes</label>
+          <label className="text-xs font-bold text-slate-400">Observation Notes</label>
           <textarea
             rows={6}
             placeholder="Describe details representing task persistence, processing barriers or social accomplishments..."
@@ -116,7 +115,7 @@ export default function ObservationsTab({
                       {obs.tag}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-200 leading-relaxed font-sans">{obs.text}</p>
+                  <p className="text-xs text-slate-200 leading-relaxed">{obs.text}</p>
                 </div>
               </div>
             ))
@@ -133,7 +132,7 @@ export default function ObservationsTab({
                       1:1
                     </span>
                   </div>
-                  <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                  <p className="text-xs text-slate-200 leading-relaxed">
                     Demonstrates improved multiplication fluency when using base-ten manipulatives directly.
                   </p>
                 </div>
@@ -150,7 +149,7 @@ export default function ObservationsTab({
                       1:1
                     </span>
                   </div>
-                  <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                  <p className="text-xs text-slate-200 leading-relaxed">
                     Demonstrates improved multiplication fluency when using base-ten manipulatives directly.
                   </p>
                 </div>

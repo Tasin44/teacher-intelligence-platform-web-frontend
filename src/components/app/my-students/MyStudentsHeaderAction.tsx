@@ -36,7 +36,7 @@ export const MyStudentsHeaderAction2 = ({
         placeholder="Search student..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg pl-9 pr-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-orange-500 transition font-sans"
+        className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg pl-9 pr-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-orange-500 transition"
       />
       {searchQuery && (
         <div className="absolute left-0 right-0 top-10 mt-1 max-h-48 overflow-y-auto bg-[#1A1D27] border border-[#2A2D3A] rounded-lg z-20 shadow-xl divide-y divide-[#2A2D3A]/50">

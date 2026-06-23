@@ -92,7 +92,7 @@ export default function BehaviorTab({
 
                 {/* Notes */}
                 <div className="flex flex-col gap-2 mt-4">
-                    <label className="text-xs font-bold text-slate-400 font-sans">Observation Context Notes</label>
+                    <label className="text-xs font-bold text-slate-400">Observation Context Notes</label>
                     <textarea
                         rows={4}
                         placeholder="Record what preceded, the specific behavior, and any interventions deployed..."
@@ -115,7 +115,7 @@ export default function BehaviorTab({
 
             {/* Behavior Log Table */}
             <Card title={`Behavior Diagnostics (${currentStudent.name})`}>
-                <div className="overflow-x-auto font-sans">
+                <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs text-slate-300">
                         <thead className="text-slate-400 font-semibold">
                             <tr className="border-b border-[#2A2D3A]">

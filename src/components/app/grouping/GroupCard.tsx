@@ -80,7 +80,7 @@ const GroupCard = ({ group, students, onEdit, onSelectStudent, onNavigate }: Gro
                 {/* Focus Tag Pill */}
                 <div className="mb-4">
                     <span
-                        className="px-3 py-1.5 rounded-lg text-xs font-bold font-sans"
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold"
                         style={{ backgroundColor: '#F1F5F9', color: group.color }}
                     >
                         {group.tag}
@@ -90,7 +90,7 @@ const GroupCard = ({ group, students, onEdit, onSelectStudent, onNavigate }: Gro
 
             {/* Bottom Actions Row */}
             <div className="flex justify-between items-center mt-3">
-                <span className="text-xs text-slate-450 font-semibold font-sans">
+                <span className="text-xs text-slate-450 font-semibold">
                     At Grade Level
                 </span>
                 <div className="flex items-center gap-2.5">

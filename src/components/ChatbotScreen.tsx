@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import { 
-  Bot, 
-  Send, 
-  Sparkles, 
-  Trash2, 
-  ArrowRight, 
-  CheckCircle2, 
-  AlertCircle 
+import {
+  Bot,
+  Send,
+  Sparkles,
+  Trash2,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react";
 
 interface Message {
@@ -105,7 +105,7 @@ export default function ChatbotScreen({
       }
 
       const data = await response.json();
-      
+
       const copilotMessage: Message = {
         id: "msg_" + Date.now() + "_copilot",
         role: "copilot",
@@ -161,14 +161,14 @@ export default function ChatbotScreen({
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-140px)] animate-fadeIn font-sans text-slate-100" id="chatbot-screen-container">
+    <div className="flex flex-col h-[calc(100vh-140px)] animate-fadeIn text-slate-100" id="chatbot-screen-container">
       {/* Upper banner info */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
         <div>
           <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
             AI Copilot Chat
           </h2>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">Differentiate, scaffold, and construct standard lesson resources with smart context-aware suggestions</p>
+          <p className="text-xs text-slate-400 mt-0.5">Differentiate, scaffold, and construct standard lesson resources with smart context-aware suggestions</p>
         </div>
         <button
           onClick={handleClearChat}
@@ -180,7 +180,7 @@ export default function ChatbotScreen({
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-5 flex-1 min-h-0 bg-transparent" id="chatbot-main-layout">
-        
+
         {/* Left column - Helper Prompts sidebar (1/4 space) */}
         <div className="xl:col-span-1 bg-[#1E2130] p-5 rounded-xl border border-[#2A2D3A] flex flex-col justify-between" id="chatbot-prompts-card">
           <div className="space-y-4">
@@ -188,10 +188,10 @@ export default function ChatbotScreen({
               <Sparkles size={13} fill="currentColor" />
               Quick Suggestions
             </h3>
-            <p className="text-[11px] text-slate-400 leading-relaxed font-sans mb-3">
+            <p className="text-[11px] text-slate-400 leading-relaxed mb-3">
               Click a pre-configured prompt category below to instantly query the copilot with relevant curricular challenges:
             </p>
-            
+
             <div className="space-y-2.5">
               {suggestedPrompts.map((item, idx) => (
                 <button
@@ -212,7 +212,7 @@ export default function ChatbotScreen({
               <CheckCircle2 size={11} fill="currentColor" className="text-orange-500/10" />
               Standards Oriented
             </h4>
-            <p className="text-[10px] text-slate-400 leading-relaxed font-sans">
+            <p className="text-[10px] text-slate-400 leading-relaxed">
               EduPulse Copilot automatically structures teaching materials around common-core standards and aligns them with remedial or enrichment guidelines.
             </p>
           </div>
@@ -220,21 +220,21 @@ export default function ChatbotScreen({
 
         {/* Right column - Main Chat Screen (3/4 space) */}
         <div className="xl:col-span-3 bg-[#1E2130] rounded-xl border border-[#2A2D3A] flex flex-col min-h-0 overflow-hidden" id="chatbot-conversation-card">
-          
+
           {/* Messages scroll section */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-[#0F1117]/10" id="chat-messages-scroll">
             {messages.map((msg) => {
               const isUser = msg.role === "user";
               return (
-                <div 
-                  key={msg.id} 
+                <div
+                  key={msg.id}
                   className={`flex items-start gap-3 max-w-[85%] ${isUser ? "ml-auto flex-row-reverse" : "mr-auto"}`}
                 >
                   {/* Sender profile image / icon */}
                   {isUser ? (
-                    <img 
-                      src={teacherAvatar} 
-                      alt={teacherName} 
+                    <img
+                      src={teacherAvatar}
+                      alt={teacherName}
                       referrerPolicy="no-referrer"
                       className="w-8 h-8 rounded-full border border-slate-700 object-cover shrink-0 mt-0.5"
                     />
@@ -245,11 +245,10 @@ export default function ChatbotScreen({
                   )}
 
                   {/* Message body text */}
-                  <div className={`p-4 rounded-xl text-xs leading-relaxed font-sans border shadow-sm ${
-                    isUser 
-                      ? "bg-orange-500 text-slate-900 border-orange-400/20 rounded-tr-none" 
+                  <div className={`p-4 rounded-xl text-xs leading-relaxed border shadow-sm ${isUser
+                      ? "bg-orange-500 text-slate-900 border-orange-400/20 rounded-tr-none"
                       : "bg-[#0F1117]/50 text-slate-200 border-[#2A2D3A]/50 rounded-tl-none whitespace-pre-wrap font-mono"
-                  }`}>
+                    }`}>
                     <div className="prose prose-invert prose-xs max-w-none">
                       {msg.content}
                     </div>
@@ -263,7 +262,7 @@ export default function ChatbotScreen({
                 <div className="w-8 h-8 rounded-lg bg-orange-500 text-slate-900 flex items-center justify-center shrink-0 mt-0.5 font-bold animate-pulse">
                   <Bot size={16} />
                 </div>
-                <div className="bg-[#0F1117]/50 text-slate-400 border border-[#2A2D3A]/50 p-4 rounded-xl rounded-tl-none text-xs flex items-center gap-2 font-medium font-sans">
+                <div className="bg-[#0F1117]/50 text-slate-400 border border-[#2A2D3A]/50 p-4 rounded-xl rounded-tl-none text-xs flex items-center gap-2 font-medium">
                   <div className="flex gap-1">
                     <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
                     <span className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
@@ -275,7 +274,7 @@ export default function ChatbotScreen({
             )}
 
             {error && (
-              <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl flex items-start gap-3 text-rose-400 text-xs font-sans max-w-[85%] mx-auto">
+              <div className="bg-rose-500/10 border border-rose-500/20 p-4 rounded-xl flex items-start gap-3 text-rose-400 text-xs max-w-[85%] mx-auto">
                 <AlertCircle size={16} className="shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold text-rose-400 mb-0.5">Copilot Request Failed</h4>
@@ -289,7 +288,7 @@ export default function ChatbotScreen({
 
           {/* Bottom input area */}
           <div className="p-4 bg-[#1E2130] border-t border-[#2A2D3A]" id="chat-composer-section">
-            <form 
+            <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
@@ -302,7 +301,7 @@ export default function ChatbotScreen({
                 onChange={(e) => setInput(e.target.value)}
                 disabled={isThinking}
                 placeholder="Ask your query (e.g. 'How should I explain equivalence of 1/2 and 2/4?')..."
-                className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-xl pl-4 pr-14 py-3.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-orange-500 transition font-sans font-medium"
+                className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-xl pl-4 pr-14 py-3.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-orange-500 transition font-medium"
               />
               <button
                 type="submit"
@@ -313,7 +312,7 @@ export default function ChatbotScreen({
                 <Send size={14} className="stroke-[2.5]" />
               </button>
             </form>
-            <div className="flex justify-between items-center mt-2.5 px-1 font-sans text-[10px] text-slate-500">
+            <div className="flex justify-between items-center mt-2.5 px-1 text-[10px] text-slate-500">
               <span>Powered by gemini-3.5-flash AI Model</span>
               <span>All responses align with standardized curriculum strategies</span>
             </div>

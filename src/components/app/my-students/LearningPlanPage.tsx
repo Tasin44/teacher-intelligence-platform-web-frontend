@@ -163,7 +163,7 @@ const LearningPlanPage = ({
                 <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-widest">On Track</span>
               )}
             </div>
-            <p className="text-sm text-slate-400 mt-1 font-sans">
+            <p className="text-sm text-slate-400 mt-1">
               Parent Representative: {currentStudent.parentName} ({currentStudent.parentEmail})
             </p>
           </div>
@@ -202,9 +202,9 @@ const LearningPlanPage = ({
               <CheckCircle size={16} className="text-emerald-500" />
               Current Strengths
             </h4>
-            <ul className="space-y-3 font-sans text-slate-350 select-none">
+            <ul className="space-y-3 text-slate-350 select-none">
               {planData.strengths.map((str, i) => (
-                <li key={i} className="flex gap-2.5 text-xs text-slate-200 leading-relaxed font-sans">
+                <li key={i} className="flex gap-2.5 text-xs text-slate-200 leading-relaxed">
                   <span className="text-emerald-500 select-none font-bold">✓</span>
                   <span>{str}</span>
                 </li>
@@ -237,7 +237,7 @@ const LearningPlanPage = ({
               <Sparkles size={16} className="text-orange-500" />
               Recommended Activities
             </h4>
-            <div className="space-y-3 font-sans">
+            <div className="space-y-3">
               {planData.activities.map((act, i) => (
                 <div key={i} className="flex items-center justify-between p-2.5 bg-[#0F1117]/60 rounded-lg border border-[#2A2D3A]/40 hover:border-orange-500/10 transition">
                   <div className="flex gap-2.5 items-center">
@@ -305,7 +305,7 @@ const LearningPlanPage = ({
 
       {/* Section 4 — Action Bar */}
       <div className="bg-[#1E2130] p-4.5 rounded-xl border border-[#2A2D3A] flex flex-col sm:flex-row justify-between items-center gap-4">
-        <span className="text-xs font-semibold text-slate-400 font-sans flex items-center gap-1.5 matches-saved">
+        <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 matches-saved">
           <Sparkles size={14} className="text-orange-500" />
           Last generated: June 15, 2026 at 4:32 PM via Student Diagnostics Core
         </span>

@@ -47,10 +47,10 @@ const StandardsMastery = () => {
                     <table className="w-full text-left text-xs text-slate-300">
                         <thead>
                             <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
-                                <th className="pb-3 text-left font-sans">Student</th>
-                                <th className="pb-3 text-left font-sans">Standard</th>
-                                <th className="pb-3 text-center font-sans">%</th>
-                                <th className="pb-3 text-right font-sans">Status</th>
+                                <th className="pb-3 text-left">Student</th>
+                                <th className="pb-3 text-left">Standard</th>
+                                <th className="pb-3 text-center">%</th>
+                                <th className="pb-3 text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#2A2D3A]/60">

@@ -47,7 +47,7 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="flex flex-col w-full text-primary-text font-sans">
+        <div className="flex flex-col w-full text-primary-text">
             {/* Header Title inside card */}
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold font-heading text-primary-text mb-1">

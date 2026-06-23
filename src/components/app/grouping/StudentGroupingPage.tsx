@@ -57,7 +57,7 @@ const StudentGroupingPage = ({ students, groups, history, onRegenerateGroups, on
 
   const actionButtons = (
     <div className="flex items-center gap-3">
-      <span className="text-xs font-semibold text-slate-400 font-sans hidden md:block">Last compiled: June 14, 2026</span>
+      <span className="text-xs font-semibold text-slate-400 hidden md:block">Last compiled: June 14, 2026</span>
       <Button
         onClick={handleGenerate}
         disabled={isGenerating}

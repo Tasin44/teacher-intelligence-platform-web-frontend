@@ -23,7 +23,7 @@ const GenerationHistory = ({ history, onRestore }: GenerationHistoryProps) => {
                             <th className="pb-2 text-right">Audit Options</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#2A2D3A]/60 font-sans">
+                    <tbody className="divide-y divide-[#2A2D3A]/60">
                         {history.map((hist) => (
                             <tr key={hist.id} className="hover:bg-slate-800/10">
                                 <td className="py-3 text-slate-300 font-bold">{hist.date}</td>

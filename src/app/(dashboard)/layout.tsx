@@ -10,7 +10,7 @@ import AddStudentModal from '@/components/modal/AddStudentModal';
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { loggedInTeacher, logout, addStudent, isAddStudentOpen, setIsAddStudentOpen, isNotificationOpen, setIsNotificationOpen, notifications, setNotifications} = useEduPulse();
+  const { loggedInTeacher, logout, addStudent, isAddStudentOpen, setIsAddStudentOpen, isNotificationOpen, setIsNotificationOpen, notifications, setNotifications } = useEduPulse();
 
   const teacher = loggedInTeacher || {
     name: 'Ms. Johnson',
@@ -51,7 +51,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const currentPageTitle = pageTitleMap[pathname] || 'Classroom Optimization Planner';
 
   return (
-    <div className="min-h-screen flex text-slate-100 bg-[#0F1117] font-sans antialiased" id="edupulse-workspace">
+    <div className="min-h-screen flex text-slate-100 bg-[#0F1117] antialiased" id="edupulse-workspace">
       {/* 1. Left Sidebar layout */}
       <aside className="fixed inset-y-0 left-0 w-60 bg-[#1A1D27] flex flex-col justify-between border-r border-[#2A2D3A] z-40" id="edupulse-sidebar">
         {/* Top: Logo section */}

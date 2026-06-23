@@ -115,7 +115,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
           <h2 className="text-2xl font-bold font-heading text-slate-100 mt-2">
             EduPulse Command Center
           </h2>
-          <p className="text-xs text-slate-400 font-sans mt-1 max-w-xl">
+          <p className="text-xs text-slate-400 mt-1 max-w-xl">
             Fine-tune generative AI diagnostic rules, interactive parent dispatch thresholds, standards taxonomy compliance, and class criteria parameters.
           </p>
         </div>
@@ -129,7 +129,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* Left Side: Teacher Dossier Card (Span 1) */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-[#1E2130] p-6 rounded-2xl border border-[#2A2D3A] space-y-6" id="teacher-profile-settings">
@@ -157,7 +157,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
                     <Camera size={12} className="inline font-bold" />
                   </div>
                 </div>
-                
+
                 <div className="w-full space-y-1">
                   <label className="text-[9px] uppercase font-extrabold text-slate-500 block text-center">Avatar Profile Link</label>
                   <input
@@ -186,9 +186,8 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
                       type="button"
                       title={item.label}
                       onClick={() => setAvatar(item.url)}
-                      className={`w-9 h-9 rounded-full border-2 overflow-hidden transition cursor-pointer hover:scale-110 active:scale-95 bg-transparent p-0 ${
-                        avatar === item.url ? 'border-orange-500 shadow-md shadow-orange-500/20' : 'border-[#2A2D3A]/80'
-                      }`}
+                      className={`w-9 h-9 rounded-full border-2 overflow-hidden transition cursor-pointer hover:scale-110 active:scale-95 bg-transparent p-0 ${avatar === item.url ? 'border-orange-500 shadow-md shadow-orange-500/20' : 'border-[#2A2D3A]/80'
+                        }`}
                     >
                       <img src={item.url} alt={item.label} className="w-full h-full object-cover" />
                     </button>
@@ -198,7 +197,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
             </div>
 
             {/* General Settings */}
-            <div className="space-y-4 text-xs font-sans">
+            <div className="space-y-4 text-xs">
               <div className="space-y-1.5">
                 <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">Full Display Name</label>
                 <div className="relative">
@@ -295,7 +294,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
                     setSavedToast(true);
                     setTimeout(() => setSavedToast(false), 4000);
                   }}
-                  className="w-full py-2.5 bg-orange-500/10 hover:bg-orange-500 text-orange-400 hover:text-slate-950 border border-orange-500/20 hover:border-orange-500 font-extrabold text-xs rounded-xl transition cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5 font-sans"
+                  className="w-full py-2.5 bg-orange-500/10 hover:bg-orange-500 text-orange-400 hover:text-slate-950 border border-orange-500/20 hover:border-orange-500 font-extrabold text-xs rounded-xl transition cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5"
                 >
                   <Save size={13} />
                   Update Live Profile Only
@@ -308,7 +307,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
 
         {/* Right Side: AI Engine Config (Span 2) */}
         <div className="lg:col-span-2 space-y-6">
-          
+
           {/* Section 1: AI Diagnostics & Curricular Targets */}
           <div className="bg-[#1E2130] p-6 rounded-2xl border border-[#2A2D3A] space-y-6">
             <h3 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 pb-2.5 border-b border-[#2A2D3A]/50">
@@ -317,11 +316,11 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-sans">
-              
+
               {/* Slider Block left */}
               <div className="space-y-4">
                 <div className="bg-[#0F1117]/55 p-4 rounded-xl border border-[#2A2D3A]/60 space-y-4">
-                  
+
                   {/* Sensitivity */}
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center text-xs font-bold text-slate-200">
@@ -384,7 +383,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
 
               {/* Engine values right */}
               <div className="space-y-4">
-                
+
                 {/* Generative AI Support tone */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1.5">
@@ -397,11 +396,10 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
                         key={tone}
                         type="button"
                         onClick={() => setAiTone(tone)}
-                        className={`py-2 rounded-lg text-xs font-bold text-center border capitalize transition cursor-pointer select-none ${
-                          aiTone === tone
-                            ? 'bg-orange-505 text-slate-950 border-orange-500 font-extrabold font-sans'
+                        className={`py-2 rounded-lg text-xs font-bold text-center border capitalize transition cursor-pointer select-none ${aiTone === tone
+                            ? 'bg-orange-505 text-slate-950 border-orange-500 font-extrabold'
                             : 'bg-[#0F1117] text-slate-400 border-[#2A2D3A] hover:bg-slate-800'
-                        }`}
+                          }`}
                       >
                         {tone}
                       </button>
@@ -426,11 +424,10 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
                         key={level}
                         type="button"
                         onClick={() => setScaffoldLevel(level)}
-                        className={`py-2 rounded-lg text-xs font-bold text-center border uppercase transition cursor-pointer select-none ${
-                          scaffoldLevel === level
-                            ? 'bg-orange-505 text-slate-950 border-orange-500 font-extrabold font-sans'
+                        className={`py-2 rounded-lg text-xs font-bold text-center border uppercase transition cursor-pointer select-none ${scaffoldLevel === level
+                            ? 'bg-orange-505 text-slate-950 border-orange-500 font-extrabold'
                             : 'bg-[#0F1117] text-slate-400 border-[#2A2D3A] hover:bg-slate-800'
-                        }`}
+                          }`}
                       >
                         {level}
                       </button>
@@ -491,10 +488,10 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-              
+
               {/* Toggles left */}
               <div className="space-y-4">
-                
+
                 {/* Auto send toggle */}
                 <div className="flex items-center justify-between p-3 bg-[#0F1117] rounded-xl border border-[#2A2D3A]">
                   <div className="max-w-[75%]">
@@ -533,7 +530,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
 
               {/* Translations and audit CC right */}
               <div className="space-y-4">
-                
+
                 {/* Translate Language selection */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 flex items-center gap-1.5">
@@ -602,7 +599,7 @@ export default function SettingsScreen({ teacher, onUpdateTeacher }: SettingsScr
           >
             Cancel Changes
           </button>
-          
+
           <button
             onClick={handleSave}
             className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:opacity-95 text-slate-950 font-bold text-xs rounded-lg shadow-lg shadow-orange-500/10 transition border-0 cursor-pointer flex items-center gap-1.5"

@@ -69,7 +69,7 @@ const EditGroupModal = ({ group, students, onClose, onSave }: EditGroupModalProp
                 </div>
 
                 {/* Modal Body Form */}
-                <div className="space-y-4 text-xs font-sans">
+                <div className="space-y-4 text-xs">
                     <div className="flex flex-col gap-1.5">
                         <label className="font-bold text-slate-400">Cohort / Group Name</label>
                         <input

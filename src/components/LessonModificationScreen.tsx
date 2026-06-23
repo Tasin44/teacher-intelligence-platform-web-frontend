@@ -76,7 +76,7 @@ export default function LessonModificationScreen({
           <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
             Lesson Modification
           </h2>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">Adapt standard lesson plans to class diagnostic averages instantly using generative suggestions</p>
+          <p className="text-xs text-slate-400 mt-0.5">Adapt standard lesson plans to class diagnostic averages instantly using generative suggestions</p>
         </div>
       </div>
 
@@ -92,7 +92,7 @@ export default function LessonModificationScreen({
               placeholder="e.g. Fractions — Unit 4, Week 2 Assessment"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3.5 text-sm text-slate-100 focus:outline-none focus:border-orange-500 transition font-sans font-medium"
+              className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3.5 text-sm text-slate-100 focus:outline-none focus:border-orange-500 transition font-medium"
             />
             {/* Auto stats below */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 text-center sm:text-left text-xs font-semibold">
@@ -160,7 +160,7 @@ export default function LessonModificationScreen({
                     </span>
                     <span className="text-[9px] text-[#94A3B8] font-mono">{sug.standards.join(', ')}</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed font-sans line-clamp-3 font-medium">
+                  <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 font-medium">
                     {sug.description}
                   </p>
                 </div>
@@ -208,7 +208,7 @@ export default function LessonModificationScreen({
                     </span>
                     <span className="text-[9px] text-[#94A3B8] font-mono">{sug.standards.join(', ')}</span>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed font-sans line-clamp-3 font-medium">
+                  <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 font-medium">
                     {sug.description}
                   </p>
                 </div>
@@ -238,12 +238,12 @@ export default function LessonModificationScreen({
       {/* Section 4 — Applied Modifications Log Table */}
       <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A]" id="applied-modifications-card">
         <h3 className="text-base font-bold font-heading text-slate-100 mb-1">Applied Modifications</h3>
-        <p className="text-xs text-slate-400 font-sans mb-4">Historical record of AI adaptations mapped into active curriculum pacing layers</p>
+        <p className="text-xs text-slate-400 mb-4">Historical record of AI adaptations mapped into active curriculum pacing layers</p>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-300">
             <thead>
-              <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold font-sans">
+              <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
                 <th className="pb-3">Date</th>
                 <th className="pb-3">Lesson Unit</th>
                 <th className="pb-3">Modification Details</th>
@@ -251,7 +251,7 @@ export default function LessonModificationScreen({
                 <th className="pb-3 text-right">Status State</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A2D3A]/60 font-sans font-medium">
+            <tbody className="divide-y divide-[#2A2D3A]/60 font-medium">
               {appliedList.map((mod) => (
                 <tr key={mod.id} className="hover:bg-slate-800/10">
                   <td className="py-3 text-slate-400 font-bold">{mod.date}</td>

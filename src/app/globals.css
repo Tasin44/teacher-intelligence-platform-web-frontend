@@ -25,7 +25,12 @@ body {
   font-family: var(--font-sans);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
 }
 
@@ -52,6 +57,7 @@ h1, h2, h3, h4, h5, h6 {
   .custom-glow {
     box-shadow: 0 0 20px 4px rgba(249, 115, 22, 0.04);
   }
+
   .success-glow {
     box-shadow: 0 0 20px 4px rgba(34, 197, 94, 0.03);
   }
@@ -98,18 +104,23 @@ h1, h2, h3, h4, h5, h6 {
 .bg-slate-900\/10 {
   background-color: rgba(241, 245, 249, 0.8) !important;
 }
+
 .bg-slate-800\/60 {
   background-color: rgba(241, 245, 249, 0.9) !important;
 }
+
 .bg-slate-800\/15 {
   background-color: rgba(241, 245, 249, 0.4) !important;
 }
+
 .bg-slate-800 {
   background-color: #F1F5F9 !important;
 }
+
 .hover\:bg-slate-800:hover {
   background-color: #F1F5F9 !important;
 }
+
 .hover\:bg-slate-800\/15:hover {
   background-color: rgba(241, 245, 249, 0.6) !important;
 }
@@ -179,10 +190,11 @@ iframe.bg-\[\#0F1117\],
 }
 
 /* 8. Table/Group Dividers */
-.divide-\[\#2A2D3A\]\/60 > :not([hidden]) ~ :not([hidden]) {
+.divide-\[\#2A2D3A\]\/60> :not([hidden])~ :not([hidden]) {
   border-color: #E2E8F0 !important;
 }
-.divide-\[\#2A2D3A\]\/50 > :not([hidden]) ~ :not([hidden]) {
+
+.divide-\[\#2A2D3A\]\/50> :not([hidden])~ :not([hidden]) {
   border-color: #E2E8F0 !important;
 }
 
@@ -211,7 +223,8 @@ aside span.text-xs {
 .text-slate-400,
 .text-slate-450,
 .text-slate-500 {
-  color: #475569 !important; /* Rich readable Slate 600 */
+  color: #475569 !important;
+  /* Rich readable Slate 600 */
 }
 
 /* Select element value dropdown menu styling options readability */
@@ -240,7 +253,8 @@ option {
 
 /* Active links or orange text states */
 .text-orange-500 {
-  color: #EA580C !important; /* Vibrant high contrast orange */
+  color: #EA580C !important;
+  /* Vibrant high contrast orange */
 }
 
 /* Ensure white text is retained on dark/vibrant elements where needed (e.g. green badges, red badges, orange icons) */
@@ -251,19 +265,23 @@ button.text-slate-900,
 .bg-orange-500 span,
 .bg-orange-500 svg,
 .text-slate-900 {
-  color: #010409 !important; /* Extremely high contrast near-black text for vibrant orange */
+  color: #010409 !important;
+  /* Extremely high contrast near-black text for vibrant orange */
 }
 
 /* Maintain light icons on colored circles if there are any, or adjust specifically as needed */
 .bg-emerald-500\/10 {
   background-color: rgba(16, 185, 129, 0.1) !important;
 }
+
 .bg-rose-500\/10 {
   background-color: rgba(244, 63, 94, 0.1) !important;
 }
+
 .bg-blue-500\/10 {
   background-color: rgba(59, 130, 246, 0.1) !important;
 }
+
 .bg-amber-500\/10 {
   background-color: rgba(245, 158, 11, 0.1) !important;
 }
@@ -426,9 +444,11 @@ button.text-slate-900,
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }

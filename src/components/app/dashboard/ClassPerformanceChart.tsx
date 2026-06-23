@@ -45,7 +45,7 @@ const ClassPerformanceChart = () => {
     if (!isMounted) {
         return (
             <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] h-[380px] animate-pulse flex items-center justify-center">
-                <span className="text-slate-400 text-sm font-sans">Loading Chart...</span>
+                <span className="text-slate-400 text-sm">Loading Chart...</span>
             </div>
         );
     }

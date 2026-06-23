@@ -40,7 +40,7 @@ export default function InterventionsScreen({
   // Form Drawer Control
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingInterventionId, setEditingInterventionId] = useState<string | null>(null);
-  
+
   const [formDataStudentId, setFormDataStudentId] = useState('s6');
   const [formDataStrategy, setFormDataStrategy] = useState<'1:1 Support' | 'Small Group' | 'Peer Support'>('1:1 Support');
   const [formDataActivities, setFormDataActivities] = useState('');
@@ -143,7 +143,7 @@ export default function InterventionsScreen({
           <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
             Reteach & Intervention
           </h2>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">Automate remedial paths and configure localized multi-tiered clinical interventions</p>
+          <p className="text-xs text-slate-400 mt-0.5">Automate remedial paths and configure localized multi-tiered clinical interventions</p>
         </div>
         <button
           onClick={() => handleOpenForm()}
@@ -238,13 +238,12 @@ export default function InterventionsScreen({
                   <div>
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-xs font-semibold text-slate-400">Tactical Strategy:</span>
-                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        int.strategy === '1:1 Support'
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${int.strategy === '1:1 Support'
                           ? 'bg-rose-500/15 text-rose-400 border border-rose-500/10'
                           : int.strategy === 'Small Group'
-                          ? 'bg-blue-500/15 text-blue-400 border border-blue-500/10'
-                          : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/10'
-                      }`}>
+                            ? 'bg-blue-500/15 text-blue-400 border border-blue-500/10'
+                            : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/10'
+                        }`}>
                         {int.strategy}
                       </span>
                     </div>
@@ -316,7 +315,7 @@ export default function InterventionsScreen({
                 <h4 className="text-sm font-bold text-slate-100 truncate mt-1 mb-2" title={plan.standard}>
                   {plan.standard.split(' ')[0]}
                 </h4>
-                <p className="text-xs text-slate-350 leading-relaxed font-sans line-clamp-3">
+                <p className="text-xs text-slate-350 leading-relaxed line-clamp-3">
                   {plan.method}
                 </p>
               </div>
@@ -357,7 +356,7 @@ export default function InterventionsScreen({
               {editingInterventionId ? 'Modify Active Intervention Plan' : 'Configure Custom Remedial Pipeline'}
             </h3>
 
-            <div className="space-y-4 text-xs font-sans">
+            <div className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="font-bold text-slate-400">Target Student Name</label>
@@ -436,7 +435,7 @@ export default function InterventionsScreen({
                   rows={5}
                   value={formDataActivities}
                   onChange={(e) => setFormDataActivities(e.target.value)}
-                  className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-sans resize-none leading-relaxed"
+                  className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-orange-500 resize-none leading-relaxed"
                 />
               </div>
             </div>
@@ -515,8 +514,8 @@ export default function InterventionsScreen({
 
         return (
           <div className="fixed inset-0 z-50 bg-[#0F1117]/85 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
-            <div className="bg-[#1E2130] border border-[#2A2D3A] rounded-2xl w-full max-w-2xl shadow-2xl p-6 relative flex flex-col justify-between animate-scaleIn text-slate-200 font-sans">
-              
+            <div className="bg-[#1E2130] border border-[#2A2D3A] rounded-2xl w-full max-w-2xl shadow-2xl p-6 relative flex flex-col justify-between animate-scaleIn text-slate-200">
+
               {/* Corner Close Button */}
               <button
                 onClick={() => setViewingReteachPlan(null)}
@@ -533,12 +532,12 @@ export default function InterventionsScreen({
                 <h3 className="text-lg font-bold font-heading text-slate-100 leading-snug">
                   {fullStandardName}
                 </h3>
-                
+
                 <div className="flex flex-wrap items-center gap-3 mt-3">
                   <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide">
                     {plan.studentCount} Students Blocked
                   </span>
-                  
+
                   <span className="text-[11px] bg-slate-800 text-slate-305 px-2.5 py-0.5 rounded font-mono font-bold uppercase">
                     STRATEGY: {remediationStrategy}
                   </span>
@@ -547,7 +546,7 @@ export default function InterventionsScreen({
 
               {/* Scrollable Content Section */}
               <div className="space-y-5 max-h-[360px] overflow-y-auto pr-1.5 custom-scrollbar text-xs">
-                
+
                 {/* Method / Overview Details */}
                 <div className="bg-[#151722] p-4 rounded-xl border border-[#2A2D3A]">
                   <h4 className="font-bold text-slate-400 mb-1.5 flex items-center gap-1.5 uppercase tracking-wide text-[10px]">
@@ -564,26 +563,24 @@ export default function InterventionsScreen({
                     <span>📋 Step-By-Step Interactive Execution Plan</span>
                     <span className="text-[10px] text-orange-500 lowercase font-semibold italic">click steps to check off progress</span>
                   </h4>
-                  
+
                   <div className="space-y-2.5">
                     {actionSteps.map((step, idx) => {
                       const stepKey = `${plan.id}_step_${idx}`;
                       const isCompleted = !!checkedSteps[stepKey];
                       return (
-                        <div 
+                        <div
                           key={idx}
                           onClick={() => setCheckedSteps(prev => ({ ...prev, [stepKey]: !prev[stepKey] }))}
-                          className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer select-none ${
-                            isCompleted 
-                              ? 'bg-emerald-500/5 border-emerald-500/30 text-slate-400 line-through' 
+                          className={`flex items-start gap-3 p-2.5 rounded-lg border transition cursor-pointer select-none ${isCompleted
+                              ? 'bg-emerald-500/5 border-emerald-500/30 text-slate-400 line-through'
                               : 'bg-[#1E2130]/50 border-[#2A2D3A]/60 hover:border-slate-500 text-slate-200'
-                          }`}
+                            }`}
                         >
-                          <div className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center border transition ${
-                            isCompleted 
-                              ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' 
+                          <div className={`mt-0.5 w-4 h-4 rounded flex items-center justify-center border transition ${isCompleted
+                              ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
                               : 'border-[#424659] hover:border-slate-400'
-                          }`}>
+                            }`}>
                             {isCompleted && <Check size={10} strokeWidth={4} />}
                           </div>
                           <span className="text-xs leading-relaxed font-semibold">
@@ -601,7 +598,7 @@ export default function InterventionsScreen({
                     <span>👥 BLOCKED STUDENTS ASSIGNED IN CURRENT FLAGGED MATRIX</span>
                     <span className="text-slate-500 text-[10px] font-mono">Academic Score Indicator</span>
                   </h4>
-                  
+
                   <div className="bg-[#151722] rounded-xl border border-[#2A2D3A] divide-y divide-[#2A2D3A]/50 overflow-hidden">
                     {matchingStudents.length > 0 ? (
                       matchingStudents.map((student) => (

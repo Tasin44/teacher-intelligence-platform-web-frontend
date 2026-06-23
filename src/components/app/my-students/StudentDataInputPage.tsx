@@ -158,9 +158,9 @@ const StudentDataInputPage = ({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`cursor-pointer px-6 py-3.5 text-sm font-semibold tracking-wide border-b-2 transition font-sans ${activeTab === tab.id
-                ? 'border-orange-500 text-orange-500 bg-orange-500/5'
-                : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/10'
+            className={`cursor-pointer px-6 py-3.5 text-sm font-semibold tracking-wide border-b-2 transition ${activeTab === tab.id
+              ? 'border-orange-500 text-orange-500 bg-orange-500/5'
+              : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/10'
               }`}
           >
             {tab.label}
@@ -207,7 +207,7 @@ const StudentDataInputPage = ({
 
       {/* Bottom Sticky Saved Bar */}
       <div className='bg-[#1E2130] p-4.5 rounded-xl border border-[#2A2D3A] flex flex-col sm:flex-row justify-between items-center gap-4'>
-        <span className="text-xs font-semibold text-slate-400 font-sans flex items-center gap-1.5">
+        <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           Auto-synchronized with EduPulse Core • Last saved {lastSaved}
         </span>

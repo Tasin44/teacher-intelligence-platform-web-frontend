@@ -54,7 +54,7 @@ const SignInPage = () => {
     };
 
     return (
-        <div className="flex flex-col w-full text-primary-text font-sans">
+        <div className="flex flex-col w-full text-primary-text">
             {/* Header Title inside card */}
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold font-heading text-primary-text mb-1">
@@ -126,7 +126,7 @@ const SignInPage = () => {
                 <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 mb-4">
                     Instant Active Classrooms
                 </span>
-                
+
                 <div className="grid grid-cols-2 gap-4 w-full">
                     {/* Option 1: Grade 4 */}
                     <TeacherLoginCard
@@ -147,7 +147,7 @@ const SignInPage = () => {
                     />
                 </div>
             </div>
-            
+
             {/* Link to Register */}
             <div className="text-center mt-6">
                 <p className="text-xs text-slate-500">

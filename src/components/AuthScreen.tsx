@@ -29,12 +29,12 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+
   // Sign up fields
   const [name, setName] = useState('');
   const [school, setSchool] = useState('Oakwood Elementary School');
   const [grade, setGrade] = useState('Grade 4');
-  
+
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -95,7 +95,7 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
           setIsLoading(false);
           return;
         }
-        
+
         const newTeacher = {
           name,
           email,
@@ -152,7 +152,7 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8 font-sans" id="auth-screen-layout">
+    <div className="min-h-screen w-full flex items-center justify-center bg-[#F8FAFC] py-12 px-4 sm:px-6 lg:px-8" id="auth-screen-layout">
       <div className="max-w-md w-full space-y-7" id="auth-card-container">
         {/* Brand Header */}
         <div className="text-center" id="auth-header">
@@ -172,21 +172,19 @@ export default function AuthScreen({ onLoginSuccess }: AuthScreenProps) {
           <div className="flex border-b border-slate-100 pb-4" id="auth-tabs">
             <button
               onClick={() => { setIsSignUp(false); setErrorMsg(''); }}
-              className={`flex-1 text-center py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer ${
-                !isSignUp
+              className={`flex-1 text-center py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer ${!isSignUp
                   ? 'border-orange-500 text-orange-600'
                   : 'border-transparent text-slate-400 hover:text-slate-650'
-              }`}
+                }`}
             >
               Sign In
             </button>
             <button
               onClick={() => { setIsSignUp(true); setErrorMsg(''); }}
-              className={`flex-1 text-center py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer ${
-                isSignUp
+              className={`flex-1 text-center py-2 text-xs font-bold uppercase tracking-wider border-b-2 transition cursor-pointer ${isSignUp
                   ? 'border-orange-500 text-orange-600'
                   : 'border-transparent text-slate-400 hover:text-slate-650'
-              }`}
+                }`}
             >
               Create Account
             </button>

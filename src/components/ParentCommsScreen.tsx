@@ -159,7 +159,7 @@ export default function ParentCommsScreen({
           <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
             Parent Communication
           </h2>
-          <p className="text-xs text-slate-400 font-sans mt-0.5">Generate customized emails and update logs to parents based on automated diagnostics</p>
+          <p className="text-xs text-slate-400 mt-0.5">Generate customized emails and update logs to parents based on automated diagnostics</p>
         </div>
       </div>
 
@@ -198,11 +198,10 @@ export default function ParentCommsScreen({
                 key={type}
                 type="button"
                 onClick={() => setCommsType(type as any)}
-                className={`px-4 py-2.5 rounded-lg border duration-150 cursor-pointer ${
-                  commsType === type
+                className={`px-4 py-2.5 rounded-lg border duration-150 cursor-pointer ${commsType === type
                     ? 'bg-orange-500/10 text-orange-500 border-orange-500/50'
                     : 'bg-[#0F1117] text-slate-400 border-[#2A2D3A] hover:text-slate-200'
-                }`}
+                  }`}
               >
                 {type}
               </button>
@@ -219,11 +218,10 @@ export default function ParentCommsScreen({
                 key={t}
                 type="button"
                 onClick={() => setTone(t as any)}
-                className={`px-4 py-2.5 rounded-lg border duration-150 cursor-pointer ${
-                  tone === t
+                className={`px-4 py-2.5 rounded-lg border duration-150 cursor-pointer ${tone === t
                     ? 'bg-orange-500/10 text-orange-400 border-orange-500/53'
                     : 'bg-[#0F1117] text-slate-400 border-[#2A2D3A] hover:text-slate-200'
-                }`}
+                  }`}
               >
                 {t}
               </button>
@@ -305,12 +303,12 @@ export default function ParentCommsScreen({
       {/* Section 4 — Sent History Table */}
       <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A]" id="comms-history-card">
         <h3 className="text-base font-bold font-heading text-slate-100 mb-1">Communication History</h3>
-        <p className="text-xs text-slate-400 font-sans mb-4">Tracking email deliverables sent during the current Grade 4 term cycle</p>
+        <p className="text-xs text-slate-400 mb-4">Tracking email deliverables sent during the current Grade 4 term cycle</p>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-slate-300">
             <thead>
-              <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold font-sans">
+              <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
                 <th className="pb-3">Date Sent</th>
                 <th className="pb-3">Recipient Student</th>
                 <th className="pb-3">Classification</th>
@@ -319,7 +317,7 @@ export default function ParentCommsScreen({
                 <th className="pb-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#2A2D3A]/60 font-sans">
+            <tbody className="divide-y divide-[#2A2D3A]/60">
               {commsHistoryList.map((hist) => {
                 const studentName = students.find((s) => s.id === hist.studentId)?.name || 'Marcus Thompson';
                 return (
@@ -345,7 +343,7 @@ export default function ParentCommsScreen({
                     <td className="py-3 text-center text-slate-400">{hist.sentBy}</td>
                     <td className="py-3 text-right">
                       <button
-                         onClick={() => setViewingHistoryItem(hist)}
+                        onClick={() => setViewingHistoryItem(hist)}
                         className="text-xs font-bold text-orange-500 hover:text-orange-400 hover:underline bg-transparent border-0 cursor-pointer"
                       >
                         View Copy

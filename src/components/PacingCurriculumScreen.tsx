@@ -78,7 +78,7 @@ export default function PacingCurriculumScreen({
           <h2 className="text-2xl font-bold font-heading text-slate-100 flex items-center gap-2">
             Pacing & Curriculum
           </h2>
-          <p className="text-xs text-slate-400 font-sans mt-0.5 font-sans">Compare classroom progression against state lesson models and unlock pacing modifications</p>
+          <p className="text-xs text-slate-400 mt-0.5">Compare classroom progression against state lesson models and unlock pacing modifications</p>
         </div>
       </div>
 
@@ -142,7 +142,7 @@ export default function PacingCurriculumScreen({
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-base font-bold font-heading text-slate-100">Expected vs Actual Pacing</h3>
-            <p className="text-xs text-slate-400 font-sans">Number of CCSS standard coverage milestones completed by instruction week</p>
+            <p className="text-xs text-slate-400">Number of CCSS standard coverage milestones completed by instruction week</p>
           </div>
           <div className="flex gap-4 text-xs font-semibold" id="pacing-chart-legend">
             <div className="flex items-center gap-1.5 text-orange-500">
@@ -180,7 +180,7 @@ export default function PacingCurriculumScreen({
                 { expected: 10, actual: 8, label: 'Wk 8' }
               ].map((week, idx) => (
                 <div key={idx} className="flex flex-col items-center group w-12 text-center select-none">
-                   <div className="flex items-end justify-center gap-1">
+                  <div className="flex items-end justify-center gap-1">
                     {/* Expected bar */}
                     <div
                       className="w-3 bg-orange-500 rounded-t-sm hover:brightness-115 transition-all duration-300"
@@ -194,7 +194,7 @@ export default function PacingCurriculumScreen({
                       title={`Actual: ${week.actual}`}
                     ></div>
                   </div>
-                  <span className="text-[10px] text-slate-450 mt-1.5 font-bold font-sans uppercase">
+                  <span className="text-[10px] text-slate-450 mt-1.5 font-bold uppercase">
                     {week.label}
                   </span>
                 </div>
@@ -213,7 +213,7 @@ export default function PacingCurriculumScreen({
               <Sparkles size={16} className="text-orange-500 animate-spin" />
               Curriculum Adjustment Recommendations
             </h3>
-            <p className="text-xs text-slate-400 mb-5 font-sans">AI-calculated syllabus compressions to realign lessons and recover delayed instructional dates</p>
+            <p className="text-xs text-slate-400 mb-5">AI-calculated syllabus compressions to realign lessons and recover delayed instructional dates</p>
 
             <div className="space-y-4" id="suggestions-box">
               {suggestions.map((sug) => (
@@ -230,7 +230,7 @@ export default function PacingCurriculumScreen({
                     )}
                   </div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-xs text-slate-205 leading-relaxed font-sans">{sug.suggestion}</p>
+                    <p className="text-xs text-slate-205 leading-relaxed">{sug.suggestion}</p>
                     <div className="flex justify-between items-center text-[10px] pt-1">
                       <span className="text-slate-500 font-mono">Standards: {sug.standardsImpacted}</span>
                       <button
@@ -254,7 +254,7 @@ export default function PacingCurriculumScreen({
               <CheckSquare size={16} className="text-orange-500" />
               Standards Coverage Checklist
             </h3>
-            <p className="text-xs text-slate-400 mb-5 font-sans">Grade 4 fundamental math & syllabus thresholds checked</p>
+            <p className="text-xs text-slate-400 mb-5">Grade 4 fundamental math & syllabus thresholds checked</p>
 
             <div className="max-h-80 overflow-y-auto space-y-2 pr-1.5" id="pacing-checklist">
               {coverageList.map((st) => (
@@ -277,7 +277,7 @@ export default function PacingCurriculumScreen({
                         {st.status}
                       </span>
                     </div>
-                    <p className="text-slate-400 leading-snug font-sans truncate" title={st.name}>
+                    <p className="text-slate-400 leading-snug truncate" title={st.name}>
                       {st.name}
                     </p>
                   </div>
@@ -288,7 +288,7 @@ export default function PacingCurriculumScreen({
 
           <div className="pt-4 border-t border-[#2A2D3A]/45 mt-4 text-xs font-semibold select-none">
             <div className="flex justify-between mb-1.5">
-              <span className="text-slate-450 font-sans">Cumulative syllabus coverage:</span>
+              <span className="text-slate-450">Cumulative syllabus coverage:</span>
               <strong className="text-orange-500 font-mono text-sm leading-none">{coveredCount} of {coverageList.length} ({coveragePercent}%)</strong>
             </div>
             <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1 select-none">
@@ -308,8 +308,8 @@ export default function PacingCurriculumScreen({
               stud.riskLevel === 'At Risk'
                 ? 'text-rose-500 bg-rose-500/10'
                 : stud.riskLevel === 'Advanced'
-                ? 'text-blue-500 bg-blue-500/10'
-                : 'text-emerald-500 bg-emerald-500/10';
+                  ? 'text-blue-500 bg-blue-500/10'
+                  : 'text-emerald-500 bg-emerald-500/10';
 
             const coveredCountMock = stud.riskLevel === 'At Risk' ? 8 : stud.riskLevel === 'Advanced' ? 17 : 12;
             const percentageMock = Math.round((coveredCountMock / 20) * 100);

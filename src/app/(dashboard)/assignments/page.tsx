@@ -1,22 +1,12 @@
 "use client";
-
-import React from 'react';
+import AssignmentsPage from '@/components/app/assignments/AssignmentsPage';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
-import AssignmentsScreen from '@/components/AssignmentsScreen';
 
-export default function AssignmentsPage() {
-  const {
-    assignments,
-    students,
-    groups,
-    addAssignment,
-    updateAssignment,
-    isCreateAssignmentOpen,
-    setIsCreateAssignmentOpen
-  } = useEduPulse();
+const page = () => {
+  const { students, assignments, groups, addAssignment, updateAssignment, isCreateAssignmentOpen, setIsCreateAssignmentOpen } = useEduPulse();
 
   return (
-    <AssignmentsScreen
+    <AssignmentsPage
       assignments={assignments}
       students={students}
       groups={groups}
@@ -27,3 +17,5 @@ export default function AssignmentsPage() {
     />
   );
 }
+
+export default page;

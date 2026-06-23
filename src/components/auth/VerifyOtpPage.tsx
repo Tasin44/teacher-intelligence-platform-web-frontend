@@ -38,13 +38,13 @@ const VerifyOtpPage = () => {
             setError('Please enter all 5 digits');
             return;
         }
-        
+
         // Simulating verification success and pushing to Reset Password
         router.push('/auth/reset-password');
     };
 
     return (
-        <div className="flex flex-col w-full text-primary-text font-sans">
+        <div className="flex flex-col w-full text-primary-text">
             {/* Header Title inside card */}
             <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold font-heading text-primary-text mb-1">

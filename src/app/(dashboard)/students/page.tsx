@@ -51,7 +51,7 @@ function StudentsPageContent() {
               : 'text-slate-450 hover:text-slate-250 bg-gray-100'
           }`}
         >
-          Individualized Education Plans (IEP)
+          Individualized Education Plan (IEP)
         </button>
       </div>
       {subtab === 'input' ? (

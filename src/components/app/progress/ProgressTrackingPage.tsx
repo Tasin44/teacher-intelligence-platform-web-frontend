@@ -43,7 +43,7 @@ const ProgressTrackingPage = ({
   }, [students, searchQuery]);
 
   return (
-    <DashboardChildrenLayout title='Progress Tracking' subtitle='Audit student performance trends, standards mastery progressions, and attendance cycles'>
+    <DashboardChildrenLayout title='Progress Tracking' subtitle='Track student growth, standard mastery, assessment trends, and attendance to identify students who needs additional support or enrichment.'>
       {/* Section 1 — Header Row */}
         <div className="w-full max-w-2xl">
           {/* Search Student Selector */}

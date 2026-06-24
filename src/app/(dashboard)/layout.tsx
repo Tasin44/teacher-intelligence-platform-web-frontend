@@ -62,8 +62,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
               <path d="M24 14L32.66 19V29L24 34L15.34 29V19L24 14Z" fill="white" />
               <circle cx="24" cy="24" r="5" fill="#F97316" />
             </svg>
-            <span className="font-heading font-black tracking-tight text-white text-[17px]">
-              EduPulse <span className="text-orange-500 font-extrabold text-[15px] italic">AI</span>
+            <span className="font-black text-xl tracking-tight text-[#1E293B]">
+              Teachers<span className="text-accent-orange">ai</span>Pet
             </span>
           </Link>
 

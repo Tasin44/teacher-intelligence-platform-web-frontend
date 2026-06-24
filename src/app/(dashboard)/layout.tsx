@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Plus, Sparkles, X, Bot } from 'lucide-react';
+import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Bot } from 'lucide-react';
 import { EduPulseProvider, useEduPulse } from '@/lib/context/EduPulseContext';
 import AddStudentModal from '@/components/modal/AddStudentModal';
+import { Button } from '@/components/ui/button';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
@@ -125,7 +125,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {currentPageTitle}
           </h1>
 
-          <div className="flex items-center gap-5 relative">
+          <div className="flex items-center gap-6 relative">
+            <Link className='flex items-center gap-2 text-white bg-accent-orange rounded-2xl px-4 py-2 font-semibold' href={"/chatbot"}>
+
+              <Bot size={18}/>
+              AI Pet
+            </Link>
             {/* Notification Bell */}
             <div className="relative">
               <button

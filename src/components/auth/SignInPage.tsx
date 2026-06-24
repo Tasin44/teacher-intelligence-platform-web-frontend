@@ -17,12 +17,7 @@ const SignInPage = () => {
     const { login } = useEduPulse();
     const [showPassword, setShowPassword] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors }
-    } = useForm<TSignInInput>({
+    const { register, handleSubmit, formState: { errors } } = useForm<TSignInInput>({
         resolver: zodResolver(signInSchema),
         defaultValues: {
             email: '',

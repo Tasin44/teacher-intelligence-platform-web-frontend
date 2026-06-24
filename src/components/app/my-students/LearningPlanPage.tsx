@@ -121,13 +121,13 @@ const LearningPlanPage = ({
     setIsRegenerating(true);
     setTimeout(() => {
       setIsRegenerating(false);
-      alert(`AI Engine has re-analyzed ${currentStudent.name}'s latest diagnostic progress and rewritten their Individual Learning Plan (ILP)!`);
+      alert(`AI Engine has re-analyzed ${currentStudent.name}'s latest diagnostic progress and rewritten their Individual Education Plan (IEP)!`);
     }, 1200);
   };
 
   return (
     <DashboardChildrenLayout
-      title='Individual Learning Plan'
+      title='Individual Education Plan'
       subtitle='Custom diagnostic profiles and AI enrichment models for individual students'
       actionButtons={
         <MyStudentsHeaderAction2
@@ -320,7 +320,7 @@ const LearningPlanPage = ({
           </button>
           <Button
             onClick={() => {
-              alert(`Successfully downloaded Individual Learning Plan (PDF) dossier for ${currentStudent.name}!`);
+              alert(`Successfully downloaded Individual Education Plan (PDF) dossier for ${currentStudent.name}!`);
             }}
           >
             <Download size={13} strokeWidth={2.5} />

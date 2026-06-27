@@ -17,6 +17,7 @@ interface EditAssignmentModalProps {
         dueDate: string;
         standards: string;
         instructions: string;
+        questionCount?: number;
     }) => void;
 }
 
@@ -29,6 +30,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
     const [formDueDate, setFormDueDate] = useState('2026-06-20');
     const [formStandards, setFormStandards] = useState('CCSS.Math.3.OA.A.1');
     const [formInstructions, setFormInstructions] = useState('');
+    const [formQuestionCount, setFormQuestionCount] = useState(10);
 
     useEffect(() => {
         if (isOpen) {
@@ -40,6 +42,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                 setFormDueDate(selectedAssignment.dueDate);
                 setFormStandards(selectedAssignment.standards.join(', '));
                 setFormInstructions(selectedAssignment.instructions);
+                setFormQuestionCount(selectedAssignment.questionCount || 10);
             } else {
                 setFormTitle('Unified Fractions Modeling Workbook');
                 setFormDifficulty('Medium');
@@ -48,6 +51,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                 setFormDueDate('2026-06-24');
                 setFormStandards('CCSS.Math.3.NF.A.1');
                 setFormInstructions('Students will paint visual grid blocks corresponding to target fractions (1/2, 1/4, 1/8). Support with tactile fraction strips as needed.');
+                setFormQuestionCount(10);
             }
         }
     }, [selectedAssignment, isOpen]);
@@ -63,7 +67,8 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
             targetValue: formTargetValue,
             dueDate: formDueDate,
             standards: formStandards,
-            instructions: formInstructions
+            instructions: formInstructions,
+            questionCount: formQuestionCount
         });
     };
 
@@ -172,6 +177,20 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                                 className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-1.5 text-xs text-slate-250 focus:outline-none focus:border-orange-500"
                             />
                         </div>
+                    </div>
+
+                    {/* Generate Questions Count */}
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-400 py-1">
+                        <span>Generate</span>
+                        <input
+                            type="number"
+                            min={1}
+                            max={100}
+                            value={formQuestionCount}
+                            onChange={(e) => setFormQuestionCount(Math.max(1, parseInt(e.target.value) || 1))}
+                            className="w-14 bg-[#0F1117] border border-[#2A2D3A] rounded-lg py-1.5 text-center text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                        />
+                        <span>questions for this task.</span>
                     </div>
 
                     {/* Instructions */}

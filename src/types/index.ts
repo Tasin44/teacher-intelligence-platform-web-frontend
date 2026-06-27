@@ -85,6 +85,8 @@ export interface Assignment {
   standards: string[];
   instructions: string;
   levelBadge: 'Below' | 'On Track' | 'Advanced';
+  questionCount?: number;
+  questions?: string[];
 }
 
 export interface Intervention {

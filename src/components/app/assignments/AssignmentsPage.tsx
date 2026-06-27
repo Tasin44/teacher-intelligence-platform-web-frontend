@@ -84,6 +84,7 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
     dueDate: string;
     standards: string;
     instructions: string;
+    questionCount?: number;
   }) => {
     const levelBadge: 'Below' | 'On Track' | 'Advanced' =
       formData.targetValue === 'Group D' || formData.targetValue === 'Below'
@@ -103,7 +104,8 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
         dueDate: formData.dueDate,
         standards: formData.standards.split(',').map((s) => s.trim()),
         instructions: formData.instructions,
-        levelBadge
+        levelBadge,
+        questionCount: formData.questionCount
       };
       setAssignments(assignments.map((a) => (a.id === selectedAssignment.id ? updated : a)));
       onUpdateAssignment(updated);
@@ -119,7 +121,8 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
         dueDate: formData.dueDate,
         standards: formData.standards.split(',').map((s) => s.trim()),
         instructions: formData.instructions,
-        levelBadge
+        levelBadge,
+        questionCount: formData.questionCount
       };
       setAssignments([newAssign, ...assignments]);
       onAddAssignment(newAssign);
@@ -229,6 +232,10 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
         students={students}
         onClose={handleCloseDetailsModal}
         onEditClick={handleOpenEditModal}
+        onUpdateAssignment={(updated) => {
+          setAssignments(assignments.map((a) => (a.id === updated.id ? updated : a)));
+          onUpdateAssignment(updated);
+        }}
       />
     </DashboardChildrenLayout>
   );

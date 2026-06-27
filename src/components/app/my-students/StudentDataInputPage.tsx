@@ -204,30 +204,6 @@ const StudentDataInputPage = ({
           />
         )}
       </div>
-
-      {/* Bottom Sticky Saved Bar */}
-      <div className='bg-[#1E2130] p-4.5 rounded-xl border border-[#2A2D3A] flex flex-col sm:flex-row justify-between items-center gap-4'>
-        <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Auto-synchronized with EduPulse Core • Last saved {lastSaved}
-        </span>
-        <div className="flex gap-3">
-          <button
-            onClick={() => setActiveTab('academic')}
-            className="px-4 py-2 hover:bg-slate-800 text-slate-300 font-semibold text-xs rounded-lg transition bg-transparent border-0 cursor-pointer"
-          >
-            Cancel
-          </button>
-          <Button
-            onClick={() => {
-              setLastSaved('Just now');
-              triggerSuccessToast(`Successfully synchronized and published student records for ${currentStudent.name}!`);
-            }}
-          >
-            Save & Update
-          </Button>
-        </div>
-      </div>
     </DashboardChildrenLayout>
   );
 }

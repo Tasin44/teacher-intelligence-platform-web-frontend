@@ -1,13 +1,12 @@
 "use client";
-import React, { useState } from 'react';
-import { Sparkles, Check } from 'lucide-react';
+import { useState } from 'react';
+import { Check } from 'lucide-react';
 import { Student, Group, GroupHistory } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import StudentGroupingStats from './StudentGroupingStats';
 import GroupCard from './GroupCard';
 import GenerationHistory from './GenerationHistory';
 import EditGroupModal from '@/components/modal/EditGroupModal';
-import { Button } from '@/components/ui/button';
 
 interface StudentGroupingScreenProps {
   students: Student[];
@@ -20,7 +19,6 @@ interface StudentGroupingScreenProps {
 }
 
 const StudentGroupingPage = ({ students, groups, history, onRegenerateGroups, onUpdateGroups, onNavigate, onSelectStudent }: StudentGroupingScreenProps) => {
-  const [isGenerating, setIsGenerating] = useState(false);
   const [successToast, setSuccessToast] = useState(false);
   const [successToastMessage, setSuccessToastMessage] = useState('AI Engine successfully optimized student groups based on latest academic matrices!');
 
@@ -37,17 +35,6 @@ const StudentGroupingPage = ({ students, groups, history, onRegenerateGroups, on
     setTimeout(() => setSuccessToast(false), 4000);
   };
 
-  const handleGenerate = () => {
-    setIsGenerating(true);
-    setTimeout(() => {
-      onRegenerateGroups();
-      setIsGenerating(false);
-      setSuccessToastMessage('AI Engine successfully optimized student groups based on latest academic matrices!');
-      setSuccessToast(true);
-      setTimeout(() => setSuccessToast(false), 4000);
-    }, 1500);
-  };
-
   const handleRestoreState = (hist: GroupHistory) => {
     onRegenerateGroups();
     setSuccessToastMessage(`Successfully restored group configuration snapshot back to ${hist.date} (${hist.trigger})!`);
@@ -55,24 +42,11 @@ const StudentGroupingPage = ({ students, groups, history, onRegenerateGroups, on
     setTimeout(() => setSuccessToast(false), 4000);
   };
 
-  const actionButtons = (
-    <div className="flex items-center gap-3">
-      <span className="text-xs font-semibold text-slate-400 hidden md:block">Last compiled: June 14, 2026</span>
-      <Button
-        onClick={handleGenerate}
-        disabled={isGenerating}
-      >
-        <Sparkles size={16} fill="#000" className={isGenerating ? 'animate-spin' : ''} />
-        {isGenerating ? 'Recalculating...' : 'Generate Groups'}
-      </Button>
-    </div>
-  );
 
   return (
     <DashboardChildrenLayout
       title="AI Student Grouping"
       subtitle="Automate student study clusters using recent scores, attendance trends, and pedagogical targets"
-      actionButtons={actionButtons}
     >
       {/* Toast Notification */}
       {successToast && (

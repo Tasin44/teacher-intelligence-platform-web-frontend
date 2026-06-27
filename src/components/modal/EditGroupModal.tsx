@@ -18,15 +18,6 @@ const EditGroupModal = ({ group, students, onClose, onSave }: EditGroupModalProp
     const [editTag, setEditTag] = useState(group.tag);
     const [editType, setEditType] = useState<'Advanced' | 'On Track' | 'Developing' | 'At Risk'>(group.type);
     const [editColor, setEditColor] = useState(group.color);
-    const [editStudentIds, setEditStudentIds] = useState<string[]>(group.studentIds);
-
-    const handleToggleStudentInEdit = (studentId: string) => {
-        if (editStudentIds.includes(studentId)) {
-            setEditStudentIds(editStudentIds.filter((id) => id !== studentId));
-        } else {
-            setEditStudentIds([...editStudentIds, studentId]);
-        }
-    };
 
     const handleSaveGroup = () => {
         if (!editName.trim()) return;
@@ -38,14 +29,6 @@ const EditGroupModal = ({ group, students, onClose, onSave }: EditGroupModalProp
             type: editType,
             color: editColor,
             borderColor: editColor,
-            studentIds: editStudentIds,
-            avgScore: editStudentIds.length > 0
-                ? Math.round(
-                    students
-                        .filter((s) => editStudentIds.includes(s.id))
-                        .reduce((acc, curr) => acc + curr.avgScore, 0) / editStudentIds.length
-                )
-                : group.avgScore
         };
 
         onSave(updatedGroup);
@@ -105,72 +88,6 @@ const EditGroupModal = ({ group, students, onClose, onSave }: EditGroupModalProp
                                 <option value="Developing">Developing Core Mechanics</option>
                                 <option value="At Risk">At Risk / Intensive Target</option>
                             </select>
-                        </div>
-                    </div>
-
-                    {/* Theme Color selector */}
-                    <div className="flex flex-col gap-2">
-                        <label className="font-bold text-slate-400">Aesthetic Accent Theme</label>
-                        <div className="flex items-center gap-2.5">
-                            {[
-                                { value: '#10B981', name: 'Emerald Green' },
-                                { value: '#3B82F6', name: 'Blue Sky' },
-                                { value: '#F59E0B', name: 'Zesty Amber' },
-                                { value: '#EF4444', name: 'Rose Red' },
-                                { value: '#8B5CF6', name: 'Royal Purple' }
-                            ].map((option) => (
-                                <button
-                                    key={option.value}
-                                    type="button"
-                                    onClick={() => setEditColor(option.value)}
-                                    className="w-7 h-7 rounded-full border-2 cursor-pointer transition p-0 flex items-center justify-center"
-                                    style={{
-                                        backgroundColor: option.value,
-                                        borderColor: editColor === option.value ? '#FFFFFF' : 'transparent'
-                                    }}
-                                    title={option.name}
-                                >
-                                    {editColor === option.value && <Check size={12} className="text-white drop-shadow-md" />}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Student Enrollment Checklist */}
-                    <div className="flex flex-col gap-1.5">
-                        <div className="flex justify-between items-center">
-                            <label className="font-bold text-slate-400">Enrolled Student Cohort Checklist</label>
-                            <span className="text-[10px] text-slate-500 font-mono font-bold">
-                                {editStudentIds.length} selectees
-                            </span>
-                        </div>
-
-                        <div className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3 max-h-40 overflow-y-auto space-y-1.5 custom-scrollbar">
-                            {students.map((student) => {
-                                const isChecked = editStudentIds.includes(student.id);
-                                return (
-                                    <div
-                                        key={student.id}
-                                        onClick={() => handleToggleStudentInEdit(student.id)}
-                                        className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition ${isChecked ? 'bg-slate-800/40 text-slate-100' : 'hover:bg-slate-800/20 text-slate-400'
-                                            }`}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            <img
-                                                src={student.avatar}
-                                                alt={student.name}
-                                                referrerPolicy="no-referrer"
-                                                className="w-5 h-5 rounded-full object-cover"
-                                            />
-                                            <span className="font-semibold">{student.name}</span>
-                                        </div>
-                                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition ${isChecked ? 'bg-orange-500 border-orange-500 text-slate-900' : 'border-slate-600'
-                                            }`}>
-                                            {isChecked && <Check size={10} strokeWidth={3} />}
-                                        </div>
-                                    </div>
-                                );
-                            })}
                         </div>
                     </div>
                 </div>

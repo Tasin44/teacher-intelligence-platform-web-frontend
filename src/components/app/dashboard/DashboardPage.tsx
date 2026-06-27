@@ -1,6 +1,5 @@
 "use client";
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
-import State from './State';
 import DashboardStats from './DashboardStats';
 import ClassPerformanceChart from './ClassPerformanceChart';
 import StandardsMastery from './StandardsMastery';
@@ -10,7 +9,7 @@ import QuickActions from './QuickActions';
 
 const DashboardPage = () => {
   return (
-    <DashboardChildrenLayout title="Good morning, Ms. Johnson 👋" subtitle=" Monday, June 16, 2026 — Grade 4 | Room 12" state={<State />}>
+    <DashboardChildrenLayout title="Good morning, Ms. Johnson 👋" subtitle=" Monday, June 16, 2026 — Grade 4">
 
       {/* 4 Stat Cards */}
       <DashboardStats />

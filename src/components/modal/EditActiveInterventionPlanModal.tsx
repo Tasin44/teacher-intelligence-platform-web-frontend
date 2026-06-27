@@ -76,29 +76,14 @@ const EditActiveInterventionPlanModal = ({
         </h3>
 
         <div className="space-y-4 text-xs">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="font-bold text-slate-400">Target Student Name</label>
-              <input
-                type="text"
-                disabled
-                value={studentName}
-                className="bg-[#0F1117]/60 border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-400 font-semibold disabled:opacity-60 focus:outline-none"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="font-bold text-slate-400">Clinical Tier Method</label>
-              <select
-                value={strategy}
-                onChange={(e) => setStrategy(e.target.value as any)}
-                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-semibold"
-              >
-                <option value="1:1 Support">1:1 Clinical Guidance</option>
-                <option value="Small Group">Small Group Sync (Tier 2)</option>
-                <option value="Peer Support">Structured Peer Mentorship</option>
-              </select>
-            </div>
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="font-bold text-slate-400">Target Student Name</label>
+            <input
+              type="text"
+              disabled
+              value={studentName}
+              className="bg-[#0F1117]/60 border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-400 font-semibold disabled:opacity-60 focus:outline-none"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

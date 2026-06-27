@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { User } from 'lucide-react';
 import { Student } from '@/types';
 
@@ -8,10 +8,54 @@ interface AttendanceTabProps {
   currentStudent: Student;
 }
 
+const months = [
+  { value: 0, label: 'January' },
+  { value: 1, label: 'February' },
+  { value: 2, label: 'March' },
+  { value: 3, label: 'April' },
+  { value: 4, label: 'May' },
+  { value: 5, label: 'June' },
+  { value: 6, label: 'July' },
+  { value: 7, label: 'August' },
+  { value: 8, label: 'September' },
+  { value: 9, label: 'October' },
+  { value: 10, label: 'November' },
+  { value: 11, label: 'December' }
+];
+
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: currentYear - 1900 + 11 }, (_, i) => 1900 + i).reverse();
+
 export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
-  // Static Calendar Dates for June 2026
+  const [selectedMonth, setSelectedMonth] = useState(5); // June
+  const [selectedYear, setSelectedYear] = useState(2026);
+
+  // Dynamic Calendar Dates based on selected Month and Year
   const calendarDays = useMemo(() => {
-    const days: Array<{ day: number; weekday: boolean; status: 'Present' | 'Absent' | 'Late' | 'Weekend' }> = [];
+    const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+    
+    // Day of the week for the 1st of the month
+    // Date.getDay() returns 0 for Sunday, 1 for Monday, ..., 6 for Saturday.
+    // Our column headers are Mon, Tue, Wed, Thu, Fri, Sat, Sun.
+    // Let's map it so Mon = 0, Tue = 1, ..., Sat = 5, Sun = 6.
+    const firstDay = new Date(selectedYear, selectedMonth, 1).getDay();
+    const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+    const days: Array<{ 
+      day: number | null; 
+      weekday: boolean; 
+      status: 'Present' | 'Absent' | 'Late' | 'Weekend' | 'Empty' 
+    }> = [];
+
+    // Add empty placeholders for the offset
+    for (let i = 0; i < startOffset; i++) {
+      days.push({
+        day: null,
+        weekday: false,
+        status: 'Empty'
+      });
+    }
+
     const rand = (day: number) => {
       const density = currentStudent.attendanceRate / 100;
       if (density > 0.95) {
@@ -27,9 +71,9 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
       }
     };
 
-    for (let d = 1; d <= 30; d++) {
-      const weekdayIndex = ((d - 1) % 7) + 1;
-      const isWeekend = weekdayIndex === 6 || weekdayIndex === 7;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayOfWeek = new Date(selectedYear, selectedMonth, d).getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       days.push({
         day: d,
         weekday: !isWeekend,
@@ -37,18 +81,20 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
       });
     }
     return days;
-  }, [currentStudent]);
+  }, [currentStudent, selectedMonth, selectedYear]);
 
   const attendanceSummary = useMemo(() => {
     let presentCount = 0;
     let absentCount = 0;
     let lateCount = 0;
+    let weekendCount = 0;
     calendarDays.forEach((day) => {
       if (day.status === 'Present') presentCount++;
       if (day.status === 'Absent') absentCount++;
       if (day.status === 'Late') lateCount++;
+      if (day.status === 'Weekend') weekendCount++;
     });
-    return { presentCount, absentCount, lateCount };
+    return { presentCount, absentCount, lateCount, weekendCount };
   }, [calendarDays]);
 
   return (
@@ -58,7 +104,30 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
             <h3 className="text-base font-bold text-slate-100 font-heading">Monthly Attendance Ledger</h3>
-            <p className="text-xs text-slate-400">June 2026 Academic Cycle</p>
+            <div className="flex items-center gap-2 mt-1.5">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-1 text-xs text-slate-350 focus:outline-none focus:border-orange-500 transition font-semibold cursor-pointer"
+              >
+                {months.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-1 text-xs text-slate-350 focus:outline-none focus:border-orange-500 transition font-semibold cursor-pointer"
+              >
+                {years.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className="flex flex-wrap gap-4 text-xs font-semibold">
             <div className="flex items-center gap-1.5 text-emerald-400">
@@ -75,7 +144,7 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
             </div>
             <div className="flex items-center gap-1.5 text-slate-500">
               <span className="w-3 h-3 rounded bg-slate-800 border border-slate-700"></span>
-              <span>Weekend (8)</span>
+              <span>Weekend ({attendanceSummary.weekendCount})</span>
             </div>
           </div>
         </div>
@@ -93,7 +162,16 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
 
         {/* Monthly calendar matrix */}
         <div className="grid grid-cols-7 gap-2" id="attendance-calendar-grid">
-          {calendarDays.map((day) => {
+          {calendarDays.map((day, idx) => {
+            if (day.status === 'Empty' || day.day === null) {
+              return (
+                <div
+                  key={`empty-${idx}`}
+                  className="h-16 rounded-lg bg-transparent border border-transparent"
+                />
+              );
+            }
+
             let cellBg = 'bg-slate-800/10 text-slate-400 border border-[#2A2D3A]/50';
             let statusLabel = 'Wknd';
 
@@ -129,9 +207,6 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
               {currentStudent.attendanceRate}%
             </strong>
           </div>
-          <p className="text-slate-400 text-right leading-relaxed max-w-md">
-            Calculated dynamically across the June 2026 instruction calendar day sheets. Grade 4 thresholds flags alerts under 90%.
-          </p>
         </div>
       </div>
     </div>

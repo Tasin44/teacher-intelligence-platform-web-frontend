@@ -13,7 +13,6 @@ const academicRecordSchema = z.object({
     testName: z.string().min(1, 'Test name is required'),
     score: z.number().min(0, 'Score must be at least 0').max(100, 'Score cannot exceed 100'),
     academicDate: z.string().min(1, 'Date is required'),
-    readingLevel: z.string().optional(),
     standards: z.string().min(1, 'At least one standard is required'),
 });
 
@@ -45,7 +44,6 @@ const AcademicTab = ({
             testName: '',
             score: 80,
             academicDate: '2026-06-15',
-            readingLevel: '4A',
             standards: 'CCSS.Math.3.NF.A.1'
         }
     });
@@ -60,7 +58,6 @@ const AcademicTab = ({
             testName: record.testName,
             score: record.score,
             academicDate: record.date,
-            readingLevel: record.readingLevel || '4A',
             standards: record.standards.join(', ')
         });
 
@@ -78,7 +75,6 @@ const AcademicTab = ({
             testName: '',
             score: 80,
             academicDate: '2026-06-15',
-            readingLevel: '4A',
             standards: 'CCSS.Math.3.NF.A.1'
         });
     };
@@ -94,7 +90,6 @@ const AcademicTab = ({
                     testName: data.testName,
                     score: data.score,
                     date: data.academicDate,
-                    readingLevel: isReadingSub ? data.readingLevel : undefined,
                     standards: data.standards.split(',').map((s) => s.trim()).filter(Boolean)
                 });
             }
@@ -107,7 +102,6 @@ const AcademicTab = ({
                 testName: data.testName,
                 score: data.score,
                 date: data.academicDate,
-                readingLevel: isReadingSub ? data.readingLevel : undefined,
                 standards: data.standards.split(',').map((s) => s.trim()).filter(Boolean)
             });
             onSuccess(`Successfully saved test score of ${data.score}% for ${currentStudent.name}!`);
@@ -119,7 +113,6 @@ const AcademicTab = ({
             testName: '',
             score: 80,
             academicDate: '2026-06-15',
-            readingLevel: '4A',
             standards: 'CCSS.Math.3.NF.A.1'
         });
     };
@@ -185,21 +178,6 @@ const AcademicTab = ({
                                 {errors.academicDate && (
                                     <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.academicDate.message}</p>
                                 )}
-                            </div>
-
-                            {/* Reading Level (Conditional) */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-bold text-slate-400">Reading Level (Standardized)</label>
-                                <select
-                                    disabled={!isReading}
-                                    {...register('readingLevel')}
-                                    className={`bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition ${!isReading ? 'opacity-40 cursor-not-allowed' : ''
-                                        }`}
-                                >
-                                    {['2Y', '2Z', '3A', '3B', '3C', '3D', '4A', '4K', '4L', '4M', '4N', '4O', '4P', '4Q', '4R', '4S', '4Z', '5A', '5B'].map((level) => (
-                                        <option key={level} value={level}>{level}</option>
-                                    ))}
-                                </select>
                             </div>
 
                             {/* Standards Linked */}

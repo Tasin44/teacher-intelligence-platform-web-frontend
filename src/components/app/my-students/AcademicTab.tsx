@@ -1,10 +1,23 @@
 "use client";
-
 import React, { useState } from 'react';
 import { UserCheck, Edit2, Trash2 } from 'lucide-react';
 import { Student, AcademicRecord } from '@/types';
 import { Button } from '@/components/ui/button';
 import Card from '@/components/shared/Card';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const academicRecordSchema = z.object({
+    subject: z.string().min(1, 'Subject is required'),
+    testName: z.string().min(1, 'Test name is required'),
+    score: z.number().min(0, 'Score must be at least 0').max(100, 'Score cannot exceed 100'),
+    academicDate: z.string().min(1, 'Date is required'),
+    readingLevel: z.string().optional(),
+    standards: z.string().min(1, 'At least one standard is required'),
+});
+
+type TAcademicRecordInput = z.infer<typeof academicRecordSchema>;
 
 interface AcademicTabProps {
     currentStudent: Student;
@@ -15,31 +28,41 @@ interface AcademicTabProps {
     onSuccess: (message: string) => void;
 }
 
-export default function AcademicTab({
+const AcademicTab = ({
     currentStudent,
     academicRecords,
     onAddAcademicRecord,
     onUpdateAcademicRecord,
     onDeleteAcademicRecord,
     onSuccess
-}: AcademicTabProps) {
-    // Academic Form States
+}: AcademicTabProps) => {
     const [editingAcademicId, setEditingAcademicId] = useState<string | null>(null);
-    const [subject, setSubject] = useState<'Math' | 'Reading' | 'Science' | 'Social Studies' | 'Writing'>('Math');
-    const [testName, setTestName] = useState('');
-    const [score, setScore] = useState<number>(80);
-    const [academicDate, setAcademicDate] = useState('2026-06-15');
-    const [readingLevel, setReadingLevel] = useState('4A');
-    const [standards, setStandards] = useState('CCSS.Math.3.NF.A.1');
+
+    const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<TAcademicRecordInput>({
+        resolver: zodResolver(academicRecordSchema),
+        defaultValues: {
+            subject: 'Math',
+            testName: '',
+            score: 80,
+            academicDate: '2026-06-15',
+            readingLevel: '4A',
+            standards: 'CCSS.Math.3.NF.A.1'
+        }
+    });
+
+    const subjectValue = watch('subject');
+    const isReading = subjectValue?.trim().toLowerCase() === 'reading';
 
     const handleTriggerEditAcademic = (record: AcademicRecord) => {
-        setSubject(record.subject);
-        setTestName(record.testName);
-        setScore(record.score);
-        setAcademicDate(record.date);
-        setReadingLevel(record.readingLevel || '4A');
-        setStandards(record.standards.join(', '));
         setEditingAcademicId(record.id);
+        reset({
+            subject: record.subject,
+            testName: record.testName,
+            score: record.score,
+            academicDate: record.date,
+            readingLevel: record.readingLevel || '4A',
+            standards: record.standards.join(', ')
+        });
 
         // Scroll to form smoothly
         const element = document.getElementById('academic-form-heading');
@@ -50,26 +73,29 @@ export default function AcademicTab({
 
     const handleCancelAcademicEdit = () => {
         setEditingAcademicId(null);
-        setTestName('');
-        setScore(80);
-        setAcademicDate('2026-06-15');
-        setReadingLevel('4A');
-        setStandards('CCSS.Math.3.NF.A.1');
+        reset({
+            subject: 'Math',
+            testName: '',
+            score: 80,
+            academicDate: '2026-06-15',
+            readingLevel: '4A',
+            standards: 'CCSS.Math.3.NF.A.1'
+        });
     };
 
-    const handleSaveAcademic = () => {
-        if (!testName) return;
+    const onSubmit = (data: TAcademicRecordInput) => {
+        const isReadingSub = data.subject.trim().toLowerCase() === 'reading';
         if (editingAcademicId) {
             if (onUpdateAcademicRecord) {
                 onUpdateAcademicRecord({
                     id: editingAcademicId,
                     studentId: currentStudent.id,
-                    subject,
-                    testName,
-                    score,
-                    date: academicDate,
-                    readingLevel: subject === 'Reading' ? readingLevel : undefined,
-                    standards: standards.split(',').map((s) => s.trim()).filter(Boolean)
+                    subject: data.subject,
+                    testName: data.testName,
+                    score: data.score,
+                    date: data.academicDate,
+                    readingLevel: isReadingSub ? data.readingLevel : undefined,
+                    standards: data.standards.split(',').map((s) => s.trim()).filter(Boolean)
                 });
             }
             setEditingAcademicId(null);
@@ -77,127 +103,138 @@ export default function AcademicTab({
         } else {
             onAddAcademicRecord({
                 studentId: currentStudent.id,
-                subject,
-                testName,
-                score,
-                date: academicDate,
-                readingLevel: subject === 'Reading' ? readingLevel : undefined,
-                standards: [standards]
+                subject: data.subject,
+                testName: data.testName,
+                score: data.score,
+                date: data.academicDate,
+                readingLevel: isReadingSub ? data.readingLevel : undefined,
+                standards: data.standards.split(',').map((s) => s.trim()).filter(Boolean)
             });
-            onSuccess(`Successfully saved test score of ${score}% for ${currentStudent.name}!`);
+            onSuccess(`Successfully saved test score of ${data.score}% for ${currentStudent.name}!`);
         }
-        setTestName('');
-        setScore(80);
-        setAcademicDate('2026-06-15');
-        setReadingLevel('4A');
-        setStandards('CCSS.Math.3.NF.A.1');
+
+        // Reset fields
+        reset({
+            subject: 'Math',
+            testName: '',
+            score: 80,
+            academicDate: '2026-06-15',
+            readingLevel: '4A',
+            standards: 'CCSS.Math.3.NF.A.1'
+        });
     };
 
     return (
         <div className="space-y-6 animate-fadeIn">
             {/* Form */}
-            <Card title={`${editingAcademicId ? "Edit Academic Assessment Record" : "Post New Test or Assignment Grade"}`}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {/* Subject dropdown */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400">Subject</label>
-                        <select
-                            value={subject}
-                            onChange={(e) => setSubject(e.target.value as any)}
-                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition"
-                        >
-                            <option value="Math">Math</option>
-                            <option value="Reading">Reading</option>
-                            <option value="Science">Science</option>
-                            <option value="Social Studies">Social Studies</option>
-                            <option value="Writing">Writing</option>
-                        </select>
-                    </div>
+            <div id="academic-form-heading">
+                <Card title={`${editingAcademicId ? "Edit Academic Assessment Record" : "Post New Test or Assignment Grade"}`}>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {/* Subject field */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold text-slate-400">Subject</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Math"
+                                    {...register('subject')}
+                                    className={`bg-[#0F1117] border ${errors.subject ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                                />
+                                {errors.subject && (
+                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.subject.message}</p>
+                                )}
+                            </div>
 
-                    {/* Test Name */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400">Test / Assignment Name</label>
-                        <input
-                            type="text"
-                            placeholder="e.g. Multiplication Fact Check 4"
-                            value={testName}
-                            onChange={(e) => setTestName(e.target.value)}
-                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition"
-                        />
-                    </div>
+                            {/* Test Name */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold text-slate-400">Test / Assignment Name</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. Multiplication Fact Check 4"
+                                    {...register('testName')}
+                                    className={`bg-[#0F1117] border ${errors.testName ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                                />
+                                {errors.testName && (
+                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.testName.message}</p>
+                                )}
+                            </div>
 
-                    {/* Score */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400">Score / 100</label>
-                        <input
-                            type="number"
-                            max="100"
-                            min="0"
-                            value={score}
-                            onChange={(e) => setScore(Number(e.target.value))}
-                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition"
-                        />
-                    </div>
+                            {/* Score */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold text-slate-400">Score / 100</label>
+                                <input
+                                    type="number"
+                                    max="100"
+                                    min="0"
+                                    {...register('score', { valueAsNumber: true })}
+                                    className={`bg-[#0F1117] border ${errors.score ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                                />
+                                {errors.score && (
+                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.score.message}</p>
+                                )}
+                            </div>
 
-                    {/* Date */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400">Assessment Date</label>
-                        <input
-                            type="date"
-                            value={academicDate}
-                            onChange={(e) => setAcademicDate(e.target.value)}
-                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition"
-                        />
-                    </div>
+                            {/* Date */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold text-slate-400">Assessment Date</label>
+                                <input
+                                    type="date"
+                                    {...register('academicDate')}
+                                    className={`bg-[#0F1117] border ${errors.academicDate ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none transition`}
+                                />
+                                {errors.academicDate && (
+                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.academicDate.message}</p>
+                                )}
+                            </div>
 
-                    {/* Reading Level (Conditional) */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400">Reading Level (Standardized)</label>
-                        <select
-                            disabled={subject !== 'Reading'}
-                            value={readingLevel}
-                            onChange={(e) => setReadingLevel(e.target.value)}
-                            className={`bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition ${subject !== 'Reading' ? 'opacity-40 cursor-not-allowed' : ''
-                                }`}
-                        >
-                            {['2Y', '2Z', '3A', '3B', '3C', '3D', '4A', '4K', '4L', '4M', '4N', '4O', '4P', '4Q', '4R', '4S', '4Z', '5A', '5B'].map((level) => (
-                                <option key={level} value={level}>{level}</option>
-                            ))}
-                        </select>
-                    </div>
+                            {/* Reading Level (Conditional) */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold text-slate-400">Reading Level (Standardized)</label>
+                                <select
+                                    disabled={!isReading}
+                                    {...register('readingLevel')}
+                                    className={`bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition ${!isReading ? 'opacity-40 cursor-not-allowed' : ''
+                                        }`}
+                                >
+                                    {['2Y', '2Z', '3A', '3B', '3C', '3D', '4A', '4K', '4L', '4M', '4N', '4O', '4P', '4Q', '4R', '4S', '4Z', '5A', '5B'].map((level) => (
+                                        <option key={level} value={level}>{level}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                    {/* Standards Linked */}
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs font-bold text-slate-400">CCSS Standard Code</label>
-                        <input
-                            type="text"
-                            placeholder="e.g. CCSS.Math.3.OA.A.1"
-                            value={standards}
-                            onChange={(e) => setStandards(e.target.value)}
-                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 transition"
-                        />
-                    </div>
-                </div>
+                            {/* Standards Linked */}
+                            <div className="flex flex-col gap-2">
+                                <label className="text-xs font-bold text-slate-400">CCSS Standard Code</label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. CCSS.Math.3.OA.A.1"
+                                    {...register('standards')}
+                                    className={`bg-[#0F1117] border ${errors.standards ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                                />
+                                {errors.standards && (
+                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.standards.message}</p>
+                                )}
+                            </div>
+                        </div>
 
-                <div className="mt-5 flex justify-end gap-3">
-                    {editingAcademicId && (
-                        <button
-                            type="button"
-                            onClick={handleCancelAcademicEdit}
-                            className="bg-[#2A2D3A] text-slate-300 font-semibold px-4 py-2 rounded-lg text-xs hover:bg-[#323647] inline-flex items-center gap-1.5 cursor-pointer border-0"
-                        >
-                            Cancel Edit
-                        </button>
-                    )}
-                    <Button
-                        type="button"
-                        onClick={handleSaveAcademic}
-                    >
-                        <UserCheck size={14} />
-                        {editingAcademicId ? 'Save Assessment Changes' : 'Record Assessment'}
-                    </Button>
-                </div>
-            </Card>
+                        <div className="mt-5 flex justify-end gap-3">
+                            {editingAcademicId && (
+                                <button
+                                    type="button"
+                                    onClick={handleCancelAcademicEdit}
+                                    className="bg-[#2A2D3A] text-slate-300 font-semibold px-4 py-2 rounded-lg text-xs hover:bg-[#323647] inline-flex items-center gap-1.5 cursor-pointer border-0"
+                                >
+                                    Cancel Edit
+                                </button>
+                            )}
+                            <Button type="submit">
+                                <UserCheck size={14} />
+                                {editingAcademicId ? 'Save Assessment Changes' : 'Record Assessment'}
+                            </Button>
+                        </div>
+                    </form>
+                </Card>
+            </div>
 
             {/* Assessment History Table */}
             <Card title={`Recorded Assessments ${currentStudent.name}`}>
@@ -266,4 +303,6 @@ export default function AcademicTab({
             </Card>
         </div>
     );
-}
+};
+
+export default AcademicTab;

@@ -14,7 +14,6 @@ interface ProfileAndFilterProps {
 }
 
 export default function ProfileAndFilter({
-    students,
     currentStudent,
     searchQuery,
     setSearchQuery,
@@ -69,7 +68,7 @@ export default function ProfileAndFilter({
                     />
                     <div>
                         <h4 className="font-bold text-base text-slate-100">{currentStudent.name}</h4>
-                        <p className="text-xs text-slate-400 font-medium">Grade 4 | Room 12 | Reading Code: {currentStudent.readingLevel}</p>
+                        <p className="text-xs text-slate-400 font-medium">Grade 4 | Reading Code: {currentStudent.readingLevel}</p>
                     </div>
                 </div>
                 <div>

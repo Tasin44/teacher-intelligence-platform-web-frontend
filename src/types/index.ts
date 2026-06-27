@@ -33,7 +33,7 @@ export interface Student {
 export interface AcademicRecord {
   id: string;
   studentId: string;
-  subject: 'Math' | 'Reading' | 'Science' | 'Social Studies' | 'Writing';
+  subject: string;
   testName: string;
   score: number;
   date: string;

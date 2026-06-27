@@ -1,16 +1,31 @@
 "use client";
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Bot } from 'lucide-react';
+import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Bot, ChevronLeft, ChevronRight } from 'lucide-react';
 import { EduPulseProvider, useEduPulse } from '@/lib/context/EduPulseContext';
 import AddStudentModal from '@/components/modal/AddStudentModal';
-import { Button } from '@/components/ui/button';
 
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { loggedInTeacher, logout, isNotificationOpen, setIsNotificationOpen, notifications, setNotifications } = useEduPulse();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Sync collapsed state with localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('edupulse_sidebar_collapsed');
+    if (saved === 'true') {
+      setIsCollapsed(true);
+    }
+  }, []);
+
+  const handleToggleCollapse = () => {
+    const nextState = !isCollapsed;
+    setIsCollapsed(nextState);
+    localStorage.setItem('edupulse_sidebar_collapsed', String(nextState));
+  };
 
   const teacher = loggedInTeacher || {
     name: 'Ms. Johnson',
@@ -53,18 +68,29 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex text-slate-100 bg-[#0F1117] antialiased" id="edupulse-workspace">
       {/* 1. Left Sidebar layout */}
-      <aside className="fixed inset-y-0 left-0 w-60 bg-[#1A1D27] flex flex-col justify-between border-r border-[#2A2D3A] z-40">
+      <aside className={`fixed inset-y-0 left-0 ${isCollapsed ? 'w-20' : 'w-60'} bg-[#1A1D27] flex flex-col justify-between border-r border-[#2A2D3A] z-40 transition-all duration-300 ease-in-out`}>
+        {/* Toggle Collapse Button */}
+        <button
+          onClick={handleToggleCollapse}
+          className="absolute top-9 -right-3.5 transform -translate-y-1/2 bg-[#1A1D27] border border-[#2A2D3A] rounded-full w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition z-50 shadow-md cursor-pointer"
+          title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+
         {/* Top: Logo section */}
         <div>
-          <Link href={"/"} className="h-16 flex items-center gap-2.5 px-6 border-b border-[#2A2D3A]/75 bg-slate-900/10" id="sidebar-logo">
-            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 shadow-md shadow-orange-500/10 rounded-xl">
+          <Link href={"/"} className={`h-16 flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-2.5 px-6'} border-b border-[#2A2D3A]/75 bg-slate-900/10 transition-all duration-300`} id="sidebar-logo">
+            <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 shadow-md shadow-orange-500/10 rounded-xl shrink-0">
               <rect width="48" height="48" rx="12" fill="#F97316" />
               <path d="M24 14L32.66 19V29L24 34L15.34 29V19L24 14Z" fill="white" />
               <circle cx="24" cy="24" r="5" fill="#F97316" />
             </svg>
-            <span className="font-black text-xl tracking-tight text-[#1E293B]">
-              Teachers<span className="text-accent-orange">ai</span>Pet
-            </span>
+            {!isCollapsed && (
+              <span className="font-black text-xl tracking-tight text-[#1E293B] whitespace-nowrap animate-fadeIn">
+                Teachers<span className="text-accent-orange">ai</span>Pet
+              </span>
+            )}
           </Link>
 
           {/* Navigation Items */}
@@ -80,10 +106,11 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.id}
                   href={item.path}
-                  className={`w-full flex items-center gap-3 py-2.5 px-4 rounded-lg text-sm tracking-wider transition duration-150 justify-start select-none cursor-pointer border-0 decoration-transparent ${activeClass}`}
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'} py-2.5 rounded-lg text-sm tracking-wider transition-all duration-150 justify-start select-none cursor-pointer border-0 decoration-transparent ${activeClass}`}
+                  title={isCollapsed ? item.label : undefined}
                 >
-                  <Icon size={16} className={`${isActive ? 'text-orange-500' : 'text-slate-450'}`} />
-                  <span>{item.label}</span>
+                  <Icon size={16} className={`shrink-0 ${isActive ? 'text-orange-500' : 'text-slate-450'}`} />
+                  {!isCollapsed && <span className="whitespace-nowrap animate-fadeIn">{item.label}</span>}
                 </Link>
               );
             })}
@@ -91,34 +118,57 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Bottom Panel */}
-        <div className="p-4 border-t border-[#2A2D3A] flex items-center justify-between bg-slate-900/10" id="sidebar-teacher-profile">
-          <div className="flex items-center gap-3">
-            <img
-              src={teacher.avatar}
-              alt="Teacher"
-              referrerPolicy="no-referrer"
-              className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A]"
-            />
-            <div className="leading-tight">
-              <span className="font-bold text-xs text-white block">{teacher.name}</span>
-              <span className="text-[10px] text-slate-500">{teacher.grade} • {teacher.school.split(' ')[0]}</span>
-            </div>
+        {isCollapsed ? (
+          <div className="p-4 border-t border-[#2A2D3A] flex flex-col items-center gap-4 bg-slate-900/10 transition-all duration-300" id="sidebar-teacher-profile">
+            <Link href="/settings" title="Teacher Settings">
+              <img
+                src={teacher.avatar}
+                alt="Teacher"
+                referrerPolicy="no-referrer"
+                className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] hover:border-orange-500/40 transition shrink-0"
+              />
+            </Link>
+            <button
+              onClick={() => {
+                logout();
+                router.push('/auth/sign-in');
+              }}
+              className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-rose-400 transition cursor-pointer bg-transparent border-0 shrink-0"
+              title="Log out"
+            >
+              <LogOut size={15} />
+            </button>
           </div>
-          <button
-            onClick={() => {
-              logout();
-              router.push('/auth/sign-in');
-            }}
-            className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-rose-400 transition cursor-pointer bg-transparent border-0"
-            title="Log out"
-          >
-            <LogOut size={15} />
-          </button>
-        </div>
+        ) : (
+          <div className="p-4 border-t border-[#2A2D3A] flex items-center justify-between bg-slate-900/10 transition-all duration-300" id="sidebar-teacher-profile">
+            <div className="flex items-center gap-3">
+              <img
+                src={teacher.avatar}
+                alt="Teacher"
+                referrerPolicy="no-referrer"
+                className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] shrink-0"
+              />
+              <div className="leading-tight whitespace-nowrap overflow-hidden">
+                <span className="font-bold text-xs text-white block">{teacher.name}</span>
+                <span className="text-[10px] text-slate-500 block truncate">{teacher.grade} • {teacher.school.split(' ')[0]}</span>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                logout();
+                router.push('/auth/sign-in');
+              }}
+              className="p-1.5 hover:bg-slate-800 rounded text-slate-400 hover:text-rose-400 transition cursor-pointer bg-transparent border-0 shrink-0"
+              title="Log out"
+            >
+              <LogOut size={15} />
+            </button>
+          </div>
+        )}
       </aside>
 
       {/* Main Workspace Frame container */}
-      <div className="flex-1 min-h-screen flex flex-col pl-60 bg-[#0F1117]" id="edupulse-workspace-body">
+      <div className={`flex-1 min-h-screen flex flex-col ${isCollapsed ? 'pl-20' : 'pl-60'} bg-[#0F1117] transition-all duration-300 ease-in-out`} id="edupulse-workspace-body">
         {/* 2. Global Top Bar */}
         <header className="h-16 bg-[#1A1D27] border-b border-[#2A2D3A] px-8 flex items-center justify-between sticky top-0 z-30" id="edupulse-topbar">
           <h1 className="text-base font-bold text-slate-100 font-heading tracking-wide">

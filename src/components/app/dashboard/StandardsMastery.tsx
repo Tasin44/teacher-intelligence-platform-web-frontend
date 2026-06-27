@@ -1,66 +1,66 @@
 import Card from '@/components/shared/Card';
-import React from 'react'
+import React from 'react';
 
 const masteryData = [
     {
         student: 'Sofia M.',
-        standard: 'A.1',
+        standard: 'CCSS.Math.3.OA',
         percentage: '92%',
         status: 'Mastered',
-        statusColorClass: 'bg-emerald-500/10 text-emerald-500'
+        statusColorClass: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25'
     },
     {
         student: 'Marcus T.',
-        standard: 'R.1',
+        standard: 'CCSS.Math.3.OA',
         percentage: '45%',
         status: 'In Progress',
-        statusColorClass: 'bg-orange-500/10 text-orange-500'
+        statusColorClass: 'bg-amber-500/10 text-amber-550 dark:text-amber-400 border border-amber-500/25'
     },
     {
         student: 'Aiden K.',
-        standard: 'A.2',
+        standard: 'CCSS.Math.4.OA',
         percentage: '78%',
         status: 'In Progress',
-        statusColorClass: 'bg-orange-500/10 text-orange-500'
+        statusColorClass: 'bg-amber-500/10 text-amber-550 dark:text-amber-400 border border-amber-500/25'
     },
     {
         student: 'Lily R.',
-        standard: 'R.5',
+        standard: 'CCSS.ELA.RI.4.1',
         percentage: '12%',
         status: 'Not Started',
-        statusColorClass: 'bg-rose-500/10 text-rose-500'
+        statusColorClass: 'bg-rose-500/10 text-rose-400 border border-rose-500/25'
     },
     {
         student: 'Noah P.',
-        standard: 'W.1',
-        percentage: '96%',
+        standard: 'CCSS.Math.4.OA',
+        percentage: '95%',
         status: 'Mastered',
-        statusColorClass: 'bg-emerald-500/10 text-emerald-500'
+        statusColorClass: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25'
     }
 ];
 
 const StandardsMastery = () => {
     return (
-        <Card title='Standards Mastery' className="lg:col-span-5 flex flex-col justify-between">
+        <Card title="Standards Mastery" className="lg:col-span-5 flex flex-col justify-between">
             <div>
                 <div className="overflow-x-auto" id="mastery-table-container">
                     <table className="w-full text-left text-xs text-slate-300">
                         <thead>
                             <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
-                                <th className="pb-3 text-left">Student</th>
-                                <th className="pb-3 text-left">Standard</th>
-                                <th className="pb-3 text-center">%</th>
-                                <th className="pb-3 text-right">Status</th>
+                                <th className="pb-3.5 text-left font-bold tracking-wider">Student Name</th>
+                                <th className="pb-3.5 text-left font-bold tracking-wider">Standard</th>
+                                <th className="pb-3.5 text-left font-bold tracking-wider">Mastery %</th>
+                                <th className="pb-3.5 text-right font-bold tracking-wider">Status</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#2A2D3A]/60">
+                        <tbody className="divide-y divide-[#2A2D3A]/10">
                             {masteryData.map((row, i) => (
                                 <tr key={i} className="hover:bg-slate-800/15 transition">
-                                    <td className="py-3 font-semibold text-slate-200">{row.student}</td>
-                                    <td className="py-3 text-slate-400">{row.standard}</td>
-                                    <td className="py-3 text-center font-medium text-slate-200">{row.percentage}</td>
-                                    <td className="py-3 text-right">
-                                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${row.statusColorClass}`}>
+                                    <td className="py-4 font-semibold text-slate-100 text-sm">{row.student}</td>
+                                    <td className="py-4 text-slate-400/90 text-sm font-medium">{row.standard}</td>
+                                    <td className="py-4 text-left font-bold text-slate-200 text-sm">{row.percentage}</td>
+                                    <td className="py-4 text-right">
+                                        <span className={`px-3 py-1 rounded-full text-xs font-bold inline-block tracking-wide ${row.statusColorClass}`}>
                                             {row.status}
                                         </span>
                                     </td>
@@ -71,7 +71,7 @@ const StandardsMastery = () => {
                 </div>
             </div>
         </Card>
-    )
-}
+    );
+};
 
-export default StandardsMastery
+export default StandardsMastery;

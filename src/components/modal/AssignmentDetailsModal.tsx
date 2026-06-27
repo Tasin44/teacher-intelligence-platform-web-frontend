@@ -197,7 +197,7 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                     <Button
                         onClick={onClose}
                     >
-                        Close Details
+                        Send
                     </Button>
                 </div>
             </div>

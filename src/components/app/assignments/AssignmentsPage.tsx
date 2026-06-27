@@ -197,10 +197,6 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
         setSearchQuery={setSearchQuery}
       />
 
-      {/* Grid Status count */}
-      <p className="text-xs text-slate-400" id="assignments-display-count">
-        Showing <strong>{filteredCards.length}</strong> {activeTab.toLowerCase()}(s) matching current query thresholds.
-      </p>
 
       {/* Section 4 — Assignment Cards Grid */}
       {activeTab === 'Assignment' ? (

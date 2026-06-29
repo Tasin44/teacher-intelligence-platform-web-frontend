@@ -31,16 +31,19 @@ const GroupCard = ({ group, students, onEdit, onSelectStudent, onNavigate }: Gro
             <div>
                 {/* Header Row */}
                 <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center gap-2">
-                        <span className="text-base font-bold font-heading" style={{ color: group.color }}>
-                            {group.name}
-                        </span>
-                        <span
-                            className="px-2.5 py-0.5 rounded-full text-[10px] font-bold"
-                            style={{ backgroundColor: `${group.color}15`, color: group.color }}
-                        >
-                            {group.type}
-                        </span>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-base font-bold font-heading" style={{ color: group.color }}>
+                                {group.name}
+                            </span>
+                            <span
+                                className="px-2.5 py-0.5 rounded-full text-[10px] font-bold"
+                                style={{ backgroundColor: `${group.color}15`, color: group.color }}
+                            >
+                                {group.type}
+                            </span>
+                        </div>
+                        <p className='text-xs font-semibold bg-gray-300 inline px-2 py-1 rounded-xl'>Group ID: 1</p>
                     </div>
                     <strong className="text-2xl font-black font-mono" style={{ color: group.color }}>
                         {group.avgScore}%

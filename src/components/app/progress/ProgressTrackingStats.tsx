@@ -28,7 +28,7 @@ const ProgressTrackingStats = ({ studentName }: ProgressTrackingStatsProps) => {
       </div>
 
       {/* Card 2: Standards Mastered */}
-      <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-[150px]" id="progress-card-standards">
+      {/* <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-[150px]" id="progress-card-standards">
         <div>
           <span className="text-[10px] font-extrabold text-slate-400 tracking-wider block uppercase">
             Standards Mastered
@@ -40,7 +40,7 @@ const ProgressTrackingStats = ({ studentName }: ProgressTrackingStatsProps) => {
         <p className="text-xs text-slate-500 mt-1 font-medium">
           Completion Coefficient
         </p>
-      </div>
+      </div> */}
 
       {/* Card 3: Attendance Rate */}
       <div className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex flex-col justify-between h-[150px]" id="progress-card-attendance">

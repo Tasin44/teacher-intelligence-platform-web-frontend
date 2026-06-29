@@ -19,11 +19,10 @@ const CommunicationHistory = ({ commsHistoryList, students, setViewingHistoryIte
                             <th className="pb-3">Recipient Student</th>
                             <th className="pb-3">Classification</th>
                             <th className="pb-3">Tone Setting</th>
-                            <th className="pb-3 text-center">Filer Operator</th>
                             <th className="pb-3 text-right">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#2A2D3A]/60">
+                    <tbody className="divide-y divide-[#2A2D3A]/10">
                         {commsHistoryList.map((hist) => {
                             const studentName = students.find((s) => s.id === hist.studentId)?.name || 'Marcus Thompson';
                             return (
@@ -46,7 +45,6 @@ const CommunicationHistory = ({ commsHistoryList, students, setViewingHistoryIte
                                         )}
                                     </td>
                                     <td className="py-3 uppercase text-[10px] font-extrabold text-slate-400 tracking-wider font-mono">{hist.tone}</td>
-                                    <td className="py-3 text-center text-slate-400">{hist.sentBy}</td>
                                     <td className="py-3 text-right">
                                         <button
                                             onClick={() => setViewingHistoryItem(hist)}

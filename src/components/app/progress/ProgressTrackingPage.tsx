@@ -1,11 +1,9 @@
 "use client";
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { AlertOctagon, Search, X } from 'lucide-react';
 import { Student } from '@/types';
 import ProgressTrackingStats from './ProgressTrackingStats';
 import ScoreOverTimeChart from './ScoreOverTimeChart';
-import StandardsMasteryProgress from './StandardsMasteryProgress';
 import AttendanceTrend from './AttendanceTrend';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 
@@ -139,9 +137,6 @@ const ProgressTrackingPage = ({
           <AttendanceTrend />
         </div>
       </div>
-
-      {/* Section 5 — Standards Mastery Progress (Full width) */}
-      <StandardsMasteryProgress />
     </DashboardChildrenLayout>
   );
 };

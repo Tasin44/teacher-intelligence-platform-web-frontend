@@ -34,7 +34,7 @@ const ActiveInterventionPlanCard = ({ intervention, student, onModifyPlan }: Act
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 leading-relaxed text-left">
                 {/* Strategy & Activities */}
                 <div>
-                    <div className="flex items-center gap-2 mb-2">
+                    {/* <div className="flex items-center gap-2 mb-2">
                         <span className="text-xs font-semibold text-slate-400">Tactical Strategy:</span>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${intervention.strategy === '1:1 Support'
                                 ? 'bg-rose-500/15 text-rose-455 border border-rose-500/10'
@@ -44,7 +44,7 @@ const ActiveInterventionPlanCard = ({ intervention, student, onModifyPlan }: Act
                             }`}>
                             {intervention.strategy}
                         </span>
-                    </div>
+                    </div> */}
 
                     <ul className="space-y-1.5 text-xs text-slate-305">
                         {intervention.activities.map((act, idx) => (

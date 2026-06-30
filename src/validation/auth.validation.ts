@@ -10,6 +10,7 @@ export const signUpSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   school: z.string().min(1, 'School/Campus is required'),
   grade: z.string().min(1, 'Grade assignment is required'),
+  classroom: z.string().min(1, 'Classroom Room# is required'),
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string().min(6, 'Confirm password must be at least 6 characters'),

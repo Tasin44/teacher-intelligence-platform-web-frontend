@@ -83,6 +83,7 @@ interface EduPulseContextType {
     readingLevel: string;
     parentName: string;
     parentEmail: string;
+    avatar?: string;
   }) => void;
   addAcademicRecord: (rec: Omit<AcademicRecord, 'id'>) => void;
   updateAcademicRecord: (rec: AcademicRecord) => void;
@@ -159,12 +160,13 @@ export const EduPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     readingLevel: string;
     parentName: string;
     parentEmail: string;
+    avatar?: string;
   }) => {
-    const { name, grade, riskLevel, readingLevel, parentName, parentEmail } = studentData;
+    const { name, grade, riskLevel, readingLevel, parentName, parentEmail, avatar } = studentData;
     const newStud: Student = {
       id: 's_new_' + Date.now(),
       name,
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
+      avatar: avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150',
       grade,
       room: 'Room 12',
       riskLevel,

@@ -28,6 +28,7 @@ const SignUpPage = () => {
             lastName: '',
             school: '',
             grade: '',
+            classroom: 'Room 304-B',
             email: '',
             password: '',
             confirmPassword: ''
@@ -35,6 +36,9 @@ const SignUpPage = () => {
     });
 
     const onSubmit = (data: TSignUpInput) => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('edupulse_settings_classroom_no', data.classroom);
+        }
         // Register & Log in the new teacher account
         login({
             name: `${data.firstName} ${data.lastName}`,
@@ -88,20 +92,22 @@ const SignUpPage = () => {
                     </div>
                 </div>
 
-                {/* Row 2: School & Grade Assignment */}
+                {/* Row 2: School/Campus */}
+                <div className="space-y-1.5">
+                    <Label className="text-xs font-bold text-slate-600">School/Campus</Label>
+                    <Input
+                        type="text"
+                        placeholder="Oakwood Elementary School"
+                        className="bg-white border-slate-200/80 rounded-xl h-11"
+                        {...register('school')}
+                    />
+                    {errors.school && (
+                        <p className="text-[10px] text-rose-500 font-medium">{errors.school.message}</p>
+                    )}
+                </div>
+
+                {/* Row 3: Grade Assignment & Classroom Room# */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                        <Label className="text-xs font-bold text-slate-600">School/Campus</Label>
-                        <Input
-                            type="text"
-                            placeholder="Oakwood Elementary School"
-                            className="bg-white border-slate-200/80 rounded-xl h-11"
-                            {...register('school')}
-                        />
-                        {errors.school && (
-                            <p className="text-[10px] text-rose-500 font-medium">{errors.school.message}</p>
-                        )}
-                    </div>
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600">Grade Assignment</Label>
                         <Input
@@ -112,6 +118,18 @@ const SignUpPage = () => {
                         />
                         {errors.grade && (
                             <p className="text-[10px] text-rose-500 font-medium">{errors.grade.message}</p>
+                        )}
+                    </div>
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-bold text-slate-600">Classroom Room#</Label>
+                        <Input
+                            type="text"
+                            placeholder="Room 304-B"
+                            className="bg-white border-slate-200/80 rounded-xl h-11"
+                            {...register('classroom')}
+                        />
+                        {errors.classroom && (
+                            <p className="text-[10px] text-rose-500 font-medium">{errors.classroom.message}</p>
                         )}
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
@@ -12,13 +12,9 @@ import { studentSchema, TStudentInput } from '@/validation/student.validation';
 export default function AddStudentModal() {
     const { isAddStudentOpen, setIsAddStudentOpen, addStudent } = useEduPulse();
     const router = useRouter();
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-        formState: { errors }
-    } = useForm<TStudentInput>({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<TStudentInput>({
         resolver: zodResolver(studentSchema),
         defaultValues: {
             name: '',
@@ -43,10 +39,26 @@ export default function AddStudentModal() {
                 parentName: '',
                 parentEmail: ''
             });
+            setAvatarPreview(null);
         }
     }, [isAddStudentOpen, reset]);
 
     if (!isAddStudentOpen) return null;
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setAvatarPreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setAvatarPreview(null);
+    };
 
     const onSubmit = (data: TStudentInput) => {
         addStudent({
@@ -55,7 +67,8 @@ export default function AddStudentModal() {
             riskLevel: data.riskLevel,
             readingLevel: data.readingLevel,
             parentName: data.parentName || '',
-            parentEmail: data.parentEmail || ''
+            parentEmail: data.parentEmail || '',
+            avatar: avatarPreview || undefined
         });
 
         setIsAddStudentOpen(false);
@@ -85,6 +98,62 @@ export default function AddStudentModal() {
                 </h3>
 
                 <div className="space-y-4 text-xs">
+                    {/* Avatar Upload Area */}
+                    <div className="flex items-center gap-4 bg-[#0F1117]/40 p-3.5 rounded-xl border border-[#2A2D3A]/60 mb-2">
+                        <div className="relative group shrink-0">
+                            <div className="w-14 h-14 rounded-full overflow-hidden border border-[#2A2D3A] bg-[#0F1117] flex items-center justify-center transition-all duration-300 group-hover:border-orange-500 shadow-inner">
+                                {avatarPreview ? (
+                                    <img src={avatarPreview} alt="Avatar Preview" className="w-full h-full object-cover animate-fadeIn" />
+                                ) : (
+                                    <div className="text-slate-500 group-hover:text-slate-400 transition-colors flex flex-col items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                        </svg>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* Upload overlay on hover */}
+                            <label className="absolute inset-0 rounded-full bg-black/70 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-slate-200 font-bold transition-opacity duration-200 cursor-pointer">
+                                <span>Choose</span>
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    className="hidden" 
+                                    onChange={handleImageChange} 
+                                />
+                            </label>
+                        </div>
+                        
+                        <div className="flex flex-col gap-1.5 text-left">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Student Profile Photo</span>
+                            <div className="flex gap-2">
+                                <label className="bg-[#1E2130] hover:bg-slate-800 text-slate-300 hover:text-slate-100 px-3 py-1.5 rounded-md text-[10px] font-bold border border-[#2A2D3A] transition cursor-pointer flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-3 h-3">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                                    </svg>
+                                    Upload Photo
+                                    <input 
+                                        type="file" 
+                                        accept="image/*" 
+                                        className="hidden" 
+                                        onChange={handleImageChange} 
+                                    />
+                                </label>
+                                
+                                {avatarPreview && (
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveImage}
+                                        className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 px-3 py-1.5 rounded-md text-[10px] font-bold border border-rose-500/20 transition cursor-pointer"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
                             <label className="font-bold text-slate-400">Student Name</label>

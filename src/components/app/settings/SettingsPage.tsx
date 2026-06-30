@@ -175,17 +175,6 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">Academic Term Period</label>
-                <input
-                  type="text"
-                  required
-                  value={academicTerm}
-                  onChange={(e) => setAcademicTerm(e.target.value)}
-                  className="w-full bg-[#0F1117] border border-[#2A2D3A] text-slate-200 rounded-xl px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-orange-500"
-                />
-              </div>
-
               {/* Save profile changes button */}
               <div className="pt-4 border-t border-[#2A2D3A]/45">
                 <button

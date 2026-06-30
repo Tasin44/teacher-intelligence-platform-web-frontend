@@ -85,21 +85,6 @@ const PacingCurriculumPage = ({
 
         {/* Right Status layout */}
         <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 justify-end w-full md:w-auto mt-4 md:mt-0">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-slate-500">Calculated Schedule Index:</span>
-            {pacingState === 'Behind' ? (
-              <span className="bg-[#FEF2F2] border border-[#FEE2E2] text-[#EF4444] px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                <AlertOctagon size={14} className="text-[#EF4444]" />
-                Behind Schedule
-              </span>
-            ) : (
-              <span className="bg-[#ECFDF5] border border-[#D1FAE5] text-[#10B981] px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-                <CheckCircle size={14} className="text-[#10B981]" />
-                On Schedule
-              </span>
-            )}
-          </div>
-
           <button
             onClick={handleAnalyze}
             disabled={isAnalyzing}

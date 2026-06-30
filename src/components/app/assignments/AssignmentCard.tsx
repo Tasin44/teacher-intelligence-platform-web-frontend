@@ -47,9 +47,10 @@ const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) =>
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-bold font-heading text-slate-100 leading-tight mb-2 tracking-tight group-hover:text-orange-500">
+        <h3 className="text-base font-bold font-heading text-slate-100 leading-tight tracking-tight group-hover:text-orange-500">
           {card.title}
         </h3>
+        <span className="text-xs font-semibold text-slate-350 mb-2">ID: {card.id}</span>
 
         {/* Student/Group Target block */}
         <div className="flex items-center gap-2 mb-4">

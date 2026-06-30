@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
-import { Sora, DM_Sans, Geist } from "next/font/google";
+import { Sora, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-// const dmSans = DM_Sans({
-//   subsets: ["latin"],
-//   variable: "--font-dm-sans",
-// });
-
 const sora = Sora({
   subsets: ["latin"],
   variable: "--font-sora",

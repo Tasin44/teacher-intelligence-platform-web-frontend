@@ -1,8 +1,8 @@
 "use client";
-
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { User } from 'lucide-react';
 import { Student } from '@/types';
+import TakeAttendanceModal from './TakeAttendanceModal';
 
 interface AttendanceTabProps {
   currentStudent: Student;
@@ -29,6 +29,13 @@ const years = Array.from({ length: currentYear - 1900 + 11 }, (_, i) => 1900 + i
 export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
   const [selectedMonth, setSelectedMonth] = useState(5); // June
   const [selectedYear, setSelectedYear] = useState(2026);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<{ day: number; status: 'Present' | 'Absent' | 'Late' | 'Weekend' } | null>(null);
+  const [attendanceOverrides, setAttendanceOverrides] = useState<Record<number, 'Present' | 'Absent' | 'Late' | 'Weekend'>>({});
+
+  useEffect(() => {
+    setAttendanceOverrides({});
+  }, [selectedMonth, selectedYear, currentStudent]);
 
   // Dynamic Calendar Dates based on selected Month and Year
   const calendarDays = useMemo(() => {
@@ -77,11 +84,11 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
       days.push({
         day: d,
         weekday: !isWeekend,
-        status: isWeekend ? 'Weekend' : rand(d)
+        status: attendanceOverrides[d] || (isWeekend ? 'Weekend' : rand(d))
       });
     }
     return days;
-  }, [currentStudent, selectedMonth, selectedYear]);
+  }, [currentStudent, selectedMonth, selectedYear, attendanceOverrides]);
 
   const attendanceSummary = useMemo(() => {
     let presentCount = 0;
@@ -96,6 +103,10 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
     });
     return { presentCount, absentCount, lateCount, weekendCount };
   }, [calendarDays]);
+
+  const dateStr = selectedDay
+    ? `${months[selectedMonth].label} ${selectedDay.day}, ${selectedYear}`
+    : '';
 
   return (
     <div className="space-y-6 animate-fadeIn" id="tab-attendance-content">
@@ -189,7 +200,13 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
             return (
               <div
                 key={day.day}
-                className={`h-16 rounded-lg p-2 flex flex-col justify-between transition text-left cursor-default ${cellBg}`}
+                onClick={() => {
+                  if (day.day !== null) {
+                    setSelectedDay({ day: day.day, status: day.status as 'Present' | 'Absent' | 'Late' | 'Weekend' });
+                    setIsModalOpen(true);
+                  }
+                }}
+                className={`h-16 rounded-lg p-2 flex flex-col justify-between transition text-left cursor-pointer hover:scale-[1.02] transform ${cellBg}`}
               >
                 <span className="text-xs font-bold font-mono">{day.day}</span>
                 <span className="text-[10px] self-end font-bold uppercase tracking-wider">{statusLabel}</span>
@@ -209,6 +226,27 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
           </div>
         </div>
       </div>
+
+      {selectedDay && (
+        <TakeAttendanceModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedDay(null);
+          }}
+          student={currentStudent}
+          dateStr={dateStr}
+          initialStatus={selectedDay.status}
+          onSave={(status, remarks) => {
+            setAttendanceOverrides((prev) => ({
+              ...prev,
+              [selectedDay.day]: status
+            }));
+            setIsModalOpen(false);
+            setSelectedDay(null);
+          }}
+        />
+      )}
     </div>
   );
 }

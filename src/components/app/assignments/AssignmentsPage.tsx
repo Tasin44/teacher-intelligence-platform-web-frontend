@@ -78,6 +78,7 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
 
   const handleSave = (formData: {
     title: string;
+    subject: string;
     difficulty: 'Low' | 'Medium' | 'High';
     targetType: 'Student' | 'Group' | 'Level';
     targetValue: string;
@@ -95,9 +96,10 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
 
     if (selectedAssignment) {
       // Edit
-      const updated = {
+      const updated: Assignment = {
         ...selectedAssignment,
         title: formData.title,
+        subject: formData.subject,
         difficulty: formData.difficulty,
         targetType: formData.targetType,
         targetValue: formData.targetValue,
@@ -114,6 +116,7 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
       const newAssign: Assignment = {
         id: 'as_new_' + Date.now(),
         title: formData.title,
+        subject: formData.subject,
         type: activeTab,
         difficulty: formData.difficulty,
         targetType: formData.targetType,

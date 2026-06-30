@@ -634,7 +634,8 @@ export const initialAssignments: Assignment[] = [
     dueDate: '2026-06-20',
     standards: ['CCSS.Math.3.OA.A.1', 'CCSS.Math.3.OA.A.3'],
     instructions: 'Complete standard modeling worksheets with visual arrays. Focus on grouping representations.',
-    levelBadge: 'Below'
+    levelBadge: 'Below',
+    subject: 'Math'
   },
   {
     id: 'as2',
@@ -646,7 +647,8 @@ export const initialAssignments: Assignment[] = [
     dueDate: '2026-06-20',
     standards: ['CCSS.Math.4.OA.B.4'],
     instructions: 'Determine all prime factor trees for numbers beyond 100 and write a short defense of their modular properties.',
-    levelBadge: 'Advanced'
+    levelBadge: 'Advanced',
+    subject: 'Math'
   },
   {
     id: 'as3',
@@ -658,7 +660,8 @@ export const initialAssignments: Assignment[] = [
     dueDate: '2026-06-18',
     standards: ['CCSS.Math.3.OA.C.7'],
     instructions: 'Work through Division Cards 1-15. Record partner confirmation answers on the back panel grid.',
-    levelBadge: 'On Track'
+    levelBadge: 'On Track',
+    subject: 'Math'
   },
   {
     id: 'as4',
@@ -670,7 +673,8 @@ export const initialAssignments: Assignment[] = [
     dueDate: '2026-06-22',
     standards: ['CCSS.Math.3.MD.B.3'],
     instructions: 'Draw a bar graph representing your family favorites. Use colored block stickers for visual count.',
-    levelBadge: 'Below'
+    levelBadge: 'Below',
+    subject: 'Math'
   },
   {
     id: 'as5',
@@ -682,7 +686,8 @@ export const initialAssignments: Assignment[] = [
     dueDate: '2026-06-19',
     standards: ['NGSS.4-LS1-1'],
     instructions: 'Write a two-paragraph reflection on how producers and consumers depend directly on solar cycles.',
-    levelBadge: 'On Track'
+    levelBadge: 'On Track',
+    subject: 'Science'
   },
   {
     id: 'as6',
@@ -694,7 +699,8 @@ export const initialAssignments: Assignment[] = [
     dueDate: '2026-06-21',
     standards: ['CCSS.ELA.RI.4.1'],
     instructions: 'Read custom biography snippet page 14 and summarize the subtle underlying motives of the explorer.',
-    levelBadge: 'Advanced'
+    levelBadge: 'Advanced',
+    subject: 'Reading'
   }
 ];
 

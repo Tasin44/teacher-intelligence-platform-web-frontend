@@ -34,9 +34,16 @@ const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) =>
             </span>
           )}
 
-          <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold uppercase font-mono">
-            Diff: {card.difficulty}
-          </span>
+          <div className="flex items-center gap-1.5">
+            {card.subject && (
+              <span className="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2 py-0.5 rounded text-[9px] font-bold uppercase font-mono">
+                {card.subject}
+              </span>
+            )}
+            <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold uppercase font-mono">
+              Diff: {card.difficulty}
+            </span>
+          </div>
         </div>
 
         {/* Title */}

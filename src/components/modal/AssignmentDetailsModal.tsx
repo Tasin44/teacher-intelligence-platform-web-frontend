@@ -14,30 +14,6 @@ interface AssignmentDetailsModalProps {
 }
 
 const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, onEditClick, onUpdateAssignment }: AssignmentDetailsModalProps) => {
-    if (!isOpen || !viewingAssignment) return null;
-
-    // Compute assigned students dynamically
-    const assignedStudents = students.filter((student) => {
-        const type = viewingAssignment.targetType;
-        const val = viewingAssignment.targetValue;
-        if (type === 'Student') {
-            return student.name.toLowerCase().includes(val.toLowerCase()) || val.toLowerCase().includes(student.name.toLowerCase());
-        } else if (type === 'Group') {
-            const matchGroupId = val.replace('Group ', '').trim();
-            return student.group === matchGroupId || student.group === val;
-        } else if (type === 'Level') {
-            const level = viewingAssignment.levelBadge;
-            if (level === 'Below') {
-                return student.riskLevel === 'At Risk' || student.riskLevel === 'Developing';
-            } else if (level === 'Advanced') {
-                return student.riskLevel === 'Advanced';
-            } else {
-                return student.riskLevel === 'On Track';
-            }
-        }
-        return false;
-    });
-
     const [questions, setQuestions] = useState<string[]>([]);
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
@@ -134,6 +110,30 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
         }
     }, [viewingAssignment]);
 
+    if (!isOpen || !viewingAssignment) return null;
+
+    // Compute assigned students dynamically
+    const assignedStudents = students.filter((student) => {
+        const type = viewingAssignment.targetType;
+        const val = viewingAssignment.targetValue;
+        if (type === 'Student') {
+            return student.name.toLowerCase().includes(val.toLowerCase()) || val.toLowerCase().includes(student.name.toLowerCase());
+        } else if (type === 'Group') {
+            const matchGroupId = val.replace('Group ', '').trim();
+            return student.group === matchGroupId || student.group === val;
+        } else if (type === 'Level') {
+            const level = viewingAssignment.levelBadge;
+            if (level === 'Below') {
+                return student.riskLevel === 'At Risk' || student.riskLevel === 'Developing';
+            } else if (level === 'Advanced') {
+                return student.riskLevel === 'Advanced';
+            } else {
+                return student.riskLevel === 'On Track';
+            }
+        }
+        return false;
+    });
+
     const handleStartEdit = (idx: number, currentText: string) => {
         setEditingIdx(idx);
         setEditValue(currentText);
@@ -187,6 +187,12 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                         ) : (
                             <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide">
                                 on track progression
+                            </span>
+                        )}
+
+                        {viewingAssignment.subject && (
+                            <span className="text-[11px] bg-orange-500/10 text-orange-400 border border-orange-500/20 px-2 py-0.5 rounded font-mono font-bold uppercase">
+                                Subject: {viewingAssignment.subject}
                             </span>
                         )}
 

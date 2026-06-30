@@ -11,6 +11,7 @@ interface EditAssignmentModalProps {
     onClose: () => void;
     onSave: (assignmentData: {
         title: string;
+        subject: string;
         difficulty: 'Low' | 'Medium' | 'High';
         targetType: 'Student' | 'Group' | 'Level';
         targetValue: string;
@@ -24,6 +25,7 @@ interface EditAssignmentModalProps {
 const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: EditAssignmentModalProps) => {
 
     const [formTitle, setFormTitle] = useState('');
+    const [formSubject, setFormSubject] = useState('');
     const [formDifficulty, setFormDifficulty] = useState<'Low' | 'Medium' | 'High'>('Medium');
     const [formTargetType, setFormTargetType] = useState<'Student' | 'Group' | 'Level'>('Level');
     const [formTargetValue, setFormTargetValue] = useState('Below');
@@ -36,6 +38,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
         if (isOpen) {
             if (selectedAssignment) {
                 setFormTitle(selectedAssignment.title);
+                setFormSubject(selectedAssignment.subject || '');
                 setFormDifficulty(selectedAssignment.difficulty);
                 setFormTargetType(selectedAssignment.targetType);
                 setFormTargetValue(selectedAssignment.targetValue);
@@ -45,6 +48,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                 setFormQuestionCount(selectedAssignment.questionCount || 10);
             } else {
                 setFormTitle('Unified Fractions Modeling Workbook');
+                setFormSubject('Math');
                 setFormDifficulty('Medium');
                 setFormTargetType('Group');
                 setFormTargetValue('Group D');
@@ -62,6 +66,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
         if (!formTitle) return;
         onSave({
             title: formTitle,
+            subject: formSubject,
             difficulty: formDifficulty,
             targetType: formTargetType,
             targetValue: formTargetValue,
@@ -95,16 +100,30 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
 
                 {/* Fields Grid */}
                 <div className="space-y-4 text-xs">
-                    {/* Title input */}
-                    <div className="flex flex-col gap-1.5">
-                        <label className="font-bold text-slate-400">Assignment / Homework Title</label>
-                        <input
-                            type="text"
-                            placeholder="e.g. Fractions Circle Segment Modeling"
-                            value={formTitle}
-                            onChange={(e) => setFormTitle(e.target.value)}
-                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3.5 py-2 text-xs text-slate-250 focus:outline-none focus:border-orange-500 font-medium"
-                        />
+                    {/* Title and Subject */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {/* Title input */}
+                        <div className="flex flex-col gap-1.5 sm:col-span-2">
+                            <label className="font-bold text-slate-400">Assignment / Homework Title</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Fractions Circle Segment Modeling"
+                                value={formTitle}
+                                onChange={(e) => setFormTitle(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3.5 py-2 text-xs text-slate-250 focus:outline-none focus:border-orange-500 font-medium w-full"
+                            />
+                        </div>
+                        {/* Subject input */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="font-bold text-slate-400">Subject</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Math"
+                                value={formSubject}
+                                onChange={(e) => setFormSubject(e.target.value)}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3.5 py-2 text-xs text-slate-250 focus:outline-none focus:border-orange-500 font-medium w-full"
+                            />
+                        </div>
                     </div>
 
                     {/* Targets and Difficulty */}

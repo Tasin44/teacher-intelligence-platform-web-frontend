@@ -4,17 +4,17 @@ const LessonModificationStats = () => {
   return (
     <div className="flex flex-wrap gap-2.5 pt-3">
       {/* Class Avg Score */}
-      <div 
+      <div
         className="bg-[#F1F5F9] px-4 py-2 rounded-md text-center flex flex-col justify-center min-w-[90px]"
         style={{ backgroundColor: '#F1F5F9' }}
       >
-        <span 
+        <span
           className="text-[11px] font-semibold text-secondary-text block leading-normal"
           style={{ color: '#475569' }}
         >
           Class Avg Score
         </span>
-        <strong 
+        <strong
           className="text-[9px] text-secondary-text mt-0.5 block font-bold"
           style={{ color: '#475569' }}
         >
@@ -23,17 +23,17 @@ const LessonModificationStats = () => {
       </div>
 
       {/* Below Grade */}
-      <div 
+      <div
         className="bg-[#F1F5F9] px-4 py-2 rounded-md text-center flex flex-col justify-center min-w-[90px]"
         style={{ backgroundColor: '#F1F5F9' }}
       >
-        <span 
+        <span
           className="text-[11px] font-semibold text-secondary-text block leading-normal"
           style={{ color: '#475569' }}
         >
           Below Grade
         </span>
-        <strong 
+        <strong
           className="text-[9px] text-secondary-text mt-0.5 block font-bold"
           style={{ color: '#475569' }}
         >
@@ -42,17 +42,17 @@ const LessonModificationStats = () => {
       </div>
 
       {/* On Track */}
-      <div 
+      <div
         className="bg-[#F1F5F9] px-4 py-2 rounded-md text-center flex flex-col justify-center min-w-[90px]"
         style={{ backgroundColor: '#F1F5F9' }}
       >
-        <span 
+        <span
           className="text-[11px] font-semibold text-secondary-text block leading-normal"
           style={{ color: '#475569' }}
         >
           On Track
         </span>
-        <strong 
+        <strong
           className="text-[9px] text-secondary-text mt-0.5 block font-bold"
           style={{ color: '#475569' }}
         >
@@ -61,17 +61,17 @@ const LessonModificationStats = () => {
       </div>
 
       {/* Advanced */}
-      <div 
+      <div
         className="bg-accent-orange px-4 py-2 rounded-md text-center flex flex-col justify-center min-w-[90px]"
         style={{ backgroundColor: '#F97316' }}
       >
-        <span 
+        <span
           className="text-[11px] font-semibold text-white block leading-normal"
           style={{ color: '#FFFFFF' }}
         >
           Advanced
         </span>
-        <strong 
+        <strong
           className="text-[9px] text-white mt-0.5 block font-bold"
           style={{ color: '#FFFFFF' }}
         >

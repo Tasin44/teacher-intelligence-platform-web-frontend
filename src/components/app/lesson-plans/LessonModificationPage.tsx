@@ -74,13 +74,18 @@ const LessonModificationPage = ({ suggestions, appliedModifications: initialAppl
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
             {/* Input wrapper with absolute chevron icon to look like a dropdown */}
             <div className="flex-1 relative">
-              <input
-                type="text"
-                placeholder="e.g. Fractions — Unit 4, Week 2 Assessment"
+              <select
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
-                className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3.5 pr-10 text-sm text-slate-100 focus:outline-none focus:border-orange-500 transition font-medium"
-              />
+                className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3.5 pr-10 text-sm text-slate-100 focus:outline-none focus:border-orange-500 transition font-medium appearance-none cursor-pointer"
+              >
+                <option value="Fractions — Unit 4, Week 2" className="bg-[#0F1117] text-slate-100">Fractions — Unit 4, Week 2</option>
+                <option value="Introduction to Equivalent Fractions" className="bg-[#0F1117] text-slate-100">Introduction to Equivalent Fractions</option>
+                <option value="Basic Area Layouts" className="bg-[#0F1117] text-slate-100">Basic Area Layouts</option>
+                <option value="Multiplication Modeling — Unit 3" className="bg-[#0F1117] text-slate-100">Multiplication Modeling — Unit 3</option>
+                <option value="Drawing Clear Inferences — ELA Unit 2" className="bg-[#0F1117] text-slate-100">Drawing Clear Inferences — ELA Unit 2</option>
+                <option value="Ecosystem Adaptations — Science Unit 1" className="bg-[#0F1117] text-slate-100">Ecosystem Adaptations — Science Unit 1</option>
+              </select>
               <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -93,12 +98,20 @@ const LessonModificationPage = ({ suggestions, appliedModifications: initialAppl
               disabled={isQuerying}
             >
               <Sparkles />
-              Get Suggestions
+              See Status
             </Button>
           </div>
 
           {/* Auto stats below */}
           <LessonModificationStats />
+
+          <Button
+            onClick={handleGetSuggestions}
+            disabled={isQuerying}
+          >
+            <Sparkles />
+            Get Suggestions
+          </Button>
         </div>
       </div>
 
@@ -107,17 +120,17 @@ const LessonModificationPage = ({ suggestions, appliedModifications: initialAppl
         {/* For Struggling Students Column */}
         <div className="flex flex-col text-left" id="struggling-column-card">
           <div className="flex items-center gap-2 mb-4">
-            <span 
-              className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0 inline-block" 
+            <span
+              className="w-2.5 h-2.5 rounded-full bg-rose-500 shrink-0 inline-block"
               style={{ backgroundColor: '#F43F5E' }}
             ></span>
-            <h3 
+            <h3
               className="text-sm font-bold text-slate-800 tracking-tight"
               style={{ color: '#0F172A' }}
             >
               For Struggling Students
             </h3>
-            <span 
+            <span
               className="text-xs text-slate-400 font-normal"
               style={{ color: '#94A3B8' }}
             >
@@ -139,17 +152,17 @@ const LessonModificationPage = ({ suggestions, appliedModifications: initialAppl
         {/* For Advanced Students Column */}
         <div className="flex flex-col text-left" id="advanced-column-card">
           <div className="flex items-center gap-2 mb-4">
-            <span 
-              className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 inline-block" 
+            <span
+              className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0 inline-block"
               style={{ backgroundColor: '#10B981' }}
             ></span>
-            <h3 
+            <h3
               className="text-sm font-bold text-slate-800 tracking-tight"
               style={{ color: '#0F172A' }}
             >
               For Advanced Students
             </h3>
-            <span 
+            <span
               className="text-xs text-slate-400 font-normal"
               style={{ color: '#94A3B8' }}
             >

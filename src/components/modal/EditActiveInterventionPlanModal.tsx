@@ -36,8 +36,12 @@ const EditActiveInterventionPlanModal = ({
 
   useEffect(() => {
     if (isOpen && intervention) {
-      const student = students.find((s) => s.id === intervention.studentId);
-      setStudentName(student ? `${student.name} (${student.riskLevel})` : 'Target Student');
+      if (intervention.targetType === 'group') {
+        setStudentName(`Group: ${intervention.targetName || 'Target Group'}`);
+      } else {
+        const student = students.find((s) => s.id === intervention.studentId);
+        setStudentName(student ? `${student.name} (${student.riskLevel})` : 'Target Student');
+      }
       setStrategy(intervention.strategy);
       setDuration(`${intervention.startDate} → ${intervention.endDate}`);
       setStatus(intervention.status);

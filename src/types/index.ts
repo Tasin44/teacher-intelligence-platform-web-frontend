@@ -99,6 +99,9 @@ export interface Intervention {
   endDate: string;
   progress: number; // 0-100
   status: 'Active' | 'Completed';
+  targetType?: 'student' | 'group';
+  targetName?: string;
+  groupId?: string;
 }
 
 export interface ReteachPlan {

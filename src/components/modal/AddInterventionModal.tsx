@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, CheckCircle } from 'lucide-react';
-import { Student } from '@/types';
+import { Student, Intervention } from '@/types';
 import { Button } from '../ui/button';
 
 interface AddInterventionModalProps {
@@ -10,20 +10,15 @@ interface AddInterventionModalProps {
     students: Student[];
     defaultStudentId: string;
     onClose: () => void;
-    onSave: (plan: {
-        studentId: string;
-        strategy: '1:1 Support' | 'Small Group' | 'Peer Support';
-        activities: string[];
-        startDate: string;
-        endDate: string;
-        progress: number;
-        status: 'Active' | 'Completed';
-    }) => void;
+    onSave: (plan: Omit<Intervention, 'id'>) => void;
 }
 
 const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onSave }: AddInterventionModalProps) => {
+    const [type, setType] = useState<'individual student' | 'individual group'>('individual student');
     const [studentName, setStudentName] = useState('');
     const [studentRoll, setStudentRoll] = useState('');
+    const [groupName, setGroupName] = useState('');
+    const [groupId, setGroupId] = useState('');
     const [interventionType, setInterventionType] = useState('extra tutoring');
     const [reason, setReason] = useState('low reading score');
     const [startDate, setStartDate] = useState('2026-06-16');
@@ -33,8 +28,11 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
     useEffect(() => {
         if (isOpen) {
             const currentStudent = students.find(s => s.id === defaultStudentId) || students[0];
+            setType('individual student');
             setStudentName(currentStudent?.name || '');
             setStudentRoll('');
+            setGroupName('');
+            setGroupId('');
             setInterventionType('extra tutoring');
             setReason('low reading score');
             setStartDate('2026-06-16');
@@ -46,18 +44,35 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
     if (!isOpen) return null;
 
     const handleSaveClick = () => {
-        const matchedStudent = students.find(s => s.name.toLowerCase() === studentName.toLowerCase());
-        const matchedStudentId = matchedStudent ? matchedStudent.id : (students[0]?.id || 's1');
+        if (type === 'individual student') {
+            const matchedStudent = students.find(s => s.name.toLowerCase() === studentName.toLowerCase());
+            const matchedStudentId = matchedStudent ? matchedStudent.id : (students[0]?.id || 's1');
 
-        onSave({
-            studentId: matchedStudentId,
-            strategy: (interventionType || '1:1 Support') as any,
-            activities: notes ? [notes] : ['Daily Support'],
-            startDate: startDate || '2026-06-16',
-            endDate: startDate || '2026-06-30',
-            progress: 0,
-            status: 'Active'
-        });
+            onSave({
+                studentId: matchedStudentId,
+                strategy: (interventionType || '1:1 Support') as any,
+                activities: notes ? [notes] : ['Daily Support'],
+                startDate: startDate || '2026-06-16',
+                endDate: startDate || '2026-06-30',
+                progress: 0,
+                status: 'Active',
+                targetType: 'student',
+                targetName: studentName
+            });
+        } else {
+            onSave({
+                studentId: students[0]?.id || 's1', // schema fallback
+                strategy: (interventionType || 'Small Group') as any,
+                activities: notes ? [notes] : ['Daily Support'],
+                startDate: startDate || '2026-06-16',
+                endDate: startDate || '2026-06-30',
+                progress: 0,
+                status: 'Active',
+                targetType: 'group',
+                targetName: groupName,
+                groupId: groupId
+            });
+        }
     };
 
     return (
@@ -76,31 +91,73 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
                 </h3>
 
                 <div className="space-y-4 text-xs">
-                    {/* Row 1: Student Name & Roll */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="flex flex-col gap-1.5 text-left">
-                            <label className="font-bold text-slate-400">Target Student Name</label>
-                            <input
-                                type="text"
-                                required
-                                placeholder="e.g. Alisha Patel"
-                                value={studentName}
-                                onChange={(e) => setStudentName(e.target.value)}
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1.5 text-left">
-                            <label className="font-bold text-slate-400">Target Student Roll</label>
-                            <input
-                                type="text"
-                                required
-                                placeholder="e.g. 12345"
-                                value={studentRoll}
-                                onChange={(e) => setStudentRoll(e.target.value)}
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
-                            />
-                        </div>
+                    {/* Row 0: Intervention Target Type Dropdown */}
+                    <div className="flex flex-col gap-1.5 text-left">
+                        <label className="font-bold text-slate-400">Type</label>
+                        <select
+                            value={type}
+                            onChange={(e) => setType(e.target.value as any)}
+                            className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold cursor-pointer w-full"
+                        >
+                            <option value="individual student">Individual Student</option>
+                            <option value="individual group">Individual Group</option>
+                        </select>
                     </div>
+
+                    {/* Conditional rendering based on Type */}
+                    {type === 'individual student' ? (
+                        /* Row 1 for Student: Student Name & Roll */
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1.5 text-left">
+                                <label className="font-bold text-slate-400">Target Student Name</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. Alisha Patel"
+                                    value={studentName}
+                                    onChange={(e) => setStudentName(e.target.value)}
+                                    className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5 text-left">
+                                <label className="font-bold text-slate-400">Target Student Roll</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. 12345"
+                                    value={studentRoll}
+                                    onChange={(e) => setStudentRoll(e.target.value)}
+                                    className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        /* Row 1 for Group: Group Name & ID */
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="flex flex-col gap-1.5 text-left">
+                                <label className="font-bold text-slate-400">Target Group Name</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. Group A or Reading Falcons"
+                                    value={groupName}
+                                    onChange={(e) => setGroupName(e.target.value)}
+                                    className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                                />
+                            </div>
+                            <div className="flex flex-col gap-1.5 text-left">
+                                <label className="font-bold text-slate-400">Target Group ID</label>
+                                <input
+                                    type="number"
+                                    required
+                                    placeholder="e.g. 101"
+                                    value={groupId}
+                                    onChange={(e) => setGroupId(e.target.value)}
+                                    className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     {/* Row 2: Intervention Type & Reason */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -15,18 +15,30 @@ const ActiveInterventionPlanCard = ({ intervention, student, onModifyPlan }: Act
         <div
             className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] flex flex-col lg:flex-row justify-between gap-6 hover:border-slate-700 transition"
         >
-            {/* Left side student info */}
+            {/* Left side student or group info */}
             <div className="flex items-center gap-4.5 lg:w-1/4 text-left">
-                <img
-                    src={student.avatar}
-                    alt={student.name}
-                    referrerPolicy="no-referrer"
-                    className="w-12 h-12 rounded-full object-cover border-2 border-orange-500/10 shrink-0"
-                />
+                {intervention.targetType === 'group' ? (
+                    <div className="w-12 h-12 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 font-extrabold font-heading text-sm shrink-0">
+                        {intervention.targetName ? intervention.targetName.split(' ').map(n => n[0]).join('').toUpperCase() : 'GP'}
+                    </div>
+                ) : (
+                    <img
+                        src={student.avatar}
+                        alt={student.name}
+                        referrerPolicy="no-referrer"
+                        className="w-12 h-12 rounded-full object-cover border-2 border-orange-500/10 shrink-0"
+                    />
+                )}
                 <div>
-                    <h4 className="font-bold text-sm text-slate-155">{student.name}</h4>
-                    <p className="text-xs text-slate-400 font-medium">{student.grade} | Room 12</p>
-                    <span className="text-[10px] text-slate-500 font-mono mt-1 block">Active Cluster: Group {student.group}</span>
+                    <h4 className="font-bold text-sm text-slate-155">
+                        {intervention.targetType === 'group' ? (intervention.targetName || 'Target Group') : student.name}
+                    </h4>
+                    <p className="text-xs text-slate-400 font-medium">
+                        {intervention.targetType === 'group' ? `Group Intervention` : `${student.grade} | Room 12`}
+                    </p>
+                    <span className="text-[10px] text-slate-500 font-mono mt-1 block">
+                        {intervention.targetType === 'group' ? `Target Group ID: ${intervention.groupId || 'N/A'}` : `Active Cluster: Group ${student.group}`}
+                    </span>
                 </div>
             </div>
 

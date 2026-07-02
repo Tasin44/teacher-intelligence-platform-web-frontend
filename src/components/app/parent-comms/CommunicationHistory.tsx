@@ -11,15 +11,15 @@ interface CommunicationHistoryProps {
 const CommunicationHistory = ({ commsHistoryList, students, setViewingHistoryItem }: CommunicationHistoryProps) => {
     return (
         <Card title="Communication History" subtitle="Tracking email deliverables sent during the current Grade 4 term cycle">
-            <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-350">
+            <div className="overflow-x-auto w-full max-w-full">
+                <table className="w-full text-left text-xs text-slate-350 min-w-[650px]">
                     <thead>
                         <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
-                            <th className="pb-3">Date Sent</th>
-                            <th className="pb-3">Recipient Student</th>
-                            <th className="pb-3">Classification</th>
-                            <th className="pb-3">Tone Setting</th>
-                            <th className="pb-3 text-right">Actions</th>
+                            <th className="pb-3 pr-4 whitespace-nowrap">Date Sent</th>
+                            <th className="pb-3 px-4 whitespace-nowrap">Recipient Student</th>
+                            <th className="pb-3 px-4 whitespace-nowrap">Classification</th>
+                            <th className="pb-3 px-4 whitespace-nowrap">Tone Setting</th>
+                            <th className="pb-3 pl-4 text-right whitespace-nowrap">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#2A2D3A]/10">
@@ -27,9 +27,9 @@ const CommunicationHistory = ({ commsHistoryList, students, setViewingHistoryIte
                             const studentName = students.find((s) => s.id === hist.studentId)?.name || 'Marcus Thompson';
                             return (
                                 <tr key={hist.id} className="hover:bg-slate-800/10 transition">
-                                    <td className="py-3 text-slate-450 font-bold">{hist.date}</td>
-                                    <td className="py-3 text-slate-200 font-semibold">{studentName}</td>
-                                    <td className="py-3">
+                                    <td className="py-3 text-slate-450 font-bold pr-4 whitespace-nowrap">{hist.date}</td>
+                                    <td className="py-3 text-slate-200 font-semibold px-4 whitespace-nowrap">{studentName}</td>
+                                    <td className="py-3 px-4 whitespace-nowrap">
                                         {hist.type === 'Concern' ? (
                                             <span className="bg-rose-500/10 text-rose-400 border border-rose-500/10 px-2 py-0.5 rounded-full text-[10px] font-bold">
                                                 Concern
@@ -44,8 +44,8 @@ const CommunicationHistory = ({ commsHistoryList, students, setViewingHistoryIte
                                             </span>
                                         )}
                                     </td>
-                                    <td className="py-3 uppercase text-[10px] font-extrabold text-slate-400 tracking-wider font-mono">{hist.tone}</td>
-                                    <td className="py-3 text-right">
+                                    <td className="py-3 uppercase text-[10px] font-extrabold text-slate-400 tracking-wider font-mono px-4 whitespace-nowrap">{hist.tone}</td>
+                                    <td className="py-3 text-right pl-4 whitespace-nowrap">
                                         <button
                                             onClick={() => setViewingHistoryItem(hist)}
                                             className="text-xs font-bold text-orange-500 hover:text-orange-400 hover:underline bg-transparent border-0 cursor-pointer"

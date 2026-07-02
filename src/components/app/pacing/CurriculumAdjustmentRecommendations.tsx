@@ -35,11 +35,11 @@ const CurriculumAdjustmentRecommendations = ({
             </div>
             <div className="flex-1 space-y-2">
               <p className="text-xs text-slate-300 leading-relaxed">{sug.suggestion}</p>
-              <div className="flex justify-between items-center text-[10px] pt-1">
-                <span className="text-slate-500 font-mono">Standards: {sug.standardsImpacted}</span>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-[10px] pt-1">
+                <span className="text-slate-500 font-mono break-all sm:break-normal">Standards: {sug.standardsImpacted}</span>
                 <button
                   onClick={() => onApplySuggestion(sug.id)}
-                  className="text-[10px] font-bold text-orange-500 hover:text-orange-400 cursor-pointer bg-transparent border-0"
+                  className="text-[10px] font-bold text-orange-500 hover:text-orange-400 cursor-pointer bg-transparent border-0 shrink-0"
                 >
                   Apply Suggestion
                 </button>

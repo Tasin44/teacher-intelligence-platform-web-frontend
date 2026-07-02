@@ -23,10 +23,10 @@ const IndividualStudentProgressAlignmentsCard = ({ student }: IndividualStudentP
           src={student.avatar}
           alt={student.name}
           referrerPolicy="no-referrer"
-          className="w-10 h-10 rounded-full object-cover border border-[#2A2D3A]"
+          className="w-10 h-10 rounded-full object-cover border border-[#2A2D3A] shrink-0"
         />
-        <div>
-          <h4 className="font-bold text-xs text-slate-150 truncate leading-tight w-28" title={student.name}>
+        <div className="min-w-0 flex-1">
+          <h4 className="font-bold text-xs text-slate-150 truncate leading-tight w-full" title={student.name}>
             {student.name}
           </h4>
           <span className={`px-2 py-0.2 rounded-full text-[8px] font-extrabold uppercase mt-1 inline-block ${levelColor}`}>

@@ -101,7 +101,7 @@ const PacingCurriculumPage = ({
       <ExpectedVsActualPacingChart />
 
       {/* Section 4 — Two Columns: Adjustment Suggestions vs Standards Checklist */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5" id="pacing-remedy-grid">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left Column 60%: Curriculum Assessment Suggestions */}
         <div className="lg:col-span-7">
           <CurriculumAdjustmentRecommendations
@@ -131,7 +131,7 @@ const PacingCurriculumPage = ({
                       <Square size={15} />
                     )}
                   </button>
-                  <div className="flex-1 text-[11px] select-none">
+                  <div className="flex-1 text-[11px] select-none min-w-0">
                     <div className="flex justify-between items-center mb-0.5">
                       <strong className="text-slate-205 font-bold font-mono">{st.code}</strong>
                       <span className={`text-[8px] font-bold uppercase ${st.status === 'Mastered' ? 'text-emerald-400' : 'text-slate-500'}`}>

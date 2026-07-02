@@ -195,17 +195,17 @@ const AcademicTab = ({
                             </div>
                         </div>
 
-                        <div className="mt-5 flex justify-end gap-3">
+                        <div className="mt-5 flex flex-col sm:flex-row justify-end gap-3">
                             {editingAcademicId && (
                                 <button
                                     type="button"
                                     onClick={handleCancelAcademicEdit}
-                                    className="bg-[#2A2D3A] text-slate-300 font-semibold px-4 py-2 rounded-lg text-xs hover:bg-[#323647] inline-flex items-center gap-1.5 cursor-pointer border-0"
+                                    className="w-full sm:w-auto bg-[#2A2D3A] text-slate-300 font-semibold px-4 py-2 rounded-lg text-xs hover:bg-[#323647] inline-flex items-center justify-center gap-1.5 cursor-pointer border-0"
                                 >
                                     Cancel Edit
                                 </button>
                             )}
-                            <Button type="submit">
+                            <Button type="submit" className="w-full sm:w-auto">
                                 <UserCheck size={14} />
                                 {editingAcademicId ? 'Save Assessment Changes' : 'Record Assessment'}
                             </Button>
@@ -220,25 +220,25 @@ const AcademicTab = ({
                     <table className="w-full text-left text-xs text-slate-300">
                         <thead>
                             <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
-                                <th className="pb-2">Subject</th>
-                                <th className="pb-2">Test / Milestone</th>
-                                <th className="pb-2">Score</th>
-                                <th className="pb-2">Standard</th>
-                                <th className="pb-2">Date</th>
-                                <th className="pb-2 text-center">Status</th>
-                                <th className="pb-2 text-right">Actions</th>
+                                <th className="pb-2 pr-4 whitespace-nowrap">Subject</th>
+                                <th className="pb-2 px-4 whitespace-nowrap">Test / Milestone</th>
+                                <th className="pb-2 px-4 whitespace-nowrap">Score</th>
+                                <th className="pb-2 px-4 whitespace-nowrap">Standard</th>
+                                <th className="pb-2 px-4 whitespace-nowrap">Date</th>
+                                <th className="pb-2 px-4 text-center whitespace-nowrap">Status</th>
+                                <th className="pb-2 pl-4 text-right whitespace-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#2A2D3A]/65">
                             {academicRecords.length > 0 ? (
                                 academicRecords.map((record) => (
                                     <tr key={record.id} className="hover:bg-slate-800/15 transition">
-                                        <td className="py-3 font-semibold text-orange-400">{record.subject}</td>
-                                        <td className="py-3 font-semibold text-slate-200">{record.testName}</td>
-                                        <td className="py-3 font-bold text-slate-100">{record.score}%</td>
-                                        <td className="py-3 text-slate-400 font-mono text-[11px]">{record.standards.join(', ')}</td>
-                                        <td className="py-3 text-slate-400">{record.date}</td>
-                                        <td className="py-3 text-center">
+                                        <td className="py-3 pr-4 font-semibold text-orange-400 whitespace-nowrap">{record.subject}</td>
+                                        <td className="py-3 px-4 font-semibold text-slate-200 whitespace-nowrap">{record.testName}</td>
+                                        <td className="py-3 px-4 font-bold text-slate-100 whitespace-nowrap">{record.score}%</td>
+                                        <td className="py-3 px-4 text-slate-400 font-mono text-[11px] whitespace-nowrap">{record.standards.join(', ')}</td>
+                                        <td className="py-3 px-4 text-slate-400 whitespace-nowrap">{record.date}</td>
+                                        <td className="py-3 px-4 text-center whitespace-nowrap">
                                             {record.score >= 60 ? (
                                                 <span className="bg-emerald-500/15 text-emerald-400 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
                                                     Pass
@@ -249,7 +249,7 @@ const AcademicTab = ({
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="py-3 text-right">
+                                        <td className="py-3 pl-4 text-right whitespace-nowrap">
                                             <div className="flex items-center justify-end gap-2.5 text-slate-400">
                                                 <button
                                                     onClick={() => handleTriggerEditAcademic(record)}

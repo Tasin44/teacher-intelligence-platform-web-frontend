@@ -150,11 +150,11 @@ const ChatbotPage = ({ teacherName, teacherAvatar }: ChatbotScreenProps) => {
   }
 
   return (
-    <DashboardChildrenLayout title="AI Copilot Chat" subtitle="Differentiate, scaffold, and construct standard lesson resources with smart context-aware suggestions" className="flex flex-col h-[calc(100vh-140px)] animate-fadeIn text-slate-100">
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-5 flex-1 min-h-0 bg-transparent" id="chatbot-main-layout">
+    <DashboardChildrenLayout title="AI Copilot Chat" subtitle="Differentiate, scaffold, and construct standard lesson resources with smart context-aware suggestions" className="flex flex-col lg:h-[calc(100vh-140px)] h-auto animate-fadeIn text-slate-100">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-5 flex-1 min-h-0 bg-transparent" id="chatbot-main-layout">
 
         {/* Left column - Helper Prompts sidebar (1/4 space) */}
-        <div className="xl:col-span-1 bg-[#1E2130] p-5 rounded-xl border border-[#2A2D3A] flex flex-col justify-between" >
+        <div className="lg:col-span-1 bg-[#1E2130] p-5 rounded-xl border border-[#2A2D3A] flex flex-col justify-between gap-4 lg:gap-0" >
           <div className="space-y-4">
             <h3 className="text-xs font-extrabold text-orange-500 uppercase tracking-widest flex items-center gap-1.5 mb-2">
               <Sparkles size={13} fill="currentColor" />
@@ -164,7 +164,7 @@ const ChatbotPage = ({ teacherName, teacherAvatar }: ChatbotScreenProps) => {
               Click a pre-configured prompt category below to instantly query the copilot with relevant curricular challenges:
             </p>
 
-            <div className="space-y-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
               {suggestedPrompts.map((item, idx) => (
                 <button
                   key={idx}
@@ -191,7 +191,7 @@ const ChatbotPage = ({ teacherName, teacherAvatar }: ChatbotScreenProps) => {
         </div>
 
         {/* Right column - Main Chat Screen (3/4 space) */}
-        <div className="xl:col-span-3 bg-[#1E2130] rounded-xl border border-[#2A2D3A] flex flex-col min-h-0 overflow-hidden" id="chatbot-conversation-card">
+        <div className="lg:col-span-3 bg-[#1E2130] rounded-xl border border-[#2A2D3A] flex flex-col min-h-[450px] lg:min-h-0 lg:h-full overflow-hidden" id="chatbot-conversation-card">
 
           {/* Messages scroll section */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4 custom-scrollbar bg-[#0F1117]/10" id="chat-messages-scroll">

@@ -126,14 +126,14 @@ const ProgressTrackingPage = ({
       <ProgressTrackingStats studentName={currentStudent.name} />
 
       {/* Section 4 — Charts Row (Score Over Time & Attendance Trend) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5" id="progress-charts-row">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         {/* Left Column 67%: Score Over Time Chart */}
-        <div className="lg:col-span-8">
+        <div>
           <ScoreOverTimeChart studentName={currentStudent.name} />
         </div>
 
         {/* Right Column 33%: Attendance Trend */}
-        <div className="lg:col-span-4">
+        <div >
           <AttendanceTrend />
         </div>
       </div>

@@ -19,7 +19,7 @@ const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) =>
     >
       <div>
         {/* Badge top */}
-        <div className="flex justify-between items-center mb-4.5">
+        <div className="flex justify-between flex-wrap gap-2 items-center mb-4.5">
           {card.levelBadge === 'Below' ? (
             <span className="bg-rose-500/10 text-rose-400 border border-rose-500/10 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide">
               Below
@@ -40,7 +40,7 @@ const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) =>
                 {card.subject}
               </span>
             )}
-            <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold uppercase font-mono">
+            <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold uppercase font-mono whitespace-nowrap">
               Diff: {card.difficulty}
             </span>
           </div>

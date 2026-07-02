@@ -158,7 +158,7 @@ const InterventionsPage = ({
       </div>
 
       {/* Section 3 — Active Interventions List */}
-      <div className="space-y-4 text-left" id="interventions-active-section">
+      <div className="space-y-4 text-left">
         <h3 className="text-base font-bold text-slate-100 font-heading">Active Intervention Plans ({interventions.length})</h3>
 
         <div className="space-y-4">

@@ -16,7 +16,7 @@ const CurriculumAdjustmentRecommendations = ({
     <Card
       title="Curriculum Adjustment Recommendations"
       subtitle="AI-calculated syllabus compressions to realign lessons and recover delayed instructional dates"
-      className="flex flex-col justify-between h-[390px]"
+      className="flex flex-col justify-between h-[420px]"
       actionElements={<Sparkles size={16} className="text-orange-500 animate-pulse" />}
     >
       <div className="space-y-4 max-h-64 overflow-y-auto pr-1" id="suggestions-box">

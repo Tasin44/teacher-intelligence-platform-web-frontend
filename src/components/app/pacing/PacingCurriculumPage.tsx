@@ -115,9 +115,9 @@ const PacingCurriculumPage = ({
           <Card
             title="Standards Coverage Checklist"
             subtitle="Grade 4 fundamental math & syllabus thresholds checked"
-            className="flex flex-col justify-between h-[390px]"
+            className="flex flex-col justify-between h-[420px]"
           >
-            <div className="max-h-56 overflow-y-auto space-y-2 pr-1.5" id="pacing-checklist">
+            <div className="max-h-48 overflow-y-auto space-y-2 pr-1.5" id="pacing-checklist">
               {coverageList.map((st) => (
                 <div
                   key={st.code}

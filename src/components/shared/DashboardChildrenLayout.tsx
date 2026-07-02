@@ -15,7 +15,7 @@ const DashboardChildrenLayout = ({ title, subtitle, children, actionButtons, sta
             <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
                 {
                     title && subtitle && (<div>
-                        {title && <h2 className="text-3xl font-bold font-heading text-slate-100 tracking-tight">{title}</h2>}
+                        {title && <h2 className="text-xl sm:text-2xl md:text-3xl font-bold font-heading text-slate-100 tracking-tight">{title}</h2>}
                         {subtitle && <p className="text-sm text-slate-400 mt-1">{subtitle}</p>}
                     </div>)
                 }

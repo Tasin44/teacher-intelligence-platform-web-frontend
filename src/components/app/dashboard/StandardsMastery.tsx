@@ -47,19 +47,19 @@ const StandardsMastery = () => {
                     <table className="w-full text-left text-xs text-slate-300">
                         <thead>
                             <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
-                                <th className="pb-3.5 text-left font-bold tracking-wider">Student Name</th>
-                                <th className="pb-3.5 text-left font-bold tracking-wider">Standard</th>
-                                <th className="pb-3.5 text-left font-bold tracking-wider">Mastery %</th>
-                                <th className="pb-3.5 text-right font-bold tracking-wider">Status</th>
+                                <th className="pb-3.5 pr-4 text-left font-bold tracking-wider whitespace-nowrap">Student Name</th>
+                                <th className="pb-3.5 px-4 text-left font-bold tracking-wider whitespace-nowrap">Standard</th>
+                                <th className="pb-3.5 px-4 text-left font-bold tracking-wider whitespace-nowrap">Mastery %</th>
+                                <th className="pb-3.5 pl-4 text-right font-bold tracking-wider whitespace-nowrap">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#2A2D3A]/10">
                             {masteryData.map((row, i) => (
                                 <tr key={i} className="hover:bg-slate-800/15 transition">
-                                    <td className="py-4 font-semibold text-slate-100 text-sm">{row.student}</td>
-                                    <td className="py-4 text-slate-400/90 text-sm font-medium">{row.standard}</td>
-                                    <td className="py-4 text-left font-bold text-slate-200 text-sm">{row.percentage}</td>
-                                    <td className="py-4 text-right">
+                                    <td className="py-4 pr-4 font-semibold text-slate-100 text-sm whitespace-nowrap">{row.student}</td>
+                                    <td className="py-4 px-4 text-slate-400/90 text-sm font-medium whitespace-nowrap">{row.standard}</td>
+                                    <td className="py-4 px-4 text-left font-bold text-slate-200 text-sm whitespace-nowrap">{row.percentage}</td>
+                                    <td className="py-4 pl-4 text-right whitespace-nowrap">
                                         <span className={`px-3 py-1 rounded-full text-xs font-bold inline-block tracking-wide ${row.statusColorClass}`}>
                                             {row.status}
                                         </span>

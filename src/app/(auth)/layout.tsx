@@ -28,7 +28,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </Link>
 
           {/* Auth Page Content Card */}
-          <div className="w-full bg-[#F5F5F5] border border-accent-border shadow-xl shadow-slate-100/50 rounded-2xl p-6 sm:p-10 flex flex-col">
+          <div className="w-full bg-[#F5F5F5] border border-accent-border shadow-xl shadow-slate-100/50 rounded-2xl p-4 md:p-6 flex flex-col">
             {children}
           </div>
         </div>

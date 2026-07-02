@@ -17,11 +17,7 @@ const SignUpPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<TSignUpInput>({
+    const { register, handleSubmit, formState: { errors } } = useForm<TSignUpInput>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
             firstName: '',
@@ -107,7 +103,7 @@ const SignUpPage = () => {
                 </div>
 
                 {/* Row 3: Grade Assignment & Classroom Room# */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600">Grade Assignment</Label>
                         <Input
@@ -149,7 +145,7 @@ const SignUpPage = () => {
                 </div>
 
                 {/* Row 4: Password & Confirm Password */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-1.5 relative">
                         <Label className="text-xs font-bold text-slate-600">Password</Label>
                         <div className="relative">

@@ -148,7 +148,7 @@ const StudentDataInputPage = ({
       />
 
       {/* Section 3 — Tabs Selector */}
-      <div className="flex border-b border-[#2A2D3A]" id="diagnostic-tabs-row">
+      <div className="flex border-b border-[#2A2D3A] overflow-x-auto scrollbar-none whitespace-nowrap w-full" id="diagnostic-tabs-row">
         {[
           { id: 'academic', label: 'Academic' },
           { id: 'behavior', label: 'Behavior' },
@@ -158,7 +158,7 @@ const StudentDataInputPage = ({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`cursor-pointer px-6 py-3.5 text-sm font-semibold tracking-wide border-b-2 transition ${activeTab === tab.id
+            className={`cursor-pointer px-4 md:px-6 py-3.5 text-sm font-semibold tracking-wide border-b-2 transition shrink-0 ${activeTab === tab.id
               ? 'border-orange-500 text-orange-500 bg-orange-500/5'
               : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/10'
               }`}
@@ -169,7 +169,7 @@ const StudentDataInputPage = ({
       </div>
 
       {/* Tabs Content */}
-      <div className="min-h-96" id="diagnostic-tabs-view">
+      <div className="min-h-96 w-full max-w-full overflow-hidden" id="diagnostic-tabs-view">
         {activeTab === 'academic' && (
           <AcademicTab
             currentStudent={currentStudent}

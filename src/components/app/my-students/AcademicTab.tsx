@@ -118,106 +118,100 @@ const AcademicTab = ({
     };
 
     return (
-        <div className="space-y-6 animate-fadeIn">
+        <div className="space-y-6 animate-fadeIn w-full max-w-full overflow-hidden">
             {/* Form */}
-            <div id="academic-form-heading">
-                <Card title={`${editingAcademicId ? "Edit Academic Assessment Record" : "Post New Test or Assignment Grade"}`}>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {/* Subject field */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-bold text-slate-400">Subject</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Math"
-                                    {...register('subject')}
-                                    className={`bg-[#0F1117] border ${errors.subject ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
-                                />
-                                {errors.subject && (
-                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.subject.message}</p>
-                                )}
-                            </div>
+            <Card title={`${editingAcademicId ? "Edit Academic Assessment Record" : "Post New Test or Assignment Grade"}`}>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                            {/* Test Name */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-bold text-slate-400">Test / Assignment Name</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. Multiplication Fact Check 4"
-                                    {...register('testName')}
-                                    className={`bg-[#0F1117] border ${errors.testName ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
-                                />
-                                {errors.testName && (
-                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.testName.message}</p>
-                                )}
-                            </div>
-
-                            {/* Score */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-bold text-slate-400">Score / 100</label>
-                                <input
-                                    type="number"
-                                    max="100"
-                                    min="0"
-                                    {...register('score', { valueAsNumber: true })}
-                                    className={`bg-[#0F1117] border ${errors.score ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
-                                />
-                                {errors.score && (
-                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.score.message}</p>
-                                )}
-                            </div>
-
-                            {/* Date */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-bold text-slate-400">Assessment Date</label>
-                                <input
-                                    type="date"
-                                    {...register('academicDate')}
-                                    className={`bg-[#0F1117] border ${errors.academicDate ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none transition`}
-                                />
-                                {errors.academicDate && (
-                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.academicDate.message}</p>
-                                )}
-                            </div>
-
-                            {/* Standards Linked */}
-                            <div className="flex flex-col gap-2">
-                                <label className="text-xs font-bold text-slate-400">CCSS Standard Code</label>
-                                <input
-                                    type="text"
-                                    placeholder="e.g. CCSS.Math.3.OA.A.1"
-                                    {...register('standards')}
-                                    className={`bg-[#0F1117] border ${errors.standards ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
-                                />
-                                {errors.standards && (
-                                    <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.standards.message}</p>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="mt-5 flex flex-col sm:flex-row justify-end gap-3">
-                            {editingAcademicId && (
-                                <button
-                                    type="button"
-                                    onClick={handleCancelAcademicEdit}
-                                    className="w-full sm:w-auto bg-[#2A2D3A] text-slate-300 font-semibold px-4 py-2 rounded-lg text-xs hover:bg-[#323647] inline-flex items-center justify-center gap-1.5 cursor-pointer border-0"
-                                >
-                                    Cancel Edit
-                                </button>
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-bold text-slate-400">Subject</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Math"
+                                {...register('subject')}
+                                className={`bg-[#0F1117] border ${errors.subject ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                            />
+                            {errors.subject && (
+                                <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.subject.message}</p>
                             )}
-                            <Button type="submit" className="w-full sm:w-auto">
-                                <UserCheck size={14} />
-                                {editingAcademicId ? 'Save Assessment Changes' : 'Record Assessment'}
-                            </Button>
                         </div>
-                    </form>
-                </Card>
-            </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-bold text-slate-400">Test / Assignment Name</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. Multiplication Fact Check 4"
+                                {...register('testName')}
+                                className={`bg-[#0F1117] border ${errors.testName ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                            />
+                            {errors.testName && (
+                                <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.testName.message}</p>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-bold text-slate-400">Score / 100</label>
+                            <input
+                                type="number"
+                                max="100"
+                                min="0"
+                                {...register('score', { valueAsNumber: true })}
+                                className={`bg-[#0F1117] border ${errors.score ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                            />
+                            {errors.score && (
+                                <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.score.message}</p>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-bold text-slate-400">Assessment Date</label>
+                            <input
+                                type="date"
+                                {...register('academicDate')}
+                                className={`bg-[#0F1117] border ${errors.academicDate ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none transition`}
+                            />
+                            {errors.academicDate && (
+                                <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.academicDate.message}</p>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="text-xs font-bold text-slate-400">CCSS Standard Code</label>
+                            <input
+                                type="text"
+                                placeholder="e.g. CCSS.Math.3.OA.A.1"
+                                {...register('standards')}
+                                className={`bg-[#0F1117] border ${errors.standards ? 'border-rose-500/80 focus:border-rose-500' : 'border-[#2A2D3A] focus:border-orange-500'} rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none transition`}
+                            />
+                            {errors.standards && (
+                                <p className="text-[10px] text-rose-500 font-medium mt-0.5">{errors.standards.message}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="mt-5 flex flex-col sm:flex-row justify-end gap-3">
+                        {editingAcademicId && (
+                            <button
+                                type="button"
+                                onClick={handleCancelAcademicEdit}
+                                className="w-full sm:w-auto bg-[#2A2D3A] text-slate-300 font-semibold px-4 py-2 rounded-lg text-xs hover:bg-[#323647] inline-flex items-center justify-center gap-1.5 cursor-pointer border-0"
+                            >
+                                Cancel Edit
+                            </button>
+                        )}
+                        <Button type="submit" className="w-full sm:w-auto">
+                            <UserCheck size={14} />
+                            {editingAcademicId ? 'Save Assessment Changes' : 'Record Assessment'}
+                        </Button>
+                    </div>
+                </form>
+            </Card>
 
             {/* Assessment History Table */}
             <Card title={`Recorded Assessments ${currentStudent.name}`}>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-slate-300">
+                <div className="overflow-x-auto w-full max-w-full">
+                    <table className="w-full text-left text-xs text-slate-300 min-w-[650px]">
                         <thead>
                             <tr className="border-b border-[#2A2D3A] text-slate-400 font-semibold">
                                 <th className="pb-2 pr-4 whitespace-nowrap">Subject</th>

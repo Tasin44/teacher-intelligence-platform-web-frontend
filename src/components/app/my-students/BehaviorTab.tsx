@@ -42,7 +42,7 @@ export default function BehaviorTab({
     };
 
     return (
-        <div className="space-y-6 animate-fadeIn" >
+        <div className="space-y-6 animate-fadeIn w-full max-w-full overflow-hidden" >
             {/* Form */}
             <Card title='Register Behavioral Event'>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -115,14 +115,14 @@ export default function BehaviorTab({
 
             {/* Behavior Log Table */}
             <Card title={`Behavior Diagnostics (${currentStudent.name})`}>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs text-slate-300">
+                <div className="overflow-x-auto w-full max-w-full">
+                    <table className="w-full text-left text-xs text-slate-300 min-w-[650px]">
                         <thead className="text-slate-400 font-semibold">
                             <tr className="border-b border-[#2A2D3A]">
-                                <th className="pb-2">Date</th>
-                                <th className="pb-2">Classification</th>
-                                <th className="pb-2">Observation Notes</th>
-                                <th className="pb-2 text-center">Class Engagement</th>
+                                <th className="pb-2 whitespace-nowrap">Date</th>
+                                <th className="pb-2 whitespace-nowrap">Classification</th>
+                                <th className="pb-2 whitespace-nowrap">Observation Notes</th>
+                                <th className="pb-2 text-center whitespace-nowrap">Class Engagement</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[#2A2D3A]/60">
@@ -137,8 +137,8 @@ export default function BehaviorTab({
 
                                     return (
                                         <tr key={log.id} className={`${bgRowColor} transition`}>
-                                            <td className="py-4 font-medium text-slate-300 align-top pr-3">{log.date}</td>
-                                            <td className="py-4 align-top pr-3">
+                                            <td className="py-4 font-medium text-slate-300 align-top pr-3 whitespace-nowrap">{log.date}</td>
+                                            <td className="py-4 align-top pr-3 whitespace-nowrap">
                                                 {log.type === 'Concern' ? (
                                                     <span className="bg-rose-500/20 text-rose-400 px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-rose-500/20">
                                                         Concern

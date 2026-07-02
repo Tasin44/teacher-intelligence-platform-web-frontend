@@ -189,7 +189,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main Workspace Frame container */}
-      <div className={`flex-1 min-h-screen flex flex-col ${isCollapsed ? 'lg:pl-20' : 'lg:pl-60'} pl-0 bg-[#0F1117] transition-all duration-300 ease-in-out`} id="edupulse-workspace-body">
+      <div className={`flex-1 min-h-screen flex flex-col ${isCollapsed ? 'lg:pl-20' : 'lg:pl-60'} pl-0 bg-[#0F1117] transition-all duration-300 ease-in-out min-w-0 overflow-x-hidden`} id="edupulse-workspace-body">
         {/* 2. Global Top Bar */}
         <header className="h-16 bg-[#1A1D27] border-b border-[#2A2D3A] px-4 md:px-8 flex items-center justify-between sticky top-0 z-30" id="edupulse-topbar">
           <div className="flex items-center gap-3">
@@ -280,7 +280,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* 3. Main content frame area */}
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 overflow-y-auto min-w-0 w-full">
           {children}
         </main>
       </div>

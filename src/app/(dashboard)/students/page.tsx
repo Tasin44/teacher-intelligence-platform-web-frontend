@@ -32,10 +32,10 @@ function StudentsPageContent() {
     <div className="space-y-6">
 
       {/* tabs */}
-      <div className="flex bg-[#1E2130] p-1.5 rounded-xl border border-[#2A2D3A] w-fit" id="subtab-bridge">
+      <div className="flex bg-[#1E2130] p-1.5 rounded-xl border border-[#2A2D3A] w-full max-w-full overflow-x-auto scrollbar-none whitespace-nowrap" id="subtab-bridge">
         <button
           onClick={() => setSubtab('input')}
-          className={`px-2 md:px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider transition cursor-pointer border-0 ${
+          className={`px-2 md:px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider transition cursor-pointer border-0 shrink-0 ${
             subtab === 'input'
               ? 'bg-accent-orange text-white shadow-md shadow-orange-500/10'
               : 'text-slate-450 hover:text-slate-250 bg-gray-190'
@@ -45,7 +45,7 @@ function StudentsPageContent() {
         </button>
         <button
           onClick={() => setSubtab('ilp')}
-          className={`px-2 md:px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider transition cursor-pointer border-0 ${
+          className={`px-2 md:px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider transition cursor-pointer border-0 shrink-0 ${
             subtab === 'ilp'
               ? 'bg-accent-orange text-white shadow-md shadow-orange-500/10'
               : 'text-slate-450 hover:text-slate-250 bg-gray-100'
@@ -54,6 +54,7 @@ function StudentsPageContent() {
           Individualized Education Plan (IEP)
         </button>
       </div>
+
       {subtab === 'input' ? (
         <StudentDataInputTab
           students={students}

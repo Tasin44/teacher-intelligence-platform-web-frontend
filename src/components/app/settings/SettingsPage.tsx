@@ -41,12 +41,6 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
     }
     return 'Room 304-B';
   });
-  const [academicTerm, setAcademicTerm] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('edupulse_settings_academic_term') || 'Fall/Spring 2026';
-    }
-    return 'Fall/Spring 2026';
-  });
 
   const [savedToast, setSavedToast] = useState(false);
   const [savedMessage, setSavedMessage] = useState('');
@@ -164,7 +158,7 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">Classroom Room#</label>
+                  <label className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block whitespace-nowrap">Classroom Room#</label>
                   <input
                     type="text"
                     required
@@ -183,7 +177,6 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
                     onUpdateTeacher({ name, email, school, grade, avatar });
                     if (typeof window !== 'undefined') {
                       localStorage.setItem('edupulse_settings_classroom_no', classroomNo);
-                      localStorage.setItem('edupulse_settings_academic_term', academicTerm);
                     }
                     setSavedMessage(`Teacher Profile Live Updated to "${name}" successfully!`);
                     setSavedToast(true);
@@ -207,7 +200,7 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
               AI Gen-Engine Hyperparameters & Limits
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs font-sans">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-6 text-xs font-sans">
               {/* Sliders left column */}
               <div className="space-y-4">
                 <div className="bg-[#0F1117]/55 p-4 rounded-xl border border-[#2A2D3A]/60 space-y-5">

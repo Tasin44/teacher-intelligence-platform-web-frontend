@@ -217,7 +217,7 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
                       step="0.5"
                       value={sensitivity}
                       onChange={(e) => setSensitivity(Number(e.target.value))}
-                      className="w-full accent-orange-500 bg-slate-800 rounded-lg appearance-none h-2 cursor-pointer"
+                      className="w-full accent-orange-500 bg-slate-300! rounded-lg appearance-none h-2 cursor-pointer"
                     />
                     <p className="text-[10px] text-slate-400 leading-relaxed">
                       Decides how aggressively the system flags developmental setbacks. High sensitivity flags student decline early.
@@ -239,7 +239,7 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
                       step="5"
                       value={warningThreshold}
                       onChange={(e) => setWarningThreshold(Number(e.target.value))}
-                      className="w-full accent-orange-500 bg-slate-800 rounded-lg appearance-none h-2 cursor-pointer"
+                      className="w-full accent-orange-500 bg-slate-300! rounded-lg appearance-none h-2 cursor-pointer"
                     />
                   </div>
 
@@ -258,7 +258,7 @@ const SettingsPage = ({ teacher, onUpdateTeacher }: SettingsScreenProps) => {
                       step="2"
                       value={enrichmentThreshold}
                       onChange={(e) => setEnrichmentThreshold(Number(e.target.value))}
-                      className="w-full accent-orange-500 bg-slate-800 rounded-lg appearance-none h-2 cursor-pointer"
+                      className="w-full accent-orange-500 bg-slate-300! rounded-lg appearance-none h-2 cursor-pointer"
                     />
                   </div>
                 </div>

@@ -136,7 +136,9 @@ const StudentDataInputPage = ({
           <span>{successToastMessage}</span>
         </div>
       )}
-
+      <div className='flex justify-end items-center'>
+        <button className='text-slate-500 text-sm hover:underline underline-offset-4 hover:text-orange-500! transition-all duration-300 font-semibold'>View All Students</button>
+      </div>
       {/* Section 2 — Student Selector Card */}
       <ProfileAndFilter
         students={students}

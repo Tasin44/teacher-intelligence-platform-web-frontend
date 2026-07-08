@@ -11,6 +11,7 @@ import ObservationsTab from './ObservationsTab';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import { Button } from '@/components/ui/button';
 import { MyStudentsHeaderAction } from './MyStudentsHeaderAction';
+import AllStudentsPage from './AllStudentsPage';
 
 interface StudentDataInputScreenProps {
   students: Student[];
@@ -39,6 +40,7 @@ const StudentDataInputPage = ({
 }: StudentDataInputScreenProps) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'academic' | 'behavior' | 'attendance' | 'observations'>('academic');
+  const [showAllStudents, setShowAllStudents] = useState(false);
 
   // Observations State
   const [observationsList, setObservationsList] = useState<Array<{ id: string, studentId: string, date: string, tag: string, text: string }>>([
@@ -136,10 +138,26 @@ const StudentDataInputPage = ({
           <span>{successToastMessage}</span>
         </div>
       )}
-      <div className='flex justify-end items-center'>
-        <button className='text-slate-500 text-sm hover:underline underline-offset-4 hover:text-orange-500! transition-all duration-300 font-semibold'>View All Students</button>
-      </div>
-      {/* Section 2 — Student Selector Card */}
+
+      {showAllStudents ? (
+        <AllStudentsPage 
+          onBack={() => setShowAllStudents(false)}
+          onSelectStudent={(id) => {
+            onSelectStudent(id);
+            setShowAllStudents(false);
+          }}
+        />
+      ) : (
+        <>
+          <div className='flex justify-end items-center'>
+            <button 
+              onClick={() => setShowAllStudents(true)}
+              className='text-slate-500 text-sm hover:underline underline-offset-4 hover:text-orange-500! transition-all duration-300 font-semibold cursor-pointer border-0 bg-transparent'
+            >
+              View All Students
+            </button>
+          </div>
+          {/* Section 2 — Student Selector Card */}
       <ProfileAndFilter
         students={students}
         currentStudent={currentStudent}
@@ -206,6 +224,8 @@ const StudentDataInputPage = ({
           />
         )}
       </div>
+        </>
+      )}
     </DashboardChildrenLayout>
   );
 }

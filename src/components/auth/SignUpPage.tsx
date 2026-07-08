@@ -4,69 +4,102 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signUpSchema, TSignUpInput } from '@/validation/auth.validation'
 import { useRouter } from 'next/navigation'
-import { useEduPulse } from '@/lib/context/EduPulseContext'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { signupRequest } from '@/lib/api/auth.api'
+import { ApiError } from '@/lib/api/client'
+import { saveSignupEmail } from '@/lib/auth/session'
 
 const SignUpPage = () => {
     const router = useRouter();
-    const { login } = useEduPulse();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
 
     const { register, handleSubmit, formState: { errors } } = useForm<TSignUpInput>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
-            firstName: '',
-            lastName: '',
-            school: '',
-            grade: '',
-            classroom: 'Room 304-B',
-            email: '',
-            password: '',
+            firstName:       '',
+            lastName:        '',
+            grade:           '',
+            classroom:       '',
+            email:           '',
+            password:        '',
             confirmPassword: ''
         }
     });
 
-    const onSubmit = (data: TSignUpInput) => {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('edupulse_settings_classroom_no', data.classroom);
+    const onSubmit = async (data: TSignUpInput) => {
+        setApiError(null);
+        setIsLoading(true);
+
+        try {
+            await signupRequest({
+                first_name: data.firstName,
+                last_name:  data.lastName,
+                // TODO: replace with a real school selector once the API
+                // endpoint for listing schools is available.
+                school_id:  1,
+                grade:      data.grade,
+                room:       data.classroom,
+                email:      data.email,
+                password:   data.password,
+            });
+
+            // Save email in sessionStorage so verify-otp page can use it
+            saveSignupEmail(data.email);
+
+            // Navigate to OTP verification in signup mode
+            router.push('/auth/verify-otp?mode=signup');
+        } catch (err) {
+            if (err instanceof ApiError) {
+                const errData = err.data as Record<string, string[]> | null;
+                if (errData?.email) {
+                    setApiError(errData.email[0]);
+                } else {
+                    setApiError(err.message);
+                }
+            } else {
+                setApiError('Something went wrong. Please try again.');
+            }
+        } finally {
+            setIsLoading(false);
         }
-        // Register & Log in the new teacher account
-        login({
-            name: `${data.firstName} ${data.lastName}`,
-            email: data.email,
-            school: data.school,
-            grade: data.grade,
-            avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
-        });
-        router.push('/');
     };
 
     return (
         <div className="flex flex-col w-full text-primary-text">
-            {/* Header Title inside card */}
+            {/* Header */}
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold font-heading text-primary-text mb-1">
-                    Welcome Back Ms. Johnson
+                    Create Account
                 </h2>
                 <p className="text-sm font-semibold text-slate-500">
-                    Sign up on your account
+                    Sign up as a teacher
                 </p>
             </div>
+
+            {/* Global API error */}
+            {apiError && (
+                <div className="mb-4 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-medium">
+                    {apiError}
+                </div>
+            )}
 
             {/* Registration Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 {/* Row 1: First Name & Last Name */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <Label className="text-xs font-bold text-slate-600">Frist Name</Label>
+                        <Label className="text-xs font-bold text-slate-600">First Name</Label>
                         <Input
+                            id="signup-first-name"
                             type="text"
-                            placeholder="Shipon"
+                            placeholder="John"
                             className="bg-white border-slate-200/80 rounded-xl h-11"
                             {...register('firstName')}
                         />
@@ -75,10 +108,11 @@ const SignUpPage = () => {
                         )}
                     </div>
                     <div className="space-y-1.5">
-                        <Label className="text-xs font-bold text-slate-600">Last name</Label>
+                        <Label className="text-xs font-bold text-slate-600">Last Name</Label>
                         <Input
+                            id="signup-last-name"
                             type="text"
-                            placeholder="Shipon"
+                            placeholder="Doe"
                             className="bg-white border-slate-200/80 rounded-xl h-11"
                             {...register('lastName')}
                         />
@@ -88,27 +122,14 @@ const SignUpPage = () => {
                     </div>
                 </div>
 
-                {/* Row 2: School/Campus */}
-                <div className="space-y-1.5">
-                    <Label className="text-xs font-bold text-slate-600">School/Campus</Label>
-                    <Input
-                        type="text"
-                        placeholder="Oakwood Elementary School"
-                        className="bg-white border-slate-200/80 rounded-xl h-11"
-                        {...register('school')}
-                    />
-                    {errors.school && (
-                        <p className="text-[10px] text-rose-500 font-medium">{errors.school.message}</p>
-                    )}
-                </div>
-
-                {/* Row 3: Grade Assignment & Classroom Room# */}
+                {/* Row 2: Grade Assignment & Classroom */}
                 <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600">Grade Assignment</Label>
                         <Input
+                            id="signup-grade"
                             type="text"
-                            placeholder="Grade 3/Grade 4/Grade 5..."
+                            placeholder="10th Grade"
                             className="bg-white border-slate-200/80 rounded-xl h-11"
                             {...register('grade')}
                         />
@@ -119,8 +140,9 @@ const SignUpPage = () => {
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600">Classroom Room#</Label>
                         <Input
+                            id="signup-classroom"
                             type="text"
-                            placeholder="Room 304-B"
+                            placeholder="Room 101"
                             className="bg-white border-slate-200/80 rounded-xl h-11"
                             {...register('classroom')}
                         />
@@ -134,8 +156,9 @@ const SignUpPage = () => {
                 <div className="space-y-1.5">
                     <Label className="text-xs font-bold text-slate-600">Professional Email Address</Label>
                     <Input
+                        id="signup-email"
                         type="email"
-                        placeholder="Enter your email"
+                        placeholder="teacher@school.edu"
                         className="bg-white border-slate-200/80 rounded-xl h-11"
                         {...register('email')}
                     />
@@ -150,8 +173,9 @@ const SignUpPage = () => {
                         <Label className="text-xs font-bold text-slate-600">Password</Label>
                         <div className="relative">
                             <Input
+                                id="signup-password"
                                 type={showPassword ? 'text' : 'password'}
-                                placeholder="Enter your password"
+                                placeholder="Min 8 chars, letter + number"
                                 className="bg-white border-slate-200/80 rounded-xl h-11 pr-9"
                                 {...register('password')}
                             />
@@ -168,11 +192,12 @@ const SignUpPage = () => {
                         )}
                     </div>
                     <div className="space-y-1.5 relative">
-                        <Label className="text-xs font-bold text-slate-600">Confirm Passwords</Label>
+                        <Label className="text-xs font-bold text-slate-600">Confirm Password</Label>
                         <div className="relative">
                             <Input
+                                id="signup-confirm-password"
                                 type={showConfirmPassword ? 'text' : 'password'}
-                                placeholder="Enter your password"
+                                placeholder="Re-enter password"
                                 className="bg-white border-slate-200/80 rounded-xl h-11 pr-9"
                                 {...register('confirmPassword')}
                             />
@@ -190,12 +215,18 @@ const SignUpPage = () => {
                     </div>
                 </div>
 
-                {/* Submit button: text matches "Login" inside signup card screenshot */}
                 <Button
+                    id="signup-submit"
                     type="submit"
-                    className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold mt-2 cursor-pointer transition shadow-lg shadow-orange-500/10"
+                    disabled={isLoading}
+                    className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold mt-2 cursor-pointer transition shadow-lg shadow-orange-500/10 disabled:opacity-70"
                 >
-                    Register
+                    {isLoading ? (
+                        <span className="flex items-center gap-2">
+                            <Loader2 size={16} className="animate-spin" />
+                            Sending OTP…
+                        </span>
+                    ) : 'Register'}
                 </Button>
             </form>
 

@@ -1,19 +1,21 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Loader2, Plus, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEduPulse } from '@/lib/context/EduPulseContext';
+import { Loader2, Edit2, X, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { studentSchema, TStudentInput } from '@/validation/student.validation';
-import { createStudent } from '@/lib/api/student.api';
-import { apiStudentToStudent } from '@/types';
+import { updateStudent, ApiStudent } from '@/lib/api/student.api';
 
-export default function AddStudentModal() {
-    const { isAddStudentOpen, setIsAddStudentOpen, addStudent, refreshStudents } = useEduPulse();
-    const router = useRouter();
+interface EditStudentModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    student: ApiStudent;
+    onSuccess: (updated: ApiStudent) => void;
+}
+
+export default function EditStudentModal({ isOpen, onClose, student, onSuccess }: EditStudentModalProps) {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -21,28 +23,34 @@ export default function AddStudentModal() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { register, handleSubmit, reset, formState: { errors } } = useForm<TStudentInput>({
-        resolver: zodResolver(studentSchema),
-        defaultValues: {
-            name: '',
-            rollNo: '',
-            grade: '10',
-            riskLevel: 'On Track',
-            readingLevel: '4A',
-            parentName: '',
-            parentEmail: ''
-        }
+        resolver: zodResolver(studentSchema)
     });
 
     useEffect(() => {
-        if (isAddStudentOpen) {
-            reset({ name: '', rollNo: '', grade: '10', riskLevel: 'On Track', readingLevel: '4A', parentName: '', parentEmail: '' });
-            setAvatarPreview(null);
+        if (isOpen) {
+            const riskMap: Record<string, string> = {
+                'on_track': 'On Track',
+                'at_risk': 'At Risk',
+                'advance': 'Advanced',
+                'developing': 'Developing'
+            };
+            
+            reset({
+                name: student.student_name,
+                rollNo: student.student_roll,
+                grade: student.student_grade,
+                riskLevel: (riskMap[student.risk_status] || 'On Track') as any,
+                readingLevel: student.reading_level || '4A',
+                parentName: student.parent_name || '',
+                parentEmail: student.parent_email || ''
+            });
+            setAvatarPreview(student.student_image);
             setAvatarFile(null);
             setApiError(null);
         }
-    }, [isAddStudentOpen, reset]);
+    }, [isOpen, student, reset]);
 
-    if (!isAddStudentOpen) return null;
+    if (!isOpen) return null;
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -71,29 +79,19 @@ export default function AddStudentModal() {
             formData.append('student_grade', data.grade);
             formData.append('risk_status', riskToBackend[data.riskLevel] ?? 'on_track');
             formData.append('reading_level', data.readingLevel);
+            
             if (data.parentName) formData.append('parent_name', data.parentName);
             if (data.parentEmail) formData.append('parent_email', data.parentEmail);
+            
+            // Only append image if it was actually changed
             if (avatarFile) formData.append('student_image', avatarFile);
 
-            const created = await createStudent(formData);
-            // Append to local context as well
-            addStudent({
-                name: created.student_name,
-                grade: created.student_grade,
-                riskLevel: ({ on_track: 'On Track', at_risk: 'At Risk', advance: 'Advanced', developing: 'Developing' } as any)[created.risk_status] ?? 'On Track',
-                readingLevel: data.readingLevel,
-                parentName: created.parent_name ?? '',
-                parentEmail: created.parent_email ?? '',
-                avatar: created.student_image ?? undefined,
-            });
-
-            // Also trigger a full refresh if available
-            if (refreshStudents) await refreshStudents();
-
-            setIsAddStudentOpen(false);
-            router.push('/students?subtab=input');
+            const updated = await updateStudent(student.student_id, formData);
+            onSuccess(updated);
+            onClose();
         } catch (err: any) {
-            setApiError(err.message || 'Failed to create student. Please try again.');
+            setApiError(err.message || 'Failed to update student profile.');
+            setTimeout(() => setApiError(null), 5000);
         } finally {
             setIsLoading(false);
         }
@@ -101,6 +99,13 @@ export default function AddStudentModal() {
 
     return (
         <div className="fixed inset-0 z-50 bg-[#0F1117]/80 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
+            {apiError && (
+                <div className="fixed top-20 right-5 bg-rose-500 border border-rose-400 text-white font-extrabold px-4 py-3 rounded-lg flex items-center gap-2 shadow-2xl z-[100] animate-bounce">
+                    <AlertCircle size={18} strokeWidth={3} />
+                    <span>{apiError}</span>
+                </div>
+            )}
+
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 className="bg-[#1E2130] border border-[#2A2D3A] rounded-xl w-full max-w-md shadow-2xl p-6 relative animate-slideUp"
@@ -108,22 +113,16 @@ export default function AddStudentModal() {
                 {/* Modal X button */}
                 <button
                     type="button"
-                    onClick={() => setIsAddStudentOpen(false)}
+                    onClick={onClose}
                     className="absolute right-5 top-5 p-1 text-slate-400 hover:text-slate-100 transition cursor-pointer bg-transparent border-0"
                 >
                     <X size={18} />
                 </button>
 
                 <h3 className="text-base font-bold font-heading text-slate-200 mb-4 flex items-center gap-2">
-                    <Plus size={18} strokeWidth={2.5} className="text-orange-500" />
-                    Enroll New Student Profile
+                    <Edit2 size={18} strokeWidth={2.5} className="text-orange-500" />
+                    Edit Student Profile
                 </h3>
-
-                {apiError && (
-                    <div className="mb-4 bg-rose-500/10 text-rose-400 border border-rose-500/20 px-3 py-2 rounded-lg text-xs font-semibold">
-                        {apiError}
-                    </div>
-                )}
 
                 <div className="space-y-4 text-xs">
                     {/* Avatar Upload Area */}
@@ -141,7 +140,7 @@ export default function AddStudentModal() {
                                 )}
                             </div>
                             <label className="absolute inset-0 rounded-full bg-black/70 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px] text-slate-200 font-bold transition-opacity duration-200 cursor-pointer">
-                                <span>Choose</span>
+                                <span>Change</span>
                                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
                             </label>
                         </div>
@@ -153,7 +152,7 @@ export default function AddStudentModal() {
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-3 h-3">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
                                     </svg>
-                                    Upload Photo
+                                    Upload New Photo
                                     <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
                                 </label>
                                 {avatarPreview && (
@@ -244,15 +243,15 @@ export default function AddStudentModal() {
                 <div className="mt-5 pt-4 border-t border-[#2A2D3A]/60 flex justify-end gap-3.5">
                     <button
                         type="button"
-                        onClick={() => setIsAddStudentOpen(false)}
+                        onClick={onClose}
                         disabled={isLoading}
                         className="px-4 py-2 hover:bg-slate-800 text-slate-400 hover:text-slate-200 font-semibold text-xs rounded-lg transition bg-transparent border-0 cursor-pointer disabled:opacity-50"
                     >
                         Cancel
                     </button>
                     <Button type="submit" disabled={isLoading}>
-                        {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                        {isLoading ? 'Creating...' : 'Create Profile Record'}
+                        {isLoading ? <Loader2 size={14} className="animate-spin" /> : <Edit2 size={14} />}
+                        {isLoading ? 'Saving...' : 'Save Changes'}
                     </Button>
                 </div>
             </form>

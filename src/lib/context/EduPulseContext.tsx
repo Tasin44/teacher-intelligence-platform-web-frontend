@@ -1,6 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { saveTokens, clearTokens, getAccessToken } from '@/lib/auth/token';
+import { getMeRequest, type TeacherProfile } from '@/lib/api/auth.api';
+import { getStudents } from '@/lib/api/student.api';
 import {
   Student,
   Group,
@@ -9,8 +12,10 @@ import {
   Assignment,
   Intervention,
   AppliedModification,
-  CommsHistory
+  CommsHistory,
+  apiStudentToStudent
 } from '@/types';
+
 import {
   initialStudents,
   initialAcademicRecords,
@@ -22,12 +27,35 @@ import {
   initialCommsHistory
 } from '@/lib/data';
 
-interface Teacher {
-  name: string;
+export interface Teacher {
+  teacher_id?: number;
+  name: string;           // "first_name last_name"
+  first_name: string;
+  last_name: string;
   email: string;
-  school: string;
+  school: string;          // display name or school_id coerced to string
   grade: string;
+  room?: string;
   avatar: string;
+  is_verified?: boolean;
+  approval_status?: 'pending' | 'approved' | 'rejected';
+}
+
+/** Map a backend TeacherProfile to the local Teacher shape */
+export function profileToTeacher(p: TeacherProfile): Teacher {
+  return {
+    teacher_id:      p.teacher_id,
+    name:            `${p.first_name} ${p.last_name}`,
+    first_name:      p.first_name,
+    last_name:       p.last_name,
+    email:           p.email,
+    school:          String(p.school),   // coerce numeric FK to string
+    grade:           p.grade,
+    room:            p.room,
+    avatar:          p.profile_picture || '',   // map backend profile_picture to avatar
+    is_verified:     p.is_verified,
+    approval_status: p.approval_status,
+  };
 }
 
 interface NotificationItem {
@@ -74,7 +102,7 @@ interface EduPulseContextType {
   setNotifications: React.Dispatch<React.SetStateAction<NotificationItem[]>>;
 
   // Functions
-  login: (teacher: Teacher) => void;
+  login: (teacher: Teacher, tokens?: { access: string; refresh: string }) => void;
   logout: () => void;
   addStudent: (studentData: {
     name: string;
@@ -94,6 +122,7 @@ interface EduPulseContextType {
   applyModification: (mod: Omit<AppliedModification, 'id'>) => void;
   addHistoryItem: (item: Omit<CommsHistory, 'id'>) => void;
   regenerateGroups: () => void;
+  refreshStudents?: () => Promise<void>;
 }
 
 const EduPulseContext = createContext<EduPulseContextType | undefined>(undefined);
@@ -139,10 +168,13 @@ export const EduPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, []);
 
-  const login = (teacher: Teacher) => {
+  const login = (teacher: Teacher, tokens?: { access: string; refresh: string }) => {
     setLoggedInTeacherState(teacher);
     if (typeof window !== 'undefined') {
       localStorage.setItem('edupulse_logged_teacher', JSON.stringify(teacher));
+      if (tokens) {
+        saveTokens(tokens.access, tokens.refresh);
+      }
     }
   };
 
@@ -150,8 +182,23 @@ export const EduPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLoggedInTeacherState(null);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('edupulse_logged_teacher');
+      clearTokens();
     }
   };
+
+  /** Refreshes the logged-in teacher profile from GET /api/auth/me */
+  const fetchMe = useCallback(async () => {
+    try {
+      const profile = await getMeRequest();
+      const teacher = profileToTeacher(profile);
+      setLoggedInTeacherState(teacher);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('edupulse_logged_teacher', JSON.stringify(teacher));
+      }
+    } catch {
+      // silently fail — token may have expired
+    }
+  }, []);
 
   const addStudent = (studentData: {
     name: string;
@@ -274,6 +321,27 @@ export const EduPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     })));
   };
 
+  // Load real students from backend on mount / after login
+  const refreshStudents = useCallback(async () => {
+    try {
+      const data = await getStudents();
+      if (data.results.length > 0) {
+        setStudents(data.results.map(apiStudentToStudent));
+      }
+    } catch {
+      // silently fall back to local data
+    }
+  }, []);
+
+  // Auto-refresh profile from server on mount if a token exists
+  useEffect(() => {
+    if (isClient && getAccessToken()) {
+      fetchMe();
+      refreshStudents();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isClient]);
+
   // Prevent flash or SSR mismatch during hydration
   const loggedInTeacherVal = isClient ? loggedInTeacher : null;
 
@@ -319,7 +387,8 @@ export const EduPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         updateAssignment,
         applyModification,
         addHistoryItem,
-        regenerateGroups
+        regenerateGroups,
+        refreshStudents,
       }}
     >
       {children}

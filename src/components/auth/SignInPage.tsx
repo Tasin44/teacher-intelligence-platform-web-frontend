@@ -5,17 +5,21 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { signInSchema, TSignInInput } from '@/validation/auth.validation'
 import { useRouter } from 'next/navigation'
 import { useEduPulse } from '@/lib/context/EduPulseContext'
+import { profileToTeacher } from '@/lib/context/EduPulseContext'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import TeacherLoginCard from './TeacherLoginCard'
+import { loginRequest } from '@/lib/api/auth.api'
+import { ApiError } from '@/lib/api/client'
 
 const SignInPage = () => {
     const router = useRouter();
     const { login } = useEduPulse();
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [apiError, setApiError] = useState<string | null>(null);
 
     const { register, handleSubmit, formState: { errors } } = useForm<TSignInInput>({
         resolver: zodResolver(signInSchema),
@@ -25,46 +29,63 @@ const SignInPage = () => {
         }
     });
 
-    const onSubmit = (data: TSignInInput) => {
-        // Fallback login
-        login({
-            name: 'Ms. Johnson',
-            email: data.email,
-            school: 'Oakwood Elementary School',
-            grade: 'Grade 4',
-            avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
-        });
-        router.push('/');
-    };
+    const onSubmit = async (data: TSignInInput) => {
+        setApiError(null);
+        setIsLoading(true);
 
-    const handleInstantLogin = (grade: string) => {
-        login({
-            name: 'Ms. Johnson',
-            email: `johnson.${grade.toLowerCase().replace(' ', '')}@oakwood.edu`,
-            school: 'Oakwood Elementary School',
-            grade: grade,
-            avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
-        });
-        router.push('/');
+        try {
+            const result = await loginRequest({
+                email:    data.email,
+                password: data.password,
+            });
+
+            // Map backend teacher → local Teacher shape and save tokens
+            const teacher = profileToTeacher(result.teacher);
+            login(teacher, result.tokens);
+
+            router.push('/');
+        } catch (err) {
+            if (err instanceof ApiError) {
+                // Backend sends non_field_errors as the key for general login failures
+                const errData = err.data as Record<string, string[]> | null;
+                if (errData?.non_field_errors) {
+                    setApiError(errData.non_field_errors[0]);
+                } else {
+                    setApiError(err.message);
+                }
+            } else {
+                setApiError('Something went wrong. Please try again.');
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <div className="flex flex-col w-full text-primary-text">
-            {/* Header Title inside card */}
+            {/* Header */}
             <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold font-heading text-primary-text mb-1">
-                    Welcome Back Ms. Johnson
+                    Welcome Back
                 </h2>
                 <p className="text-sm font-semibold text-slate-500">
-                    Sign in on your account
+                    Sign in to your account
                 </p>
             </div>
+
+            {/* Global API error */}
+            {apiError && (
+                <div className="mb-4 px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-sm font-medium">
+                    {apiError}
+                </div>
+            )}
 
             {/* Login Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div className="space-y-2">
                     <Label className="text-xs font-bold text-slate-600">Email</Label>
                     <Input
+                        id="signin-email"
                         type="email"
                         placeholder="Enter your email"
                         className="bg-white border-slate-200/80 rounded-xl h-11"
@@ -81,6 +102,7 @@ const SignInPage = () => {
                     </div>
                     <div className="relative">
                         <Input
+                            id="signin-password"
                             type={showPassword ? 'text' : 'password'}
                             placeholder="Enter your password"
                             className="bg-white border-slate-200/80 rounded-xl h-11 pr-10"
@@ -109,39 +131,19 @@ const SignInPage = () => {
                 </div>
 
                 <Button
+                    id="signin-submit"
                     type="submit"
-                    className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold cursor-pointer transition shadow-lg shadow-orange-500/10"
+                    disabled={isLoading}
+                    className="w-full h-11 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold cursor-pointer transition shadow-lg shadow-orange-500/10 disabled:opacity-70"
                 >
-                    Login
+                    {isLoading ? (
+                        <span className="flex items-center gap-2">
+                            <Loader2 size={16} className="animate-spin" />
+                            Signing in…
+                        </span>
+                    ) : 'Login'}
                 </Button>
             </form>
-
-            {/* Instant Login Options */}
-            <div className="mt-8 flex flex-col items-center">
-                <span className="text-[10px] uppercase tracking-wider font-extrabold text-slate-400 mb-4">
-                    Instant Active Classrooms
-                </span>
-
-                <div className="grid grid-cols-2 gap-4 w-full">
-                    {/* Option 1: Grade 4 */}
-                    <TeacherLoginCard
-                        name="Ms. Johnson"
-                        grade="Grade 4"
-                        school="Oakwood"
-                        avatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
-                        onClick={() => handleInstantLogin('Grade 4')}
-                    />
-
-                    {/* Option 2: Grade 5 */}
-                    <TeacherLoginCard
-                        name="Ms. Johnson"
-                        grade="Grade 5"
-                        school="Oakwood"
-                        avatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"
-                        onClick={() => handleInstantLogin('Grade 5')}
-                    />
-                </div>
-            </div>
 
             {/* Link to Register */}
             <div className="text-center mt-6">

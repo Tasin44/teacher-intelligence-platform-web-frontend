@@ -143,7 +143,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <div className="p-4 border-t border-[#2A2D3A] flex-col items-center gap-4 bg-slate-900/10 transition-all duration-300 lg:flex hidden" id="sidebar-teacher-profile-collapsed">
             <Link href="/settings" title="Teacher Settings">
               <img
-                src={teacher.avatar}
+                src={teacher.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'}
                 alt="Teacher"
                 referrerPolicy="no-referrer"
                 className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] hover:border-orange-500/40 transition shrink-0"
@@ -165,7 +165,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         <div className={`p-4 border-t border-[#2A2D3A] items-center justify-between bg-slate-900/10 transition-all duration-300 ${isCollapsed ? 'lg:hidden flex' : 'flex'}`} id="sidebar-teacher-profile">
           <div className="flex items-center gap-3">
             <img
-              src={teacher.avatar}
+              src={teacher.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'}
               alt="Teacher"
               referrerPolicy="no-referrer"
               className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] shrink-0"
@@ -269,7 +269,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
                 title="Teacher Settings"
               >
                 <img
-                  src={loggedInTeacher?.avatar}
+                  src={loggedInTeacher?.avatar || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"}
                   alt="Teacher Profile"
                   referrerPolicy="no-referrer"
                   className="w-full h-full object-cover"

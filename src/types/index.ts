@@ -14,7 +14,9 @@ export type Screen =
 export type StudentSubtab = 'input' | 'ilp';
 
 export interface Student {
-  id: string;
+  id: string;               // string-cast of student_id
+  student_id?: number;      // raw backend PK (for API calls)
+  student_roll?: string;    // R001, R002 etc — needed for POST calls
   name: string;
   avatar: string;
   grade: string;
@@ -28,6 +30,47 @@ export interface Student {
   parentEmail: string;
   mathScore: number;
   scoreDeclineAlert?: boolean;
+}
+
+/** Map a backend student record to the local Student shape used throughout the app */
+export function apiStudentToStudent(s: {
+  student_id: number;
+  student_name: string;
+  student_roll: string;
+  student_image: string | null;
+  student_grade: string;
+  risk_status: string;
+  reading_level: string | null;
+  parent_name: string | null;
+  parent_email: string | null;
+  avg_score: string | null;
+  attendance_rate: string | null;
+  recommended_group_name: string | null;
+  created_at: string;
+}): Student {
+  const riskMap: Record<string, Student['riskLevel']> = {
+    at_risk:    'At Risk',
+    on_track:   'On Track',
+    advance:    'Advanced',
+    developing: 'Developing',
+  };
+  return {
+    id:             String(s.student_id),
+    student_id:     s.student_id,
+    student_roll:   s.student_roll,
+    name:           s.student_name,
+    avatar:         s.student_image || '',
+    grade:          s.student_grade,
+    room:           '',
+    riskLevel:      riskMap[s.risk_status] ?? 'On Track',
+    readingLevel:   s.reading_level ?? '',
+    avgScore:       s.avg_score ? parseFloat(s.avg_score) : 0,
+    attendanceRate: s.attendance_rate ? parseFloat(s.attendance_rate) : 0,
+    group:          'A',
+    parentName:     s.parent_name ?? '',
+    parentEmail:    s.parent_email ?? '',
+    mathScore:      s.avg_score ? parseFloat(s.avg_score) : 0,
+  };
 }
 
 export interface AcademicRecord {

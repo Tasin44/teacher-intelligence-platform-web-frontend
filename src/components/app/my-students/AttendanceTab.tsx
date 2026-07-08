@@ -3,6 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { User } from 'lucide-react';
 import { Student } from '@/types';
 import TakeAttendanceModal from './TakeAttendanceModal';
+import { getMonthlyAttendance, markAttendance, AttendanceStatus } from '@/lib/api/attendance.api';
 
 interface AttendanceTabProps {
   currentStudent: Student;
@@ -32,8 +33,27 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<{ day: number; status: 'Present' | 'Absent' | 'Late' | 'Weekend' } | null>(null);
   const [attendanceOverrides, setAttendanceOverrides] = useState<Record<number, 'Present' | 'Absent' | 'Late' | 'Weekend'>>({});
+  const [apiData, setApiData] = useState<Record<number, 'Present' | 'Absent' | 'Late' | 'Weekend'>>({});
+  const [apiCalculatedRate, setApiCalculatedRate] = useState<number | null>(null);
 
   useEffect(() => {
+    const fetchMonthlyData = async () => {
+      if (!currentStudent.student_id) return;
+      try {
+        const res = await getMonthlyAttendance(currentStudent.student_id, selectedYear, selectedMonth + 1);
+        const mapped: Record<number, 'Present' | 'Absent' | 'Late' | 'Weekend'> = {};
+        res.days.forEach(d => {
+          const dateNum = parseInt(d.date.split('-')[2], 10);
+          mapped[dateNum] = d.status === 'present' ? 'Present' : d.status === 'absent' ? 'Absent' : 'Late';
+        });
+        setApiData(mapped);
+        setApiCalculatedRate(res.attendance_rate);
+      } catch (err) {
+        setApiData({});
+        setApiCalculatedRate(null);
+      }
+    };
+    fetchMonthlyData();
     setAttendanceOverrides({});
   }, [selectedMonth, selectedYear, currentStudent]);
 
@@ -51,7 +71,7 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
     const days: Array<{ 
       day: number | null; 
       weekday: boolean; 
-      status: 'Present' | 'Absent' | 'Late' | 'Weekend' | 'Empty' 
+      status: 'Present' | 'Absent' | 'Late' | 'Weekend' | 'Empty' | 'None' 
     }> = [];
 
     // Add empty placeholders for the offset
@@ -63,32 +83,25 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
       });
     }
 
-    const rand = (day: number) => {
-      const density = currentStudent.attendanceRate / 100;
-      if (density > 0.95) {
-        return day % 12 === 0 ? 'Late' : 'Present';
-      } else if (density > 0.88) {
-        if (day % 10 === 0) return 'Late';
-        if (day % 15 === 0) return 'Absent';
-        return 'Present';
-      } else {
-        if (day % 7 === 0) return 'Absent';
-        if (day % 11 === 0) return 'Late';
-        return 'Present';
-      }
-    };
-
     for (let d = 1; d <= daysInMonth; d++) {
       const dayOfWeek = new Date(selectedYear, selectedMonth, d).getDay();
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      
+      let status: 'Present' | 'Absent' | 'Late' | 'Weekend' | 'None' = 'None';
+      if (attendanceOverrides[d]) {
+          status = attendanceOverrides[d];
+      } else if (apiData[d]) {
+          status = apiData[d];
+      }
+      
       days.push({
         day: d,
         weekday: !isWeekend,
-        status: attendanceOverrides[d] || (isWeekend ? 'Weekend' : rand(d))
+        status: status
       });
     }
     return days;
-  }, [currentStudent, selectedMonth, selectedYear, attendanceOverrides]);
+  }, [selectedMonth, selectedYear, attendanceOverrides, apiData]);
 
   const attendanceSummary = useMemo(() => {
     let presentCount = 0;
@@ -183,8 +196,8 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
               );
             }
 
-            let cellBg = 'bg-slate-800/10 text-slate-400 border border-[#2A2D3A]/50';
-            let statusLabel = 'Wknd';
+            let cellBg = 'bg-[#0F1117] border border-[#2A2D3A] text-slate-400 hover:bg-slate-800/20';
+            let statusLabel = '';
 
             if (day.status === 'Present') {
               cellBg = 'bg-emerald-500/10 text-emerald-400 border-2 border-emerald-500/20 hover:bg-emerald-500/15';
@@ -195,6 +208,9 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
             } else if (day.status === 'Late') {
               cellBg = 'bg-amber-500/10 text-amber-400 border-2 border-amber-500/20 hover:bg-amber-500/15';
               statusLabel = 'L';
+            } else if (day.status === 'Weekend') {
+              cellBg = 'bg-slate-800/10 text-slate-400 border border-[#2A2D3A]/50';
+              statusLabel = 'Wknd';
             }
 
             return (
@@ -202,7 +218,7 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
                 key={day.day}
                 onClick={() => {
                   if (day.day !== null) {
-                    setSelectedDay({ day: day.day, status: day.status as 'Present' | 'Absent' | 'Late' | 'Weekend' });
+                    setSelectedDay({ day: day.day, status: day.status as any });
                     setIsModalOpen(true);
                   }
                 }}
@@ -221,7 +237,7 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
             <User size={14} className="text-slate-400" />
             <span className="font-semibold">Calculated Attendance Rate:</span>
             <strong className="text-orange-500 text-sm font-bold font-mono">
-              {currentStudent.attendanceRate}%
+              {apiCalculatedRate !== null ? apiCalculatedRate.toFixed(1) : currentStudent.attendanceRate}%
             </strong>
           </div>
         </div>
@@ -236,13 +252,30 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
           }}
           student={currentStudent}
           dateStr={dateStr}
-          initialStatus={selectedDay.status}
-          onSave={(status, remarks) => {
+          initialStatus={selectedDay.status === 'None' ? 'Present' : selectedDay.status as any}
+          onSave={async (status, remarks) => {
+            // Optimistic UI update
             setAttendanceOverrides((prev) => ({
               ...prev,
               [selectedDay.day]: status
             }));
             setIsModalOpen(false);
+            
+            // API Call
+            if (currentStudent.student_roll && status !== 'Weekend') {
+              try {
+                const apiStatus = status === 'Present' ? 'present' : status === 'Absent' ? 'absent' : 'late';
+                const formattedDate = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(selectedDay.day).padStart(2, '0')}`;
+                await markAttendance({
+                  student_roll: currentStudent.student_roll,
+                  attendance_date: formattedDate,
+                  status: apiStatus as AttendanceStatus
+                });
+              } catch (err) {
+                console.error('Failed to save attendance', err);
+                // Could revert optimistic update on failure if needed
+              }
+            }
             setSelectedDay(null);
           }}
         />

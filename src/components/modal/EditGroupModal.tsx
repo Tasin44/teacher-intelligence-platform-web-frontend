@@ -2,33 +2,31 @@
 
 import React, { useState } from 'react';
 import { Sliders, X, Check } from 'lucide-react';
-import { Student, Group } from '@/types';
+import { Student } from '@/types';
 import { Button } from '../ui/button';
+import { ApiGroup } from '@/lib/api/grouping.api';
 
 interface EditGroupModalProps {
-    group: Group;
+    group: ApiGroup;
     students: Student[];
     onClose: () => void;
-    onSave: (updatedGroup: Group) => void;
+    onSave: (updatedGroup: ApiGroup) => void;
 }
 
 const EditGroupModal = ({ group, students, onClose, onSave }: EditGroupModalProps) => {
     // Group Edit States
-    const [editName, setEditName] = useState(group.name);
-    const [editTag, setEditTag] = useState(group.tag);
-    const [editType, setEditType] = useState<'Advanced' | 'On Track' | 'Developing' | 'At Risk'>(group.type);
-    const [editColor, setEditColor] = useState(group.color);
+    const [editName, setEditName] = useState(group.group_name);
+    const [editTag, setEditTag] = useState<ApiGroup['tag']>(group.tag);
+    const [editClassification, setEditClassification] = useState<ApiGroup['classification']>(group.classification);
 
     const handleSaveGroup = () => {
         if (!editName.trim()) return;
 
-        const updatedGroup: Group = {
+        const updatedGroup: ApiGroup = {
             ...group,
-            name: editName,
+            group_name: editName,
             tag: editTag,
-            type: editType,
-            color: editColor,
-            borderColor: editColor,
+            classification: editClassification,
         };
 
         onSave(updatedGroup);
@@ -67,26 +65,29 @@ const EditGroupModal = ({ group, students, onClose, onSave }: EditGroupModalProp
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col gap-1.5">
                             <label className="font-bold text-slate-400">Tactical Focus Tag</label>
-                            <input
-                                type="text"
+                            <select
                                 value={editTag}
-                                onChange={(e) => setEditTag(e.target.value)}
-                                placeholder="e.g. Multi-step equations"
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-medium"
-                            />
+                                onChange={(e) => setEditTag(e.target.value as ApiGroup['tag'])}
+                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-semibold"
+                            >
+                                <option value="above_grade_level">Above Grade Level</option>
+                                <option value="at_grade_level">At Grade Level</option>
+                                <option value="approaching_grade_level">Approaching Grade Level</option>
+                                <option value="below_grade_level">Below Grade Level</option>
+                            </select>
                         </div>
 
                         <div className="flex flex-col gap-1.5">
                             <label className="font-bold text-slate-400">Cohort Classification</label>
                             <select
-                                value={editType}
-                                onChange={(e) => setEditType(e.target.value as any)}
+                                value={editClassification}
+                                onChange={(e) => setEditClassification(e.target.value as ApiGroup['classification'])}
                                 className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-semibold"
                             >
-                                <option value="Advanced">Advanced Mastery</option>
-                                <option value="On Track">On Track / High Performance</option>
-                                <option value="Developing">Developing Core Mechanics</option>
-                                <option value="At Risk">At Risk / Intensive Target</option>
+                                <option value="advance">Advanced Mastery</option>
+                                <option value="on_track">On Track / High Performance</option>
+                                <option value="developing">Developing Core Mechanics</option>
+                                <option value="risk">At Risk / Intensive Target</option>
                             </select>
                         </div>
                     </div>

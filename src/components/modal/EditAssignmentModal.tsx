@@ -4,21 +4,24 @@ import { X, CheckCircle } from 'lucide-react';
 import { Assignment } from '@/types';
 import { Button } from '../ui/button';
 
+import { ApiAssignment } from '@/lib/api/assignment.api';
+
 interface EditAssignmentModalProps {
     isOpen: boolean;
-    selectedAssignment: Assignment | null;
+    selectedAssignment: ApiAssignment | null;
     activeTab: 'Assignment' | 'Homework';
     onClose: () => void;
     onSave: (assignmentData: {
         title: string;
         subject: string;
         difficulty: 'Low' | 'Medium' | 'High';
-        targetType: 'Student' | 'Group' | 'Level';
-        targetValue: string;
+        targetType: 'all_groups' | 'individual_student' | 'individual_group';
+        targetStudentRoll?: string;
+        targetGroupId?: number;
         dueDate: string;
         standards: string;
         instructions: string;
-        questionCount?: number;
+        questionCount: number;
     }) => void;
 }
 
@@ -27,8 +30,9 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
     const [formTitle, setFormTitle] = useState('');
     const [formSubject, setFormSubject] = useState('');
     const [formDifficulty, setFormDifficulty] = useState<'Low' | 'Medium' | 'High'>('Medium');
-    const [formTargetType, setFormTargetType] = useState<'Student' | 'Group' | 'Level'>('Level');
-    const [formTargetValue, setFormTargetValue] = useState('Below');
+    const [formTargetType, setFormTargetType] = useState<'all_groups' | 'individual_student' | 'individual_group'>('all_groups');
+    const [formTargetStudentRoll, setFormTargetStudentRoll] = useState('');
+    const [formTargetGroupId, setFormTargetGroupId] = useState('');
     const [formDueDate, setFormDueDate] = useState('2026-06-20');
     const [formStandards, setFormStandards] = useState('CCSS.Math.3.OA.A.1');
     const [formInstructions, setFormInstructions] = useState('');
@@ -39,22 +43,23 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
             if (selectedAssignment) {
                 setFormTitle(selectedAssignment.title);
                 setFormSubject(selectedAssignment.subject || '');
-                setFormDifficulty(selectedAssignment.difficulty);
-                setFormTargetType(selectedAssignment.targetType);
-                setFormTargetValue(selectedAssignment.targetValue);
-                setFormDueDate(selectedAssignment.dueDate);
-                setFormStandards(selectedAssignment.standards.join(', '));
-                setFormInstructions(selectedAssignment.instructions);
-                setFormQuestionCount(selectedAssignment.questionCount || 10);
+                setFormDifficulty(selectedAssignment.ai_difficulty);
+                setFormTargetType(selectedAssignment.target_type);
+                setFormTargetStudentRoll(selectedAssignment.target_student_name || '');
+                setFormTargetGroupId(selectedAssignment.target_group_name || '');
+                setFormDueDate(selectedAssignment.due_date || '');
+                setFormStandards(selectedAssignment.ccss_code || '');
+                setFormInstructions(selectedAssignment.instructions || '');
+                setFormQuestionCount(selectedAssignment.number_of_questions || 10);
             } else {
                 setFormTitle('Unified Fractions Modeling Workbook');
                 setFormSubject('Math');
                 setFormDifficulty('Medium');
-                setFormTargetType('Group');
-                setFormTargetValue('Group D');
+                setFormTargetType('individual_group');
+                setFormTargetGroupId('1');
                 setFormDueDate('2026-06-24');
                 setFormStandards('CCSS.Math.3.NF.A.1');
-                setFormInstructions('Students will paint visual grid blocks corresponding to target fractions (1/2, 1/4, 1/8). Support with tactile fraction strips as needed.');
+                setFormInstructions('Students will paint visual grid blocks corresponding to target fractions (1/2, 1/4, 1/8).');
                 setFormQuestionCount(10);
             }
         }
@@ -69,7 +74,8 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
             subject: formSubject,
             difficulty: formDifficulty,
             targetType: formTargetType,
-            targetValue: formTargetValue,
+            targetStudentRoll: formTargetType === 'individual_student' ? formTargetStudentRoll : undefined,
+            targetGroupId: formTargetType === 'individual_group' ? parseInt(formTargetGroupId) : undefined,
             dueDate: formDueDate,
             standards: formStandards,
             instructions: formInstructions,
@@ -143,16 +149,20 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                         </div>
 
                         {/* Target Value */}
-                        <div className="flex flex-col gap-1.5">
-                            <label className="font-bold text-slate-400">Target Parameter</label>
-                            <input
-                                type="text"
-                                placeholder="e.g. Group D or Marcus T"
-                                value={formTargetValue}
-                                onChange={(e) => setFormTargetValue(e.target.value)}
-                                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-2 text-xs text-slate-205 focus:outline-none focus:border-orange-500 font-medium"
-                            />
-                        </div>
+                        {formTargetType !== 'all_groups' && (
+                            <div className="flex flex-col gap-1.5">
+                                <label className="font-bold text-slate-400">
+                                    {formTargetType === 'individual_student' ? 'Student Roll' : 'Group ID'}
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder={formTargetType === 'individual_student' ? "e.g. R001" : "e.g. 1"}
+                                    value={formTargetType === 'individual_student' ? formTargetStudentRoll : formTargetGroupId}
+                                    onChange={(e) => formTargetType === 'individual_student' ? setFormTargetStudentRoll(e.target.value) : setFormTargetGroupId(e.target.value)}
+                                    className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-2 text-xs text-slate-205 focus:outline-none focus:border-orange-500 font-medium"
+                                />
+                            </div>
+                        )}
 
                         {/* Difficulty level toggle */}
                         <div className="flex flex-col gap-1.5">

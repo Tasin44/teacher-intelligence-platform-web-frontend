@@ -1,16 +1,17 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { X, Calendar, Edit } from 'lucide-react';
-import { Assignment, Student } from '@/types';
+import { Student } from '@/types';
 import { Button } from '../ui/button';
+import { ApiAssignment } from '@/lib/api/assignment.api';
 
 interface AssignmentDetailsModalProps {
     isOpen: boolean;
-    viewingAssignment: Assignment | null;
+    viewingAssignment: ApiAssignment | null;
     students: Student[];
     onClose: () => void;
-    onEditClick: (assignment: Assignment) => void;
-    onUpdateAssignment?: (assignment: Assignment) => void;
+    onEditClick: (assignment: ApiAssignment) => void;
+    onUpdateAssignment?: (assignment: ApiAssignment) => void;
 }
 
 const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, onEditClick, onUpdateAssignment }: AssignmentDetailsModalProps) => {
@@ -21,13 +22,13 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
     useEffect(() => {
         if (viewingAssignment) {
             if (viewingAssignment.questions && viewingAssignment.questions.length > 0) {
-                setQuestions(viewingAssignment.questions);
+                setQuestions(viewingAssignment.questions.map(q => q.question_text));
             } else {
                 // Generate default questions based on standards and questionCount
-                const count = viewingAssignment.questionCount || 5;
+                const count = viewingAssignment.number_of_questions || 5;
                 const generated: string[] = [];
-                const isFractions = viewingAssignment.standards.some(s => s.includes('NF'));
-                const isMultiplication = viewingAssignment.standards.some(s => s.includes('OA') || s.includes('MD'));
+                const isFractions = viewingAssignment.ccss_code?.includes('NF');
+                const isMultiplication = viewingAssignment.ccss_code?.includes('OA') || viewingAssignment.ccss_code?.includes('MD');
 
                 const fractionTemplates = [
                     "Represent {num}/{den} using a visual grid or rectangle model.",
@@ -114,15 +115,15 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
 
     // Compute assigned students dynamically
     const assignedStudents = students.filter((student) => {
-        const type = viewingAssignment.targetType;
-        const val = viewingAssignment.targetValue;
-        if (type === 'Student') {
-            return student.name.toLowerCase().includes(val.toLowerCase()) || val.toLowerCase().includes(student.name.toLowerCase());
-        } else if (type === 'Group') {
-            const matchGroupId = val.replace('Group ', '').trim();
+        const type = viewingAssignment.target_type;
+        const val = viewingAssignment.target_group_name || viewingAssignment.target_student_name;
+        if (type === 'individual_student') {
+            return student.name.toLowerCase().includes((val || '').toLowerCase()) || (val || '').toLowerCase().includes(student.name.toLowerCase());
+        } else if (type === 'individual_group') {
+            const matchGroupId = (val || '').replace('Group ', '').trim();
             return student.group === matchGroupId || student.group === val;
-        } else if (type === 'Level') {
-            const level = viewingAssignment.levelBadge;
+        } else if (type === 'all_groups') {
+            const level = viewingAssignment.ai_difficulty === 'Low' ? 'Below' : viewingAssignment.ai_difficulty === 'High' ? 'Advanced' : 'On Track';
             if (level === 'Below') {
                 return student.riskLevel === 'At Risk' || student.riskLevel === 'Developing';
             } else if (level === 'Advanced') {
@@ -149,10 +150,18 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
         if (onUpdateAssignment) {
             onUpdateAssignment({
                 ...viewingAssignment,
-                questions: updatedQuestions
+                questions: updatedQuestions.map((text, i) => ({
+                    question_id: i + 1,
+                    question_text: text,
+                    question_type: 'multiple_choice',
+                    options: {},
+                    correct_answer: ''
+                }))
             });
         }
     };
+
+    const levelBadge = viewingAssignment.ai_difficulty === 'Low' ? 'Below' : viewingAssignment.ai_difficulty === 'High' ? 'Advanced' : 'On Track';
 
     return (
         <div className="fixed inset-0 z-50 bg-[#0F1117]/85 flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn">
@@ -168,7 +177,8 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                 {/* Header */}
                 <div className="mb-6 pb-4 border-b border-[#2A2D3A]/60">
                     <span className="text-[10px] uppercase font-bold tracking-wider text-orange-500 block mb-1">
-                        {viewingAssignment.type === 'Assignment' ? '🎒 CLASSROOM LEARNING TASK' : '🏠 HOMEWORK DISCOVERY TASK'}
+                        {/* Fake homework toggle basically */}
+                        {'🎒 CLASSROOM LEARNING TASK'}
                     </span>
                     <h3 className="text-xl font-bold font-heading text-slate-100 leading-snug">
                         {viewingAssignment.title}
@@ -176,11 +186,11 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
 
                     <div className="flex flex-wrap items-center gap-3 mt-3">
                         {/* Level badge */}
-                        {viewingAssignment.levelBadge === 'Below' ? (
+                        {levelBadge === 'Below' ? (
                             <span className="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide">
                                 scaffolding recommended
                             </span>
-                        ) : viewingAssignment.levelBadge === 'Advanced' ? (
+                        ) : levelBadge === 'Advanced' ? (
                             <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide">
                                 enrichment focus
                             </span>
@@ -197,12 +207,12 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                         )}
 
                         <span className="text-[11px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono font-bold">
-                            DIFFICULTY: {viewingAssignment.difficulty}
+                            DIFFICULTY: {viewingAssignment.ai_difficulty}
                         </span>
 
                         <span className="text-[11px] text-slate-400 flex items-center gap-1 font-semibold ml-auto">
                             <Calendar size={12} className="text-orange-500" />
-                            Due date: {viewingAssignment.dueDate}
+                            Due date: {viewingAssignment.due_date || 'N/A'}
                         </span>
                     </div>
                 </div>
@@ -216,12 +226,11 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                             📌 Curricular Target & Linked CCSS Standards
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                            {viewingAssignment.standards.map((stan, idx) => (
-                                <span key={idx} className="bg-[#1E2130] text-slate-200 border border-[#2A2D3A] px-2.5 py-1 rounded font-mono text-xs font-bold shadow-sm">
-                                    {stan}
+                            {viewingAssignment.ccss_code ? (
+                                <span className="bg-[#1E2130] text-slate-200 border border-[#2A2D3A] px-2.5 py-1 rounded font-mono text-xs font-bold shadow-sm">
+                                    {viewingAssignment.ccss_code}
                                 </span>
-                            ))}
-                            {viewingAssignment.standards.length === 0 && (
+                            ) : (
                                 <span className="text-slate-500 italic">No exact standards linked to this homework module.</span>
                             )}
                         </div>

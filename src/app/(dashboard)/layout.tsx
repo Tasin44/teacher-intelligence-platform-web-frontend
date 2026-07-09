@@ -10,7 +10,7 @@ import AddStudentModal from '@/components/modal/AddStudentModal';
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { loggedInTeacher, logout, isNotificationOpen, setIsNotificationOpen, notifications, setNotifications } = useEduPulse();
+  const { loggedInTeacher, logout } = useEduPulse();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -206,60 +206,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-3 md:gap-6 relative">
-            <Link className='flex items-center gap-1.5 text-white bg-accent-orange rounded-2xl px-3 py-1.5 md:px-4 md:py-2 font-semibold text-xs md:text-sm shrink-0' href={"/chatbot"}>
-              <Bot size={16}/>
-              <span className="hidden sm:inline">AI Pet</span>
-            </Link>
-            {/* Notification Bell */}
-            <div className="relative">
-              <button
-                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                className="p-1.5 md:p-2 hover:bg-slate-800 text-slate-400 hover:text-white rounded-full transition relative cursor-pointer bg-transparent border-0"
-                id="bell-button"
-              >
-                <Bell size={20} />
-                <span className="absolute top-1 right-1 size-3.5 bg-orange-600 rounded-full text-[8px] font-bold text-white! flex items-center justify-center">
-                  {notifications.length}
-                </span>
-              </button>
-
-              {/* Notification dropdown panel */}
-              {isNotificationOpen && (
-                <div className="absolute right-0 mt-3.5 w-64 sm:w-76 bg-[#1E2130] border border-[#2A2D3A] rounded-xl shadow-2xl z-50 divide-y divide-[#2A2D3A]/60" id="notification-bell-dropdown">
-                  <div className="p-3 bg-slate-900/10 flex justify-between items-center">
-                    <span className="text-[11px] uppercase font-extrabold text-orange-500 tracking-wider">AI Bulletins</span>
-                    <button
-                      onClick={() => setNotifications([])}
-                      className="text-[10px] text-slate-500 hover:text-slate-350 bg-transparent border-0 cursor-pointer"
-                    >
-                      Clear All
-                    </button>
-                  </div>
-                  <div className="max-h-64 overflow-y-auto divide-y divide-[#2A2D3A]/50">
-                    {notifications.length > 0 ? (
-                      notifications.map((not) => (
-                        <Link
-                          key={not.id}
-                          href={not.screen === 'dashboard' ? '/' : `/${not.screen}`}
-                          onClick={() => setIsNotificationOpen(false)}
-                          className="w-full text-left p-3.5 hover:bg-slate-800 transition block border-0 bg-transparent cursor-pointer decoration-transparent"
-                        >
-                          <div className="flex items-start gap-2.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1 shrink-0"></span>
-                            <div>
-                              <span className="text-xs font-bold text-slate-200 block">{not.title}</span>
-                              <span className="text-[11px] text-slate-400 leading-normal block mt-0.5">{not.text}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))
-                    ) : (
-                      <div className="p-6 text-center text-xs text-slate-500">No active priority bulletins field.</div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
 
             {/* Teacher profile picture element */}
             <div className="relative">

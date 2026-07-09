@@ -7,11 +7,8 @@ const page = () => {
 
   return (
     <AssignmentsPage
-      assignments={assignments}
       students={students}
       groups={groups}
-      onAddAssignment={addAssignment}
-      onUpdateAssignment={updateAssignment}
       isCreateModalOpenByDefault={isCreateAssignmentOpen}
       onCloseDefaultModal={() => setIsCreateAssignmentOpen(false)}
     />

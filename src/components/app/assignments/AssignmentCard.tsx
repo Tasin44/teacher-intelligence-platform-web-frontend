@@ -2,16 +2,21 @@
 
 import React from 'react';
 import { Calendar, Edit, ExternalLink } from 'lucide-react';
-import { Assignment } from '@/types';
+import { ApiAssignment } from '@/lib/api/assignment.api';
 
 interface AssignmentCardProps {
-  card: Assignment;
-  onViewDetails: (assignment: Assignment) => void;
-  onEdit: (assignment: Assignment) => void;
+  card: ApiAssignment;
+  onViewDetails: (assignment: ApiAssignment) => void;
+  onEdit: (assignment: ApiAssignment) => void;
 }
 
 const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) => {
-  const avatarChar = card.targetValue.charAt(0);
+  const targetValue = card.target_type === 'individual_student' ? card.target_student_name :
+                      card.target_type === 'individual_group' ? card.target_group_name : 'All Groups';
+  const avatarChar = targetValue ? targetValue.charAt(0) : 'A';
+  
+  const levelBadge = card.ai_difficulty === 'Low' ? 'Below' : 
+                     card.ai_difficulty === 'High' ? 'Advanced' : 'On Track';
 
   return (
     <div
@@ -20,11 +25,11 @@ const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) =>
       <div>
         {/* Badge top */}
         <div className="flex justify-between flex-wrap gap-2 items-center mb-4.5">
-          {card.levelBadge === 'Below' ? (
+          {levelBadge === 'Below' ? (
             <span className="bg-rose-500/10 text-rose-400 border border-rose-500/10 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide">
               Below
             </span>
-          ) : card.levelBadge === 'Advanced' ? (
+          ) : levelBadge === 'Advanced' ? (
             <span className="bg-blue-500/10 text-blue-400 border border-blue-500/10 px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wide">
               Advanced
             </span>
@@ -41,7 +46,7 @@ const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) =>
               </span>
             )}
             <span className="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold uppercase font-mono whitespace-nowrap">
-              Diff: {card.difficulty}
+              Diff: {card.ai_difficulty}
             </span>
           </div>
         </div>
@@ -50,28 +55,28 @@ const AssignmentCard = ({ card, onViewDetails, onEdit }: AssignmentCardProps) =>
         <h3 className="text-base font-bold font-heading text-slate-100 leading-tight tracking-tight group-hover:text-orange-500">
           {card.title}
         </h3>
-        <span className="text-xs font-semibold text-slate-350 mb-2">ID: {card.id}</span>
+        <span className="text-xs font-semibold text-slate-350 mb-2">ID: {card.assignment_id}</span>
 
         {/* Student/Group Target block */}
         <div className="flex items-center gap-2 mb-4">
           <div className="w-6 h-6 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-[10px] text-orange-500 font-bold uppercase font-mono">
             {avatarChar}
           </div>
-          <span className="text-xs font-semibold text-slate-350">{card.targetValue}</span>
+          <span className="text-xs font-semibold text-slate-350">{targetValue}</span>
         </div>
 
         {/* Due Date & Standards */}
         <div className="space-y-2 mb-5 pt-3 border-t border-[#2A2D3A]/40 text-xs">
           <div className="flex items-center gap-2 text-slate-400">
             <Calendar size={13} />
-            <span className="font-semibold text-[11px]">Due: {card.dueDate}</span>
+            <span className="font-semibold text-[11px]">Due: {card.due_date || 'N/A'}</span>
           </div>
           <div className="flex flex-wrap gap-1">
-            {card.standards.map((stan, idx) => (
-              <span key={idx} className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold font-mono">
-                {stan}
+            {card.ccss_code && (
+              <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-bold font-mono">
+                {card.ccss_code}
               </span>
-            ))}
+            )}
           </div>
         </div>
       </div>

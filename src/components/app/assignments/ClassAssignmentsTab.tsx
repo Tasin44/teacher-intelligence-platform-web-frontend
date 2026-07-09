@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
-import { Assignment } from '@/types';
 import AssignmentCard from './AssignmentCard';
+import { ApiAssignment } from '@/lib/api/assignment.api';
 
 interface ClassAssignmentsTabProps {
-  assignments: Assignment[];
-  onViewDetails: (assignment: Assignment) => void;
-  onEdit: (assignment: Assignment) => void;
+  assignments: ApiAssignment[];
+  onViewDetails: (assignment: ApiAssignment) => void;
+  onEdit: (assignment: ApiAssignment) => void;
 }
 
 const ClassAssignmentsTab = ({ assignments, onViewDetails, onEdit }: ClassAssignmentsTabProps) => {
@@ -17,7 +17,7 @@ const ClassAssignmentsTab = ({ assignments, onViewDetails, onEdit }: ClassAssign
       {assignments.length > 0 ? (
         assignments.map((card) => (
           <AssignmentCard
-            key={card.id}
+            key={card.assignment_id}
             card={card}
             onViewDetails={onViewDetails}
             onEdit={onEdit}

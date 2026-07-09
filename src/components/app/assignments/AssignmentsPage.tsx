@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
-import { Assignment, Student, Group } from '@/types';
+import { Student, Group } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import AssignmentsSearchAndFilter from './AssignmentsSearchAndFilter';
 import ClassAssignmentsTab from './ClassAssignmentsTab';
@@ -10,19 +10,19 @@ import HomeworkTrackersTab from './HomeworkTrackersTab';
 import EditAssignmentModal from '@/components/modal/EditAssignmentModal';
 import AssignmentDetailsModal from '@/components/modal/AssignmentDetailsModal';
 import { Button } from '@/components/ui/button';
+import { ApiAssignment, getAssignments, searchAssignments, createAssignment, CreateAssignmentPayload } from '@/lib/api/assignment.api';
 
 interface AssignmentsScreenProps {
-  assignments: Assignment[];
   students: Student[];
   groups: Group[];
-  onAddAssignment: (assignment: Omit<Assignment, 'id'>) => void;
-  onUpdateAssignment: (assignment: Assignment) => void;
+  onAddAssignment?: (assignment: any) => void;
+  onUpdateAssignment?: (assignment: any) => void;
   isCreateModalOpenByDefault?: boolean;
   onCloseDefaultModal?: () => void;
 }
 
-const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups, onAddAssignment, onUpdateAssignment, isCreateModalOpenByDefault = false, onCloseDefaultModal }: AssignmentsScreenProps) => {
-  const [assignments, setAssignments] = useState<Assignment[]>(initialAssignmentsList);
+const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false, onCloseDefaultModal }: AssignmentsScreenProps) => {
+  const [assignments, setAssignments] = useState<ApiAssignment[]>([]);
   const [activeTab, setActiveTab] = useState<'Assignment' | 'Homework'>('Assignment');
 
   // Filters
@@ -32,16 +32,54 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
 
   // Modal Control
   const [isModalOpen, setIsModalOpen] = useState(isCreateModalOpenByDefault);
-  const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const [selectedAssignment, setSelectedAssignment] = useState<ApiAssignment | null>(null);
 
   // New Details Modal Control
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [viewingAssignment, setViewingAssignment] = useState<Assignment | null>(null);
+  const [viewingAssignment, setViewingAssignment] = useState<ApiAssignment | null>(null);
 
-  // Sync state if props change (e.g. from context)
+  // Fetch initial assignments
+  const loadAssignments = async () => {
+    try {
+      const res = await getAssignments() as any;
+      // Handle both paginated response and direct array response
+      if (Array.isArray(res)) {
+        setAssignments(res);
+      } else if (res && res.results) {
+        setAssignments(res.results);
+      } else {
+        setAssignments([]);
+      }
+    } catch (error) {
+      console.error("Failed to load assignments", error);
+    }
+  };
+
   useEffect(() => {
-    setAssignments(initialAssignmentsList);
-  }, [initialAssignmentsList]);
+    loadAssignments();
+  }, []);
+
+  // Handle search dynamically
+  useEffect(() => {
+    const handleSearch = async () => {
+      if (!searchQuery.trim()) {
+        loadAssignments();
+        return;
+      }
+      try {
+        const res = await searchAssignments(searchQuery);
+        setAssignments(res);
+      } catch (err) {
+        console.error("Failed to search assignments", err);
+      }
+    };
+    
+    // Add small debounce
+    const timer = setTimeout(() => {
+      handleSearch();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (isCreateModalOpenByDefault) {
@@ -55,12 +93,12 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
     setIsModalOpen(true);
   };
 
-  const handleOpenEditModal = (assignment: Assignment) => {
+  const handleOpenEditModal = (assignment: ApiAssignment) => {
     setSelectedAssignment(assignment);
     setIsModalOpen(true);
   };
 
-  const handleOpenDetailsModal = (assignment: Assignment) => {
+  const handleOpenDetailsModal = (assignment: ApiAssignment) => {
     setViewingAssignment(assignment);
     setIsDetailsModalOpen(true);
   };
@@ -76,88 +114,64 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
     if (onCloseDefaultModal) onCloseDefaultModal();
   };
 
-  const handleSave = (formData: {
+  const handleSave = async (formData: {
     title: string;
     subject: string;
     difficulty: 'Low' | 'Medium' | 'High';
-    targetType: 'Student' | 'Group' | 'Level';
-    targetValue: string;
+    targetType: 'all_groups' | 'individual_student' | 'individual_group';
+    targetStudentRoll?: string;
+    targetGroupId?: number;
     dueDate: string;
     standards: string;
     instructions: string;
-    questionCount?: number;
+    questionCount: number;
   }) => {
-    const levelBadge: 'Below' | 'On Track' | 'Advanced' =
-      formData.targetValue === 'Group D' || formData.targetValue === 'Below'
-        ? 'Below'
-        : formData.targetValue === 'Group A' || formData.targetValue === 'Advanced'
-          ? 'Advanced'
-          : 'On Track';
-
     if (selectedAssignment) {
-      // Edit
-      const updated: Assignment = {
-        ...selectedAssignment,
-        title: formData.title,
-        subject: formData.subject,
-        difficulty: formData.difficulty,
-        targetType: formData.targetType,
-        targetValue: formData.targetValue,
-        dueDate: formData.dueDate,
-        standards: formData.standards.split(',').map((s) => s.trim()),
-        instructions: formData.instructions,
-        levelBadge,
-        questionCount: formData.questionCount
-      };
-      setAssignments(assignments.map((a) => (a.id === selectedAssignment.id ? updated : a)));
-      onUpdateAssignment(updated);
+      // API currently doesn't have an update assignment endpoint in our swagger, 
+      // but if it did, we'd call it here. For now just reset.
+      console.warn("Edit assignment not fully implemented on backend");
     } else {
       // Create new
-      const newAssign: Assignment = {
-        id: 'as_new_' + Date.now(),
-        title: formData.title,
-        subject: formData.subject,
-        type: activeTab,
-        difficulty: formData.difficulty,
-        targetType: formData.targetType,
-        targetValue: formData.targetValue,
-        dueDate: formData.dueDate,
-        standards: formData.standards.split(',').map((s) => s.trim()),
-        instructions: formData.instructions,
-        levelBadge,
-        questionCount: formData.questionCount
-      };
-      setAssignments([newAssign, ...assignments]);
-      onAddAssignment(newAssign);
+      try {
+        const payload: CreateAssignmentPayload = {
+          title: formData.title,
+          subject: formData.subject,
+          target_type: formData.targetType,
+          target_student_roll: formData.targetStudentRoll,
+          target_group_id: formData.targetGroupId,
+          ai_difficulty: formData.difficulty,
+          ccss_code: formData.standards,
+          due_date: formData.dueDate,
+          instructions: formData.instructions,
+          number_of_questions: formData.questionCount
+        };
+        await createAssignment(payload);
+        await loadAssignments(); // refetch
+      } catch (err) {
+        console.error("Failed to create assignment", err);
+      }
     }
     handleCloseModal();
   };
 
   // Filtered Cards
   const filteredCards = useMemo(() => {
-    return assignments.filter((card) => {
-      // Tab matching
-      if (card.type !== activeTab) return false;
-
+    return (assignments || []).filter((card) => {
+      // We don't have a concept of type 'Assignment' vs 'Homework' in the API right now, 
+      // but we can fake it or just show all.
+      // For now, let's just let the search API handle the searchQuery. We can still apply client-side filtering for group/level.
+      
+      const levelBadge = card.ai_difficulty === 'Low' ? 'Below' : card.ai_difficulty === 'High' ? 'Advanced' : 'On Track';
+      
       // Filter level
-      if (filterLevel !== 'all' && card.levelBadge !== filterLevel) return false;
+      if (filterLevel !== 'all' && levelBadge !== filterLevel) return false;
 
-      // Filter group
-      if (filterGroup !== 'all' && card.targetValue !== filterGroup) return false;
-
-      // Search match
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          card.title.toLowerCase().includes(query) ||
-          card.instructions.toLowerCase().includes(query) ||
-          card.standards.some((s) => s.toLowerCase().includes(query))
-        );
-      }
+      // Filter group (if target_type === 'individual_group', check group name)
+      if (filterGroup !== 'all' && card.target_group_name !== filterGroup && card.target_type === 'individual_group') return false;
 
       return true;
     });
-  }, [assignments, activeTab, filterLevel, filterGroup, searchQuery]);
+  }, [assignments, activeTab, filterLevel, filterGroup]);
 
   const actionButtons = (
     <Button
@@ -236,8 +250,7 @@ const AssignmentsPage = ({ assignments: initialAssignmentsList, students, groups
         onClose={handleCloseDetailsModal}
         onEditClick={handleOpenEditModal}
         onUpdateAssignment={(updated) => {
-          setAssignments(assignments.map((a) => (a.id === updated.id ? updated : a)));
-          onUpdateAssignment(updated);
+          setAssignments(assignments.map((a) => (a.assignment_id === updated.assignment_id ? updated : a)));
         }}
       />
     </DashboardChildrenLayout>

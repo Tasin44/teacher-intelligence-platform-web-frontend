@@ -5,11 +5,21 @@ import ClassPerformanceChart from './ClassPerformanceChart';
 import StandardsMastery from './StandardsMastery';
 import RecentActivity from './RecentActivity';
 import QuickActions from './QuickActions';
-
+import { useEduPulse } from '@/lib/context/EduPulseContext';
 
 const DashboardPage = () => {
+  const { loggedInTeacher } = useEduPulse();
+
+  const getFormattedDate = () => {
+    const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
+    return new Date().toLocaleDateString('en-US', options);
+  };
+
+  const title = `Good morning, ${loggedInTeacher?.name || 'Teacher'} 👋`;
+  const subtitle = `${getFormattedDate()} — ${loggedInTeacher?.grade || ''}`;
+
   return (
-    <DashboardChildrenLayout title="Good morning, Ms. Johnson 👋" subtitle=" Monday, June 16, 2026 — Grade 4">
+    <DashboardChildrenLayout title={title} subtitle={subtitle}>
 
       {/* 4 Stat Cards */}
       <DashboardStats />

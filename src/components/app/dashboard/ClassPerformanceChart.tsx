@@ -1,45 +1,15 @@
 import Card from '@/components/shared/Card';
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
-
-const data = [
-    {
-        name: 'Math',
-        Below: 25,
-        'On Track': 60,
-        Advanced: 32,
-    },
-    {
-        name: 'Reading',
-        Below: 18,
-        'On Track': 68,
-        Advanced: 32,
-    },
-    {
-        name: 'Science',
-        Below: 30,
-        'On Track': 54,
-        Advanced: 30,
-    },
-    {
-        name: 'Soc. Studies',
-        Below: 10,
-        'On Track': 75,
-        Advanced: 30,
-    },
-    {
-        name: 'Writing',
-        Below: 38,
-        'On Track': 50,
-        Advanced: 30,
-    },
-];
+import { getSubjectPerformance, SubjectPerformance } from '@/lib/api/dashboard.api';
 
 const ClassPerformanceChart = () => {
     const [isMounted, setIsMounted] = useState(false);
+    const [chartData, setChartData] = useState<SubjectPerformance[]>([]);
 
     useEffect(() => {
         setIsMounted(true);
+        getSubjectPerformance().then(res => setChartData(res)).catch(console.error);
     }, []);
 
     if (!isMounted) {
@@ -56,16 +26,16 @@ const ClassPerformanceChart = () => {
                 <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart
-                            data={data}
+                            data={chartData}
                             margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
                             barGap={6}
                             barCategoryGap="25%"
                         >
                             <XAxis
-                                dataKey="name"
+                                dataKey="subject"
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: '#94A3B8', fontSize: 12, fontFamily: 'var(--font-sans)' }}
+                                tick={{ fill: '#94A3B8', fontSize: 12, fontFamily: 'var(--font-sans)', textTransform: 'capitalize' }}
                             />
                             <Tooltip
                                 cursor={{ fill: 'transparent' }}
@@ -77,10 +47,9 @@ const ClassPerformanceChart = () => {
                                     fontFamily: 'var(--font-sans)',
                                     fontSize: '12px'
                                 }}
+                                formatter={(value: number) => [`${value.toFixed(1)}%`, 'Avg Score']}
                             />
-                            <Bar dataKey="Below" fill="#EF4444" radius={[6, 6, 0, 0]} maxBarSize={14} />
-                            <Bar dataKey="On Track" fill="#10B981" radius={[6, 6, 0, 0]} maxBarSize={14} />
-                            <Bar dataKey="Advanced" fill="#3B82F6" radius={[6, 6, 0, 0]} maxBarSize={14} />
+                            <Bar dataKey="avg_score" fill="#10B981" radius={[6, 6, 0, 0]} maxBarSize={30} />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
@@ -89,16 +58,8 @@ const ClassPerformanceChart = () => {
             {/* Custom Legend aligned to bottom left */}
             <div className="flex gap-4 text-xs font-semibold mt-4 px-2" id="chart-legend">
                 <div className="flex items-center gap-1.5 text-slate-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444]"></span>
-                    <span>Below</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-slate-400">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#10B981]"></span>
-                    <span>On Track</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-slate-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#3B82F6]"></span>
-                    <span>Advanced</span>
+                    <span>Average Class Score</span>
                 </div>
             </div>
         </Card>

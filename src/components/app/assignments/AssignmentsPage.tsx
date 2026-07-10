@@ -9,6 +9,7 @@ import ClassAssignmentsTab from './ClassAssignmentsTab';
 import EditAssignmentModal from '@/components/modal/EditAssignmentModal';
 import AssignmentDetailsModal from '@/components/modal/AssignmentDetailsModal';
 import { Button } from '@/components/ui/button';
+import SubmissionsListModal from '@/components/modal/SubmissionsListModal';
 import { ApiAssignment, getAssignments, searchAssignments, createAssignment, CreateAssignmentPayload } from '@/lib/api/assignment.api';
 
 interface AssignmentsScreenProps {
@@ -35,6 +36,10 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
   // New Details Modal Control
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [viewingAssignment, setViewingAssignment] = useState<ApiAssignment | null>(null);
+
+  // Submissions Modal Control
+  const [isSubmissionsModalOpen, setIsSubmissionsModalOpen] = useState(false);
+  const [submissionsAssignmentId, setSubmissionsAssignmentId] = useState<number | null>(null);
 
   // Fetch initial assignments
   const loadAssignments = async () => {
@@ -172,12 +177,23 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
   }, [assignments, filterLevel, filterGroup]);
 
   const actionButtons = (
-    <Button
-      onClick={handleOpenNewModal}
-    >
-      <Sparkles size={16} fill="#000" />
-      Generate Assignment
-    </Button>
+    <div className="flex items-center gap-3">
+      <Button
+        onClick={() => {
+            setSubmissionsAssignmentId(null);
+            setIsSubmissionsModalOpen(true);
+        }}
+        className="bg-white border border-gray-400 !text-black hover:bg-gray-100 shadow-sm"
+      >
+        Show All Submissions
+      </Button>
+      <Button
+        onClick={handleOpenNewModal}
+      >
+        <Sparkles size={16} fill="#000" />
+        Generate Assignment
+      </Button>
+    </div>
   );
 
   return (
@@ -222,6 +238,19 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
         onUpdateAssignment={(updated) => {
           setAssignments(assignments.map((a) => (a.assignment_id === updated.assignment_id ? updated : a)));
         }}
+        onViewSubmissions={(id) => {
+          setSubmissionsAssignmentId(id);
+          setIsSubmissionsModalOpen(true);
+        }}
+      />
+
+      <SubmissionsListModal
+        isOpen={isSubmissionsModalOpen}
+        onClose={() => {
+            setIsSubmissionsModalOpen(false);
+            setSubmissionsAssignmentId(null);
+        }}
+        assignmentId={submissionsAssignmentId}
       />
     </DashboardChildrenLayout>
   );

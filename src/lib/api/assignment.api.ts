@@ -64,3 +64,27 @@ export function searchAssignments(query: string) {
 export function downloadAssignmentPdf(id: number) {
   return apiClient.downloadPdf(`/api/assignments/${id}/download-pdf/`, `assignment_${id}.pdf`);
 }
+
+export interface AssignmentSubmission {
+    submission_id: number;
+    assignment: number;
+    assignment_title: string;
+    student_name: string;
+    roll_number: string;
+    grade: string;
+    parent_name: string;
+    attachment_url: string;
+    submitted_at: string;
+}
+
+export function sendAssignmentEmail(id: number) {
+  return apiClient.post<{message: string}>(`/api/assignments/${id}/send-email/`, {});
+}
+
+export function getAllAssignmentSubmissions() {
+  return apiClient.get<AssignmentSubmission[]>('/api/assignments/submissions/');
+}
+
+export function getAssignmentSubmissions(id: number) {
+  return apiClient.get<AssignmentSubmission[]>(`/api/assignments/${id}/submissions/`);
+}

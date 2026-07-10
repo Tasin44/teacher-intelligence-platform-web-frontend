@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, Edit } from 'lucide-react';
 import { Student } from '@/types';
 import { Button } from '../ui/button';
-import { ApiAssignment, downloadAssignmentPdf } from '@/lib/api/assignment.api';
+import { ApiAssignment, downloadAssignmentPdf, sendAssignmentEmail } from '@/lib/api/assignment.api';
 
 interface AssignmentDetailsModalProps {
     isOpen: boolean;
@@ -12,9 +12,10 @@ interface AssignmentDetailsModalProps {
     onClose: () => void;
     onEditClick: (assignment: ApiAssignment) => void;
     onUpdateAssignment?: (assignment: ApiAssignment) => void;
+    onViewSubmissions?: (assignmentId: number) => void;
 }
 
-const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, onEditClick, onUpdateAssignment }: AssignmentDetailsModalProps) => {
+const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, onEditClick, onUpdateAssignment, onViewSubmissions }: AssignmentDetailsModalProps) => {
     const [questions, setQuestions] = useState<string[]>([]);
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
@@ -320,6 +321,34 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
 
                     <Button
                         onClick={() => {
+                            if (viewingAssignment && onViewSubmissions) {
+                                onViewSubmissions(viewingAssignment.assignment_id);
+                            }
+                        }}
+                        className="bg-white border border-gray-400 !text-black hover:bg-gray-100 shadow-sm"
+                    >
+                        View Submissions
+                    </Button>
+
+                    <Button
+                        onClick={async () => {
+                            if (viewingAssignment) {
+                                try {
+                                    await sendAssignmentEmail(viewingAssignment.assignment_id);
+                                    alert("Assignment sent successfully.");
+                                } catch (err) {
+                                    console.error(err);
+                                    alert("Failed to send assignment email.");
+                                }
+                            }
+                        }}
+                        className="bg-white border border-gray-400 !text-black hover:bg-gray-100 shadow-sm"
+                    >
+                        Send via Email
+                    </Button>
+
+                    <Button
+                        onClick={() => {
                             if (viewingAssignment) {
                                 downloadAssignmentPdf(viewingAssignment.assignment_id).catch(err => {
                                     console.error(err);
@@ -327,7 +356,7 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                                 });
                             }
                         }}
-                        className="bg-transparent border border-slate-500 text-slate-200 hover:bg-slate-800"
+                        className="bg-white border border-gray-400 !text-black hover:bg-gray-100 shadow-sm"
                     >
                         Export PDF
                     </Button>

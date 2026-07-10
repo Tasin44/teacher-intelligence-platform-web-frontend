@@ -69,6 +69,14 @@ export function getStudent(studentId: number) {
   return apiClient.get<ApiStudent>(`/api/students/${studentId}/`);
 }
 
+export function deleteStudent(studentId: number) {
+  return apiClient.delete<void>(`/api/students/${studentId}/`);
+}
+
+export function searchStudents(query: string) {
+  return apiClient.get<ApiStudent[]>(`/api/students/search/?q=${encodeURIComponent(query)}`);
+}
+
 /** Both create and update use FormData (handles image binary) */
 export function createStudent(formData: FormData) {
   return apiClient.post<ApiStudent>('/api/students/', formData);

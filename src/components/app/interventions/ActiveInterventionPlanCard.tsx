@@ -9,35 +9,40 @@ interface ActiveInterventionPlanCardProps {
 }
 
 const ActiveInterventionPlanCard = ({ intervention, student, onModifyPlan }: ActiveInterventionPlanCardProps) => {
-    const isCompleted = intervention.status === 'Completed';
+    const isCompleted = intervention.status === 'Completed' || (intervention as any).status === 'Completed';
+
+    const getActivities = (int: any) => {
+        if (Array.isArray(int.activities)) return int.activities;
+        if (typeof int.notes === 'string' && int.notes.trim() !== '') return int.notes.split(',');
+        return [];
+    };
 
     return (
         <div
             className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] flex flex-col lg:flex-row justify-between gap-6 hover:border-slate-700 transition"
         >
-            {/* Left side student or group info */}
             <div className="flex items-center gap-4.5 lg:w-1/4 text-left">
-                {intervention.targetType === 'group' ? (
+                {((intervention as any).target_type === 'individual_group' || intervention.targetType === 'group') ? (
                     <div className="w-12 h-12 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-500 font-extrabold font-heading text-sm shrink-0">
-                        {intervention.targetName ? intervention.targetName.split(' ').map(n => n[0]).join('').toUpperCase() : 'GP'}
+                        {((intervention as any).group_name || intervention.targetName) ? ((intervention as any).group_name || intervention.targetName).split(' ').map((n: string) => n[0]).join('').toUpperCase() : 'GP'}
                     </div>
                 ) : (
                     <img
-                        src={student.avatar}
-                        alt={student.name}
+                        src={student?.avatar || '/api/placeholder/150/150'}
+                        alt={student?.name || (intervention as any).student_name}
                         referrerPolicy="no-referrer"
                         className="w-12 h-12 rounded-full object-cover border-2 border-orange-500/10 shrink-0"
                     />
                 )}
                 <div>
                     <h4 className="font-bold text-sm text-slate-155">
-                        {intervention.targetType === 'group' ? (intervention.targetName || 'Target Group') : student.name}
+                        {((intervention as any).target_type === 'individual_group' || intervention.targetType === 'group') ? ((intervention as any).group_name || intervention.targetName || 'Target Group') : ((intervention as any).student_name || student?.name)}
                     </h4>
                     <p className="text-xs text-slate-400 font-medium">
-                        {intervention.targetType === 'group' ? `Group Intervention` : `${student.grade} | Room 12`}
+                        {((intervention as any).target_type === 'individual_group' || intervention.targetType === 'group') ? `Group Intervention` : `${student?.grade || 'Grade'} | ${student?.room || 'Room'}`}
                     </p>
                     <span className="text-[10px] text-slate-500 font-mono mt-1 block">
-                        {intervention.targetType === 'group' ? `Target Group ID: ${intervention.groupId || 'N/A'}` : `Active Cluster: Group ${student.group}`}
+                        {((intervention as any).target_type === 'individual_group' || intervention.targetType === 'group') ? `Target Group ID: ${(intervention as any).group_id || intervention.groupId || 'N/A'}` : `Active Cluster: Group ${student?.group || 'N/A'}`}
                     </span>
                 </div>
             </div>
@@ -51,10 +56,11 @@ const ActiveInterventionPlanCard = ({ intervention, student, onModifyPlan }: Act
                     </div>
 
                     <ul className="space-y-1.5 text-xs text-slate-305">
-                        {intervention.activities.map((act, idx) => (
+                        {/* Fallbacks for both dummy data and real API data */}
+                        {getActivities(intervention).map((act: string, idx: number) => (
                             <li key={idx} className="flex gap-2 font-medium">
                                 <span className="text-orange-500 font-bold">•</span>
-                                <span>{act}</span>
+                                <span>{act.trim()}</span>
                             </li>
                         ))}
                     </ul>
@@ -64,16 +70,16 @@ const ActiveInterventionPlanCard = ({ intervention, student, onModifyPlan }: Act
                 <div className="flex flex-col justify-center">
                     <div className="flex items-center gap-2 text-xs text-slate-400 mb-2 font-mono">
                         <Calendar size={13} className="text-slate-505" />
-                        <span>Timeline: {intervention.startDate} → {intervention.endDate}</span>
+                        <span>Timeline: {(intervention as any).start_date || intervention.startDate} → {(intervention as any).end_date || intervention.endDate || 'Ongoing'}</span>
                     </div>
 
                     <div className="space-y-1.5">
                         <div className="flex justify-between text-xs font-semibold">
                             <span className="text-slate-450 font-medium">Progress Checked Goal</span>
-                            <strong className="text-orange-400 font-mono font-bold">{intervention.progress}%</strong>
+                            <strong className="text-orange-400 font-mono font-bold">{(intervention as any).progress || 0}%</strong>
                         </div>
                         <div className="w-full h-1.5 bg-slate-805 rounded-full overflow-hidden">
-                            <div className="h-full bg-orange-500 rounded-full transition-all duration-750" style={{ width: `${intervention.progress}%` }}></div>
+                            <div className="h-full bg-orange-500 rounded-full transition-all duration-750" style={{ width: `${(intervention as any).progress || 0}%` }}></div>
                         </div>
                     </div>
                 </div>

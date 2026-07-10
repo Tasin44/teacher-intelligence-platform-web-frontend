@@ -88,4 +88,33 @@ export const apiClient = {
       method: 'PATCH',
       body: body instanceof FormData ? body : JSON.stringify(body),
     }),
+
+  delete: <T>(path: string) =>
+    request<T>(path, { method: 'DELETE' }),
+
+  downloadPdf: async (path: string, filename: string) => {
+    const token = getAccessToken();
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    const response = await fetch(`${BASE_URL}${path}`, {
+      method: 'GET',
+      headers,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to download PDF: ${response.status}`);
+    }
+    
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  }
 };

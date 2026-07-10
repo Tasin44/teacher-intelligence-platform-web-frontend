@@ -11,6 +11,7 @@ import AddInterventionModal from '@/components/modal/AddInterventionModal';
 import EditActiveInterventionPlanModal from '@/components/modal/EditActiveInterventionPlanModal';
 import GroupReteachPlanDetailsModal from '@/components/modal/GroupReteachPlanDetailsModal';
 import { Button } from '@/components/ui/button';
+import { getStudentsNeedingAssistance, getInterventions, createIntervention, updateIntervention, StudentNeedingAssistance } from '@/lib/api/interventions.api';
 
 interface InterventionsScreenProps {
   students: Student[];
@@ -28,11 +29,28 @@ const InterventionsPage = ({
   onUpdateIntervention
 }: InterventionsScreenProps) => {
   const [interventions, setInterventions] = useState<Intervention[]>(initialInterventionsList);
+  const [flaggedStudents, setFlaggedStudents] = useState<StudentNeedingAssistance[]>([]);
 
-  // Auto-flagged students based on specification (At Risk)
-  const flaggedStudents = useMemo(() => {
-    return students.filter((s) => s.riskLevel === 'At Risk');
-  }, [students]);
+  // Fetch flagged students and active interventions on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [flaggedRes, intRes] = await Promise.all([
+          getStudentsNeedingAssistance(),
+          getInterventions()
+        ]);
+        
+        if (Array.isArray(flaggedRes)) setFlaggedStudents(flaggedRes);
+        else if ((flaggedRes as any)?.results) setFlaggedStudents((flaggedRes as any).results);
+        
+        if (Array.isArray(intRes)) setInterventions(intRes);
+        else if ((intRes as any)?.results) setInterventions((intRes as any).results);
+      } catch (err) {
+        console.error("Failed to load interventions data", err);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Modal control states
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -71,40 +89,58 @@ const InterventionsPage = ({
     setIsEditOpen(true);
   };
 
-  const handleCreatePlan = (newPlanData: Omit<Intervention, 'id'>) => {
-    const newInterv: Intervention = {
-      id: 'int_new_' + Date.now(),
-      ...newPlanData
-    };
-    const updatedList = [newInterv, ...interventions];
-    updateInterventionsWithCallback(updatedList);
-    onAddIntervention(newInterv);
-    setIsAddOpen(false);
-    showToast(`Successfully created intervention plan for targeted student!`);
+  const handleCreatePlan = async (newPlanData: any) => {
+    try {
+      // Create via API
+      const created = await createIntervention({
+        target_type: 'individual_student',
+        student_roll: newPlanData.studentRoll || 'R001', // Should come from form, defaulting if missing
+        intervention_type: newPlanData.strategy,
+        reason: newPlanData.reason || 'Not specified',
+        start_date: newPlanData.startDate,
+        frequency: 'weekly', // dummy frequency
+        notes: newPlanData.activities?.join(', ') || ''
+      });
+      
+      const updatedList = [created, ...interventions];
+      updateInterventionsWithCallback(updatedList);
+      if (onAddIntervention) onAddIntervention(created);
+      
+      setIsAddOpen(false);
+      showToast(`Successfully created intervention plan for targeted student!`);
+    } catch (err) {
+      console.error("Failed to create intervention", err);
+      alert("Failed to create intervention.");
+    }
   };
 
-  const handleSavePlan = (updatedFields: {
-    strategy: '1:1 Support' | 'Small Group' | 'Peer Support';
-    activities: string[];
-    startDate: string;
-    endDate: string;
-    progress: number;
-    status: 'Active' | 'Completed';
-  }) => {
+  const handleSavePlan = async (updatedFields: any) => {
     if (!editingIntervention) return;
-    const updatedList = interventions.map((item) => {
-      if (item.id === editingIntervention.id) {
-        return {
-          ...item,
-          ...updatedFields
-        };
-      }
-      return item;
-    });
-    updateInterventionsWithCallback(updatedList);
-    setIsEditOpen(false);
-    setEditingIntervention(null);
-    showToast(`Successfully modified active intervention plan!`);
+    try {
+      const patched = await updateIntervention(editingIntervention.intervention_id || Number(editingIntervention.id), {
+        intervention_type: updatedFields.strategy,
+        notes: updatedFields.activities?.join(', ') || '',
+        start_date: updatedFields.startDate
+      });
+      
+      const updatedList = interventions.map((item) => {
+        if (item.intervention_id === editingIntervention.intervention_id || item.id === editingIntervention.id) {
+          return {
+            ...item,
+            ...patched,
+            ...updatedFields
+          };
+        }
+        return item;
+      });
+      updateInterventionsWithCallback(updatedList);
+      setIsEditOpen(false);
+      setEditingIntervention(null);
+      showToast(`Successfully modified active intervention plan!`);
+    } catch (err) {
+      console.error("Failed to modify intervention plan", err);
+      alert("Failed to modify plan.");
+    }
   };
 
   const showToast = (message: string) => {
@@ -147,9 +183,9 @@ const InterventionsPage = ({
 
         {/* Horizontal scroll grid */}
         <div className="flex gap-4 overflow-x-auto pb-4 pt-1 snap-x scrollbar-thin" style={{ WebkitOverflowScrolling: 'touch' }}>
-          {flaggedStudents.map((stud) => (
+          {flaggedStudents.map((stud, idx) => (
             <StudentsNeedingInterventionAssistanceCard
-              key={stud.id}
+              key={stud.student_id || idx}
               student={stud}
               onCreatePlan={handleOpenAddModal}
             />
@@ -162,11 +198,12 @@ const InterventionsPage = ({
         <h3 className="text-base font-bold text-slate-100 font-heading">Active Intervention Plans ({interventions.length})</h3>
 
         <div className="space-y-4">
-          {interventions.map((int) => {
+          {interventions.map((int, idx) => {
+            const intId = int.intervention_id || Number(int.id) || idx;
             const studentObj = students.find((s) => s.id === int.studentId) || students[0];
             return (
               <ActiveInterventionPlanCard
-                key={int.id}
+                key={intId}
                 intervention={int}
                 student={studentObj}
                 onModifyPlan={handleOpenEditModal}

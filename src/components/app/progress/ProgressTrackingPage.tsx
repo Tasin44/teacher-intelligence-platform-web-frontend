@@ -6,6 +6,16 @@ import ProgressTrackingStats from './ProgressTrackingStats';
 import ScoreOverTimeChart from './ScoreOverTimeChart';
 import AttendanceTrend from './AttendanceTrend';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
+import { 
+  getStudentOverallProgress, 
+  getStudentAttendanceTrend, 
+  getStudentWeeklyScores, 
+  getClassAttendance,
+  StudentOverallProgress,
+  MonthlyAttendance,
+  WeeklyScore,
+  ClassAttendance
+} from '@/lib/api/progress.api';
 
 interface ProgressTrackingScreenProps {
   students: Student[];
@@ -26,10 +36,28 @@ const ProgressTrackingPage = ({
 
   const [searchQuery, setSearchQuery] = useState(currentStudent?.name || '');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  const [overallProgress, setOverallProgress] = useState<StudentOverallProgress | null>(null);
+  const [attendanceTrend, setAttendanceTrend] = useState<MonthlyAttendance[]>([]);
+  const [weeklyScores, setWeeklyScores] = useState<WeeklyScore[]>([]);
+  const [classAttendance, setClassAttendance] = useState<ClassAttendance | null>(null);
 
   useEffect(() => {
     if (currentStudent) {
       setSearchQuery(currentStudent.name);
+      const studentId = Number(currentStudent.id.replace(/\D/g, '')) || 1; // Fallback to 1 if NaN
+      
+      Promise.all([
+        getStudentOverallProgress(studentId),
+        getStudentAttendanceTrend(studentId),
+        getStudentWeeklyScores(studentId),
+        getClassAttendance()
+      ]).then(([overall, trend, weekly, clsAtt]) => {
+        setOverallProgress(overall);
+        setAttendanceTrend(trend);
+        setWeeklyScores(weekly);
+        setClassAttendance(clsAtt);
+      }).catch(err => console.error("Failed to fetch progress data", err));
     }
   }, [currentStudent]);
 
@@ -123,18 +151,24 @@ const ProgressTrackingPage = ({
       </div>
 
       {/* Section 3 — Progress Summary Cards (3 cards) */}
-      <ProgressTrackingStats studentName={currentStudent.name} />
+      <ProgressTrackingStats 
+        overallProgress={overallProgress}
+        classAttendance={classAttendance}
+      />
 
       {/* Section 4 — Charts Row (Score Over Time & Attendance Trend) */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
         {/* Left Column 67%: Score Over Time Chart */}
         <div>
-          <ScoreOverTimeChart studentName={currentStudent.name} />
+          <ScoreOverTimeChart 
+            studentName={currentStudent.name} 
+            weeklyScores={weeklyScores} 
+          />
         </div>
 
         {/* Right Column 33%: Attendance Trend */}
         <div >
-          <AttendanceTrend />
+          <AttendanceTrend attendanceTrend={attendanceTrend} />
         </div>
       </div>
     </DashboardChildrenLayout>

@@ -6,7 +6,6 @@ import { Student, Group } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import AssignmentsSearchAndFilter from './AssignmentsSearchAndFilter';
 import ClassAssignmentsTab from './ClassAssignmentsTab';
-import HomeworkTrackersTab from './HomeworkTrackersTab';
 import EditAssignmentModal from '@/components/modal/EditAssignmentModal';
 import AssignmentDetailsModal from '@/components/modal/AssignmentDetailsModal';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,6 @@ interface AssignmentsScreenProps {
 
 const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false, onCloseDefaultModal }: AssignmentsScreenProps) => {
   const [assignments, setAssignments] = useState<ApiAssignment[]>([]);
-  const [activeTab, setActiveTab] = useState<'Assignment' | 'Homework'>('Assignment');
 
   // Filters
   const [filterLevel, setFilterLevel] = useState<string>('all');
@@ -171,7 +169,7 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
 
       return true;
     });
-  }, [assignments, activeTab, filterLevel, filterGroup]);
+  }, [assignments, filterLevel, filterGroup]);
 
   const actionButtons = (
     <Button
@@ -188,26 +186,6 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
       subtitle="Customize homework vectors and generate AI lesson assignments"
       actionButtons={actionButtons}
     >
-      {/* Section 2 — Tabs */}
-      <div className="flex border-b border-[#2A2D3A]" id="assignments-hw-tab-row">
-        {[
-          { id: 'Assignment', label: 'Class Assignments' },
-          { id: 'Homework', label: 'Homework Trackers' }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`cursor-pointer px-6 py-3.5 text-sm font-semibold border-b-2 transition ${activeTab === tab.id
-              ? 'border-orange-500 text-orange-500 bg-orange-500/5'
-              : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/10'
-              }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Section 3 — Filter Bar */}
       <AssignmentsSearchAndFilter
         filterLevel={filterLevel}
         setFilterLevel={setFilterLevel}
@@ -219,25 +197,17 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
 
 
       {/* Section 4 — Assignment Cards Grid */}
-      {activeTab === 'Assignment' ? (
-        <ClassAssignmentsTab
-          assignments={filteredCards}
-          onViewDetails={handleOpenDetailsModal}
-          onEdit={handleOpenEditModal}
-        />
-      ) : (
-        <HomeworkTrackersTab
-          assignments={filteredCards}
-          onViewDetails={handleOpenDetailsModal}
-          onEdit={handleOpenEditModal}
-        />
-      )}
+      <ClassAssignmentsTab
+        assignments={filteredCards}
+        onViewDetails={handleOpenDetailsModal}
+        onEdit={handleOpenEditModal}
+      />
 
       {/* Section 5 — Assignment Edit/Generate Modal Overlay */}
       <EditAssignmentModal
         isOpen={isModalOpen}
         selectedAssignment={selectedAssignment}
-        activeTab={activeTab}
+        activeTab="Assignment"
         onClose={handleCloseModal}
         onSave={handleSave}
       />

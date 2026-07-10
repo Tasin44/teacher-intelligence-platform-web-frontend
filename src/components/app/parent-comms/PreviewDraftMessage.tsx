@@ -8,9 +8,10 @@ interface PreviewDraftMessageProps {
     setGeneratedMessage: (msg: string) => void;
     handleCopy: () => void;
     handleSendEmail: () => void;
+    handleExportPdf?: () => void;
 }
 
-const PreviewDraftMessage = ({ generatedMessage, setGeneratedMessage, handleCopy, handleSendEmail }: PreviewDraftMessageProps) => {
+const PreviewDraftMessage = ({ generatedMessage, setGeneratedMessage, handleCopy, handleSendEmail, handleExportPdf }: PreviewDraftMessageProps) => {
     return (
         <Card title='Preview Draft Message' actionElements={
             <span className="bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded text-[10px] uppercase font-mono border border-emerald-500/15">
@@ -43,7 +44,7 @@ const PreviewDraftMessage = ({ generatedMessage, setGeneratedMessage, handleCopy
                         Copy Message
                     </button>
                     <button
-                        onClick={() => alert('Exporting email draft to document PDF...')}
+                        onClick={handleExportPdf}
                         className="px-4 py-2 border border-[#2A2D3A] hover:bg-slate-850 text-slate-355 hover:text-slate-500 text-xs font-bold rounded-lg transition duration-150 bg-transparent cursor-pointer flex items-center gap-1.5 border-r-0"
                     >
                         <Download size={13} />

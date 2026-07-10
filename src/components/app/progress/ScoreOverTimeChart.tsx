@@ -1,25 +1,22 @@
 import Card from '@/components/shared/Card';
 import React from 'react';
 
+import { WeeklyScore } from '@/lib/api/progress.api';
+
 interface ScoreOverTimeChartProps {
     studentName: string;
+    weeklyScores?: WeeklyScore[];
 }
 
-const ScoreOverTimeChart = ({ studentName }: ScoreOverTimeChartProps) => {
-    // X coordinates for Week 1 through 8
+const ScoreOverTimeChart = ({ studentName, weeklyScores = [] }: ScoreOverTimeChartProps) => {
+    // X coordinates for Week 1 through 8 (we use 4 weeks since the API has 4 weeks, but let's interpolate or use available)
     const xCoords = [20, 105, 190, 275, 360, 445, 530, 615];
 
-    // Math points (Orange)
-    const mathPoints = [
-        { x: xCoords[0], y: 125 },
-        { x: xCoords[1], y: 120 },
-        { x: xCoords[2], y: 135 },
-        { x: xCoords[3], y: 115 },
-        { x: xCoords[4], y: 128 },
-        { x: xCoords[5], y: 110 },
-        { x: xCoords[6], y: 102 },
-        { x: xCoords[7], y: 112 },
-    ];
+    // Math points (Orange) - mapping weeklyScores avg_score
+    const mathPoints = weeklyScores.slice(0, 8).map((score, idx) => ({
+        x: xCoords[idx] || 0,
+        y: score.avg_score ? 150 - (score.avg_score * 1.5) : 150 // simple inverted scaling
+    }));
 
     // Reading points (Green)
     const readingPoints = [
@@ -95,14 +92,9 @@ const ScoreOverTimeChart = ({ studentName }: ScoreOverTimeChartProps) => {
 
                         {/* X Axis Labels */}
                         <div className="absolute bottom-0 left-0 right-0 flex justify-between text-[11px] font-bold text-slate-400 select-none">
-                            <span>Week 1</span>
-                            <span>Week 2</span>
-                            <span>Week 3</span>
-                            <span>Week 4</span>
-                            <span>Week 5</span>
-                            <span>Week 6</span>
-                            <span>Week 7</span>
-                            <span>Week 8</span>
+                            {xCoords.map((_, idx) => (
+                                <span key={idx}>Week {idx + 1}</span>
+                            ))}
                         </div>
                     </div>
                 </div>

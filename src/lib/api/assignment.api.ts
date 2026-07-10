@@ -60,3 +60,7 @@ export function getAssignment(id: number) {
 export function searchAssignments(query: string) {
   return apiClient.get<ApiAssignment[]>(`/api/assignments/search?q=${encodeURIComponent(query)}`);
 }
+
+export function downloadAssignmentPdf(id: number) {
+  return apiClient.downloadPdf(`/api/assignments/${id}/download-pdf/`, `assignment_${id}.pdf`);
+}

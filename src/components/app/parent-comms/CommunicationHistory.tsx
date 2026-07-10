@@ -1,14 +1,20 @@
 import React from 'react';
-import { Student, CommsHistory } from '@/types';
+import { Mail, MessageSquare, Award } from 'lucide-react';
+import { ParentMessage } from '@/lib/api/parent-comms.api';
 import Card from '@/components/shared/Card';
 
 interface CommunicationHistoryProps {
-    commsHistoryList: CommsHistory[];
-    students: Student[];
-    setViewingHistoryItem: (item: CommsHistory) => void;
+    messages: ParentMessage[];
+    setViewingHistoryItem: (item: ParentMessage) => void;
 }
 
-const CommunicationHistory = ({ commsHistoryList, students, setViewingHistoryItem }: CommunicationHistoryProps) => {
+const CommunicationHistory = ({ messages, setViewingHistoryItem }: CommunicationHistoryProps) => {
+    const getIcon = (type: string) => {
+        if (type === 'concern') return <MessageSquare size={14} className="text-rose-500" />;
+        if (type === 'achievement') return <Award size={14} className="text-emerald-500" />;
+        return <Mail size={14} className="text-blue-500" />;
+    };
+
     return (
         <Card title="Communication History" subtitle="Tracking email deliverables sent during the current Grade 4 term cycle">
             <div className="overflow-x-auto w-full max-w-full">
@@ -23,26 +29,16 @@ const CommunicationHistory = ({ commsHistoryList, students, setViewingHistoryIte
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[#2A2D3A]/10">
-                        {commsHistoryList.map((hist) => {
-                            const studentName = students.find((s) => s.id === hist.studentId)?.name || 'Marcus Thompson';
+                        {messages.map((hist) => {
                             return (
-                                <tr key={hist.id} className="hover:bg-slate-800/10 transition">
-                                    <td className="py-3 text-slate-450 font-bold pr-4 whitespace-nowrap">{hist.date}</td>
-                                    <td className="py-3 text-slate-200 font-semibold px-4 whitespace-nowrap">{studentName}</td>
+                                <tr key={hist.message_id} className="hover:bg-slate-800/10 transition">
+                                    <td className="py-3 text-slate-450 font-bold pr-4 whitespace-nowrap">{hist.sent_at ? new Date(hist.sent_at).toLocaleDateString() : 'Draft'}</td>
+                                    <td className="py-3 text-slate-200 font-semibold px-4 whitespace-nowrap">{hist.student_name}</td>
                                     <td className="py-3 px-4 whitespace-nowrap">
-                                        {hist.type === 'Concern' ? (
-                                            <span className="bg-rose-500/10 text-rose-400 border border-rose-500/10 px-2 py-0.5 rounded-full text-[10px] font-bold">
-                                                Concern
-                                            </span>
-                                        ) : hist.type === 'Achievement' ? (
-                                            <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/10 px-2 py-0.5 rounded-full text-[10px] font-bold">
-                                                Achievement
-                                            </span>
-                                        ) : (
-                                            <span className="bg-blue-500/10 text-blue-400 border border-blue-500/10 px-2 py-0.5 rounded-full text-[10px] font-bold">
-                                                Progress Update
-                                            </span>
-                                        )}
+                                        <div className="flex items-center gap-1.5">
+                                            {getIcon(hist.classification)}
+                                            <span className="text-xs font-semibold capitalize text-slate-300">{hist.classification.replace('_', ' ')}</span>
+                                        </div>
                                     </td>
                                     <td className="py-3 uppercase text-[10px] font-extrabold text-slate-400 tracking-wider font-mono px-4 whitespace-nowrap">{hist.tone}</td>
                                     <td className="py-3 text-right pl-4 whitespace-nowrap">

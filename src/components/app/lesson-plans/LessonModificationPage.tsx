@@ -7,16 +7,30 @@ import ForStrugglingStudentsCard from './ForStrugglingStudentsCard';
 import AppliedModifications from './AppliedModifications';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import { Button } from '@/components/ui/button';
+import { ApiAssignment, getAssignments } from '@/lib/api/assignment.api';
+import { 
+  getAssignmentLessonStatus, 
+  generateLessonRecommendation, 
+  applyLessonRecommendation, 
+  dismissLessonRecommendation,
+  LessonAssignmentStatus,
+  LessonRecommendation 
+} from '@/lib/api/lesson.api';
 
 interface LessonModificationScreenProps {
-  suggestions: LessonSuggestion[];
-  appliedModifications: AppliedModification[];
-  onApplyModification: (mod: Omit<AppliedModification, 'id'>) => void;
+  suggestions?: LessonSuggestion[];
+  appliedModifications?: AppliedModification[];
+  onApplyModification?: (mod: Omit<AppliedModification, 'id'>) => void;
 }
 
-const LessonModificationPage = ({ suggestions, appliedModifications: initialAppliedMods, onApplyModification }: LessonModificationScreenProps) => {
+const LessonModificationPage = ({ suggestions = [], appliedModifications: initialAppliedMods = [], onApplyModification }: LessonModificationScreenProps) => {
   const [appliedList, setAppliedList] = useState<AppliedModification[]>(initialAppliedMods);
-  const [topic, setTopic] = useState('Fractions — Unit 4, Week 2');
+  
+  const [assignments, setAssignments] = useState<ApiAssignment[]>([]);
+  const [topicId, setTopicId] = useState<string>(''); // Holds assignment_id
+  const [lessonStatuses, setLessonStatuses] = useState<LessonAssignmentStatus[]>([]);
+  const [activeRecommendation, setActiveRecommendation] = useState<LessonRecommendation | null>(null);
+
   const [isQuerying, setIsQuerying] = useState(false);
   const [successToast, setSuccessToast] = useState(false);
 
@@ -25,33 +39,105 @@ const LessonModificationPage = ({ suggestions, appliedModifications: initialAppl
     setAppliedList(initialAppliedMods);
   }, [initialAppliedMods]);
 
+  useEffect(() => {
+    const initData = async () => {
+      try {
+        const [assignmentsRes, statusRes] = await Promise.all([
+          getAssignments() as any,
+          getAssignmentLessonStatus()
+        ]);
+        
+        let assignmentList = [];
+        if (Array.isArray(assignmentsRes)) assignmentList = assignmentsRes;
+        else if (assignmentsRes?.results) assignmentList = assignmentsRes.results;
+        
+        setAssignments(assignmentList);
+        setLessonStatuses(statusRes);
+        
+        if (assignmentList.length > 0) {
+          setTopicId(assignmentList[0].assignment_id.toString());
+        }
+      } catch (err) {
+        console.error("Failed to load lesson modification initial data", err);
+      }
+    };
+    initData();
+  }, []);
+
+  // Parse current recommendations
+  let parsedSuggestions: LessonSuggestion[] = [];
+  if (activeRecommendation) {
+    try {
+      // Backend returns string like "{'strugglingStudents': ['...'], 'advancedStudents': ['...']}"
+      const jsonStr = activeRecommendation.recommendation_details.replace(/'/g, '"');
+      const details = JSON.parse(jsonStr);
+      
+      const strug = (details.strugglingStudents || []).map((desc: string, idx: number) => ({
+        id: `strug-${idx}`,
+        type: 'struggling' as const,
+        tag: 'Remediation',
+        description: desc
+      }));
+      const adv = (details.advancedStudents || []).map((desc: string, idx: number) => ({
+        id: `adv-${idx}`,
+        type: 'advanced' as const,
+        tag: 'Extension',
+        description: desc
+      }));
+      parsedSuggestions = [...strug, ...adv];
+    } catch (e) {
+      console.error("Error parsing recommendation details", e);
+    }
+  }
+
   // Filtered suggestions based on state
-  const strugglingMods = suggestions.filter((s) => s.type === 'struggling');
-  const advancedMods = suggestions.filter((s) => s.type === 'advanced');
+  const strugglingMods = parsedSuggestions.filter((s) => s.type === 'struggling');
+  const advancedMods = parsedSuggestions.filter((s) => s.type === 'advanced');
 
   // Trigger AI suggestions
-  const handleGetSuggestions = () => {
+  const handleGetSuggestions = async () => {
+    if (!topicId) return;
     setIsQuerying(true);
-    setTimeout(() => {
+    try {
+      const rec = await generateLessonRecommendation(Number(topicId));
+      setActiveRecommendation(rec);
+      setSuccessToast(true);
+      setTimeout(() => setSuccessToast(false), 3000);
+    } catch (err) {
+      console.error("Failed to generate recommendation", err);
+      alert("Failed to generate lesson recommendations.");
+    } finally {
       setIsQuerying(false);
-      alert('AI lesson recommendations compiled and mapped against current student score distributions!');
-    }, 1100);
+    }
   };
 
   // Apply a suggestion to logs
-  const handleApply = (sug: LessonSuggestion, category: 'Struggling Students' | 'Advanced Students') => {
-    const newMod: AppliedModification = {
-      id: 'am_new_' + Date.now(),
-      date: '2026-06-16',
-      lessonName: topic || 'Fractions Module',
-      modType: `${sug.tag}: ${sug.description.substring(0, 30)}...`,
-      appliedFor: category,
-      status: 'Applied'
-    };
-    setAppliedList(prev => [newMod, ...prev]);
-    onApplyModification(newMod);
-    setSuccessToast(true);
-    setTimeout(() => setSuccessToast(false), 3000);
+  const handleApply = async (sug: LessonSuggestion, category: 'Struggling Students' | 'Advanced Students') => {
+    if (!activeRecommendation) return;
+    
+    try {
+      // Backend expects applied_target_type
+      await applyLessonRecommendation(activeRecommendation.lesson_rec_id, {
+        applied_target_type: 'group' // default for now, since it doesn't specify in UI which specific group/student
+      });
+      
+      const newMod: AppliedModification = {
+        id: 'am_new_' + Date.now(),
+        date: new Date().toISOString().split('T')[0],
+        lessonName: activeRecommendation.assignment_title,
+        modType: `${sug.tag}: ${sug.description.substring(0, 30)}...`,
+        appliedFor: category,
+        status: 'Applied'
+      };
+      setAppliedList(prev => [newMod, ...prev]);
+      if (onApplyModification) {
+        onApplyModification(newMod);
+      }
+      setSuccessToast(true);
+      setTimeout(() => setSuccessToast(false), 3000);
+    } catch (err) {
+      console.error("Failed to apply modification", err);
+    }
   };
 
   return (
@@ -72,19 +158,18 @@ const LessonModificationPage = ({ suggestions, appliedModifications: initialAppl
           </label>
 
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-            {/* Input wrapper with absolute chevron icon to look like a dropdown */}
             <div className="flex-1 relative">
               <select
-                value={topic}
-                onChange={(e) => setTopic(e.target.value)}
+                value={topicId}
+                onChange={(e) => {
+                  setTopicId(e.target.value);
+                  setActiveRecommendation(null); // Reset when changing topic
+                }}
                 className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3.5 pr-10 text-sm text-slate-100 focus:outline-none focus:border-orange-500 transition font-medium appearance-none cursor-pointer"
               >
-                <option value="Fractions — Unit 4, Week 2" className="bg-[#0F1117] text-slate-100">Fractions — Unit 4, Week 2</option>
-                <option value="Introduction to Equivalent Fractions" className="bg-[#0F1117] text-slate-100">Introduction to Equivalent Fractions</option>
-                <option value="Basic Area Layouts" className="bg-[#0F1117] text-slate-100">Basic Area Layouts</option>
-                <option value="Multiplication Modeling — Unit 3" className="bg-[#0F1117] text-slate-100">Multiplication Modeling — Unit 3</option>
-                <option value="Drawing Clear Inferences — ELA Unit 2" className="bg-[#0F1117] text-slate-100">Drawing Clear Inferences — ELA Unit 2</option>
-                <option value="Ecosystem Adaptations — Science Unit 1" className="bg-[#0F1117] text-slate-100">Ecosystem Adaptations — Science Unit 1</option>
+                {assignments.map(a => (
+                  <option key={a.assignment_id} value={a.assignment_id} className="bg-[#0F1117] text-slate-100">{a.title}</option>
+                ))}
               </select>
               <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4">
@@ -92,14 +177,6 @@ const LessonModificationPage = ({ suggestions, appliedModifications: initialAppl
                 </svg>
               </div>
             </div>
-
-            <Button
-              onClick={handleGetSuggestions}
-              disabled={isQuerying}
-            >
-              <Sparkles />
-              See Status
-            </Button>
           </div>
 
           {/* Auto stats below */}

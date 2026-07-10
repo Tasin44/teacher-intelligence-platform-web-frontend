@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, Edit } from 'lucide-react';
 import { Student } from '@/types';
 import { Button } from '../ui/button';
-import { ApiAssignment } from '@/lib/api/assignment.api';
+import { ApiAssignment, downloadAssignmentPdf } from '@/lib/api/assignment.api';
 
 interface AssignmentDetailsModalProps {
     isOpen: boolean;
@@ -319,9 +319,23 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                     </button>
 
                     <Button
+                        onClick={() => {
+                            if (viewingAssignment) {
+                                downloadAssignmentPdf(viewingAssignment.assignment_id).catch(err => {
+                                    console.error(err);
+                                    alert("Failed to download PDF.");
+                                });
+                            }
+                        }}
+                        className="bg-transparent border border-slate-500 text-slate-200 hover:bg-slate-800"
+                    >
+                        Export PDF
+                    </Button>
+
+                    <Button
                         onClick={onClose}
                     >
-                        Send
+                        Close
                     </Button>
                 </div>
             </div>

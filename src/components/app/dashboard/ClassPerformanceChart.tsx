@@ -24,7 +24,7 @@ const ClassPerformanceChart = () => {
         <Card title='Class Performance' className="lg:col-span-7 flex flex-col justify-between">
             <div>
                 <div className="h-64 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                         <BarChart
                             data={chartData}
                             margin={{ top: 10, right: 10, left: 10, bottom: 0 }}

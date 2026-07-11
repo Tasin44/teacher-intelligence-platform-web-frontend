@@ -30,6 +30,15 @@ export interface PaginatedStudents {
   results: ApiStudent[];
 }
 
+export interface ApiStudentDiagnostic {
+  student: ApiStudent;
+  diagnostic: {
+    current_strengths: string[];
+    skill_gaps_and_blockages: string[];
+    generated_at: string;
+  };
+}
+
 export interface GetStudentsParams {
   search?: string;
   risk_status?: RiskStatus;
@@ -88,4 +97,8 @@ export function updateStudent(studentId: number, formData: FormData) {
 
 export function getDashboardSummary() {
   return apiClient.get<DashboardSummary>('/api/dashboard/summary');
+}
+
+export function getStudentDiagnostic(studentId: number | string) {
+  return apiClient.getFull<ApiStudentDiagnostic>(`/api/students/${studentId}/diagnostic/`);
 }

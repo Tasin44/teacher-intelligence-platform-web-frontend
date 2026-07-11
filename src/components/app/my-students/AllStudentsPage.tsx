@@ -127,7 +127,9 @@ export default function AllStudentsPage({ onBack, onSelectStudent }: AllStudents
                         />
                         <div className="flex flex-col">
                           <span className="font-bold text-slate-200">{student.student_name}</span>
-                          <span className="text-[10px] text-slate-500">Parent: {student.parent_name || 'N/A'}</span>
+                          <span className="text-[10px] text-slate-500">
+                            Parent: {student.parent_name || 'N/A'} {student.parent_email ? `(${student.parent_email})` : ''}
+                          </span>
                         </div>
                       </div>
                     </td>

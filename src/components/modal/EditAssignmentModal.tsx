@@ -33,7 +33,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
     const [formTargetType, setFormTargetType] = useState<'all_groups' | 'individual_student' | 'individual_group'>('all_groups');
     const [formTargetStudentRoll, setFormTargetStudentRoll] = useState('');
     const [formTargetGroupId, setFormTargetGroupId] = useState('');
-    const [formDueDate, setFormDueDate] = useState('2026-06-20');
+    const [formDueDate, setFormDueDate] = useState('');
     const [formStandards, setFormStandards] = useState('CCSS.Math.3.OA.A.1');
     const [formInstructions, setFormInstructions] = useState('');
     const [formQuestionCount, setFormQuestionCount] = useState(10);
@@ -57,7 +57,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                 setFormDifficulty('Medium');
                 setFormTargetType('individual_group');
                 setFormTargetGroupId('1');
-                setFormDueDate('2026-06-24');
+                setFormDueDate(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
                 setFormStandards('CCSS.Math.3.NF.A.1');
                 setFormInstructions('Students will paint visual grid blocks corresponding to target fractions (1/2, 1/4, 1/8).');
                 setFormQuestionCount(10);

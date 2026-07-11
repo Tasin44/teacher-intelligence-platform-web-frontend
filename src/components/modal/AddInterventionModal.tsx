@@ -57,7 +57,8 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
                 progress: 0,
                 status: 'Active',
                 targetType: 'student',
-                targetName: studentName
+                targetName: studentName,
+                studentRoll: studentRoll
             });
         } else {
             onSave({

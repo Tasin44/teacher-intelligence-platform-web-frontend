@@ -46,7 +46,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     { id: 'progress', label: 'Progress', icon: TrendingUp, path: '/progress' },
     { id: 'parent-comms', label: 'Parent Comms', icon: MessageSquare, path: '/parent-comms' },
     { id: 'pacing', label: 'Pacing', icon: Calendar, path: '/pacing' },
-    { id: 'chatbot', label: 'AI Copilot', icon: Bot, path: '/chatbot' },
     { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' }
   ];
 
@@ -60,7 +59,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     '/progress': 'Benchmark Performance Analytics',
     '/parent-comms': 'Unified Family Messaging',
     '/pacing': 'Pacing Schedules & Coverage Plan',
-    '/chatbot': 'EduPulse AI Copilot',
+    '/chatbot': 'EduPulse AIPet',
     '/settings': 'Developer Preferences & Parameters'
   };
 
@@ -206,6 +205,15 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-3 md:gap-6 relative">
+            
+            {/* AIPet Button */}
+            <Link
+              href="/chatbot"
+              className="flex items-center gap-2 bg-orange-500/10 text-orange-500 hover:bg-orange-500/20 px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-bold text-xs md:text-sm border border-orange-500/20 transition-all cursor-pointer"
+            >
+              <Bot size={16} />
+              <span className="hidden md:inline">AIPet</span>
+            </Link>
 
             {/* Teacher profile picture element */}
             <div className="relative">

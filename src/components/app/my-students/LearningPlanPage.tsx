@@ -1,10 +1,11 @@
 "use client";
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { CheckCircle, Clock, Sparkles, Download, AlertTriangle, Target } from 'lucide-react';
 import { Student } from '@/types';
 import { Button } from '@/components/ui/button';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import { MyStudentsHeaderAction2 } from './MyStudentsHeaderAction';
+import { getStudentDiagnostic } from '@/lib/api/student.api';
 
 interface LearningPlanScreenProps {
   students: Student[];
@@ -17,7 +18,7 @@ const LearningPlanPage = ({
   selectedStudentId,
   onSelectStudent
 }: LearningPlanScreenProps) => {
-  const [isRegenerating, setIsRegenerating] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredStudents = useMemo(() => {
@@ -29,8 +30,52 @@ const LearningPlanPage = ({
     return students.find((s) => s.id === selectedStudentId) || students[0];
   }, [students, selectedStudentId]);
 
-  // Dynamic values that pivot based on Student Risk Level
+  const [diagnosticData, setDiagnosticData] = useState<{ strengths: string[], gaps: string[], generatedAt: string | null } | null>(null);
+  const [isLoadingDiagnostic, setIsLoadingDiagnostic] = useState(false);
+
+  useEffect(() => {
+    if (!currentStudent || !currentStudent.id) return;
+    let isMounted = true;
+    
+    const fetchDiagnostic = async () => {
+      const apiId = currentStudent.student_id ?? currentStudent.id.toString().replace(/\D/g, '');
+      if (!apiId) {
+        if (isMounted) setDiagnosticData(null);
+        return;
+      }
+      setIsLoadingDiagnostic(true);
+      try {
+        const res = await getStudentDiagnostic(apiId);
+        if (isMounted && res && res.data && res.data.diagnostic) {
+          setDiagnosticData({
+            strengths: res.data.diagnostic.current_strengths || [],
+            gaps: res.data.diagnostic.skill_gaps_and_blockages || [],
+            generatedAt: res.timestamp
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch diagnostic", err);
+        if (isMounted) setDiagnosticData(null);
+      } finally {
+        if (isMounted) setIsLoadingDiagnostic(false);
+      }
+    };
+    
+    fetchDiagnostic();
+    
+    return () => { isMounted = false; };
+  }, [currentStudent]);
+
+  // Dynamic values that pivot based on Student Risk Level or API response
   const planData = useMemo(() => {
+    if (diagnosticData) {
+      return {
+        strengths: diagnosticData.strengths,
+        gaps: diagnosticData.gaps,
+        generatedAt: diagnosticData.generatedAt,
+      };
+    }
+
     const risk = currentStudent.riskLevel;
     if (risk === 'At Risk') {
       return {
@@ -115,15 +160,9 @@ const LearningPlanPage = ({
         ]
       };
     }
-  }, [currentStudent]);
+  }, [currentStudent, diagnosticData]);
 
-  const handleRegenerate = () => {
-    setIsRegenerating(true);
-    setTimeout(() => {
-      setIsRegenerating(false);
-      alert(`AI Engine has re-analyzed ${currentStudent.name}'s latest diagnostic progress and rewritten their Individual Education Plan (IEP)!`);
-    }, 1200);
-  };
+
 
   return (
     <DashboardChildrenLayout
@@ -194,112 +233,36 @@ const LearningPlanPage = ({
 
       {/* Section 3 — Plan Content (2 columns) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5" id="plan-content-grid">
-        {/* Left Column */}
-        <div className="space-y-5" id="plan-left-column">
-          {/* Card 1: Current Strengths */}
-          <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-emerald-500" id="current-strengths-card">
-            <h4 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 mb-4">
-              <CheckCircle size={16} className="text-emerald-500" />
-              Current Strengths
-            </h4>
-            <ul className="space-y-3 text-slate-350 select-none">
-              {planData.strengths.map((str, i) => (
-                <li key={i} className="flex gap-2.5 text-xs text-slate-200 leading-relaxed">
-                  <span className="text-emerald-500 select-none font-bold">✓</span>
-                  <span>{str}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Card 2: Skill Gaps */}
-          <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-rose-500" id="skill-gaps-card">
-            <h4 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 mb-4">
-              <AlertTriangle size={16} className="text-rose-500" />
-              Skill Gaps & Standards Blockages
-            </h4>
-            <ul className="space-y-3 text-slate-350">
-              {planData.gaps.map((gap, i) => (
-                <li key={i} className="flex gap-2.5 text-xs text-slate-200 leading-relaxed">
-                  <span className="text-rose-500 font-bold select-none">✗</span>
-                  <span>{gap}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Card 1: Current Strengths */}
+        <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-emerald-500" id="current-strengths-card">
+          <h4 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 mb-4">
+            <CheckCircle size={16} className="text-emerald-500" />
+            Current Strengths {isLoadingDiagnostic && <span className="text-xs font-normal text-slate-400 ml-2 animate-pulse">(Loading...)</span>}
+          </h4>
+          <ul className="space-y-3 text-slate-350 select-none">
+            {planData.strengths.map((str, i) => (
+              <li key={i} className="flex gap-2.5 text-xs text-slate-200 leading-relaxed">
+                <span className="text-emerald-500 select-none font-bold">✓</span>
+                <span>{str}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* Right Column */}
-        <div className="space-y-5" id="plan-right-column">
-          {/* Card 3: Recommended Activities */}
-          <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-orange-500" id="recommended-activities-card">
-            <h4 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 mb-4">
-              <Sparkles size={16} className="text-orange-500" />
-              Recommended Activities
-            </h4>
-            <div className="space-y-3">
-              {planData.activities.map((act, i) => (
-                <div key={i} className="flex items-center justify-between p-2.5 bg-[#0F1117]/60 rounded-lg border border-[#2A2D3A]/40 hover:border-orange-500/10 transition">
-                  <div className="flex gap-2.5 items-center">
-                    <span className="w-2 h-2 rounded-full bg-orange-500 shrink-0"></span>
-                    <span className="text-xs text-slate-200 font-semibold">{act.name}</span>
-                  </div>
-                  <div className="flex gap-1.5 items-center shrink-0">
-                    <span className="bg-orange-500/10 text-orange-400 font-semibold text-[9px] px-2 py-0.5 rounded-full font-mono uppercase">
-                      {act.type}
-                    </span>
-                    <span className="text-[10px] text-slate-500 font-semibold font-mono flex items-center gap-0.5">
-                      <Clock size={10} />
-                      {act.time}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Card 4: Goals */}
-          {/* <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-blue-500" id="goals-card">
-            <h4 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 mb-4">
-              <Target size={16} className="text-blue-500" />
-              Individualized Milestones
-            </h4>
-            <div className="space-y-4">
-              <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Short Term (30 Days Target)</span>
-                <div className="mt-2.5 space-y-3.5">
-                  {planData.shortGoals.map((go, idx) => (
-                    <div key={idx}>
-                      <div className="flex justify-between text-xs font-semibold mb-1">
-                        <span className="text-slate-200">{go.name}</span>
-                        <span className="text-blue-400 font-mono font-bold">{go.progress}%</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500 rounded-full transition-all duration-1000" style={{ width: `${go.progress}%` }}></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-[#2A2D3A]/50">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Long Term (90 Days Target)</span>
-                <div className="mt-2.5 space-y-3.5">
-                  {planData.longGoals.map((go, idx) => (
-                    <div key={idx}>
-                      <div className="flex justify-between text-xs font-semibold mb-1">
-                        <span className="text-slate-200">{go.name}</span>
-                        <span className="text-blue-400 font-mono font-bold">{go.progress}%</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-500 rounded-full transition-all duration-1000" style={{ width: `${go.progress}%` }}></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div> */}
+        {/* Card 2: Skill Gaps */}
+        <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] border-l-4 border-l-rose-500" id="skill-gaps-card">
+          <h4 className="text-sm font-bold font-heading text-slate-100 flex items-center gap-2 mb-4">
+            <AlertTriangle size={16} className="text-rose-500" />
+            Skill Gaps & Standards Blockages {isLoadingDiagnostic && <span className="text-xs font-normal text-slate-400 ml-2 animate-pulse">(Loading...)</span>}
+          </h4>
+          <ul className="space-y-3 text-slate-350">
+            {planData.gaps.map((gap, i) => (
+              <li key={i} className="flex gap-2.5 text-xs text-slate-200 leading-relaxed">
+                <span className="text-rose-500 font-bold select-none">✗</span>
+                <span>{gap}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
@@ -307,26 +270,11 @@ const LearningPlanPage = ({
       <div className="bg-[#1E2130] p-4.5 rounded-xl border border-[#2A2D3A] flex flex-col sm:flex-row justify-between items-center gap-4">
         <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5 matches-saved">
           <Sparkles size={14} className="text-orange-500" />
-          Last generated: June 15, 2026 at 4:32 PM via Student Diagnostics Core
+          Last generated: {planData.generatedAt 
+            ? new Date(planData.generatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+            : 'June 15, 2026 at 4:32 PM'} via Student Diagnostics Core
         </span>
-        <div className="flex gap-3">
-          <button
-            onClick={handleRegenerate}
-            disabled={isRegenerating}
-            className="px-4.5 py-2.5 border border-orange-500 hover:bg-orange-500/10 text-orange-500 font-bold text-xs rounded-lg transition duration-150 bg-transparent cursor-pointer flex items-center gap-1.5"
-          >
-            <Sparkles size={13} />
-            {isRegenerating ? 'Analyzing scores...' : 'Regenerate Plan'}
-          </button>
-          <Button
-            onClick={() => {
-              alert(`Successfully downloaded Individual Education Plan (PDF) dossier for ${currentStudent.name}!`);
-            }}
-          >
-            <Download size={13} strokeWidth={2.5} />
-            Export as PDF
-          </Button>
-        </div>
+
       </div>
     </DashboardChildrenLayout>
   );

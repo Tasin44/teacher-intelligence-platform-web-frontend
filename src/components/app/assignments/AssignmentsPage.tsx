@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, X } from 'lucide-react';
 import { Student, Group } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import AssignmentsSearchAndFilter from './AssignmentsSearchAndFilter';
@@ -40,6 +40,16 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
   // Submissions Modal Control
   const [isSubmissionsModalOpen, setIsSubmissionsModalOpen] = useState(false);
   const [submissionsAssignmentId, setSubmissionsAssignmentId] = useState<number | null>(null);
+
+  // Error Toast Control
+  const [errorToast, setErrorToast] = useState(false);
+  const [errorToastMessage, setErrorToastMessage] = useState('');
+
+  const showErrorToast = (message: string) => {
+    setErrorToastMessage(message);
+    setErrorToast(true);
+    setTimeout(() => setErrorToast(false), 4000);
+  };
 
   // Fetch initial assignments
   const loadAssignments = async () => {
@@ -150,8 +160,10 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
         };
         await createAssignment(payload);
         await loadAssignments(); // refetch
-      } catch (err) {
+      } catch (err: any) {
         console.error("Failed to create assignment", err);
+        const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
+        showErrorToast(displayMsg || "Failed to create assignment");
       }
     }
     handleCloseModal();
@@ -202,6 +214,14 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
       subtitle="Customize homework vectors and generate AI lesson assignments"
       actionButtons={actionButtons}
     >
+      {/* Toast Notification */}
+      {errorToast && (
+        <div className="fixed top-5 right-5 bg-rose-500 border border-rose-400 text-slate-900 font-extrabold px-4 py-3 rounded-lg flex items-center gap-2 shadow-2xl z-[90] animate-bounce">
+          <X size={18} strokeWidth={3} />
+          <span>{errorToastMessage}</span>
+        </div>
+      )}
+
       <AssignmentsSearchAndFilter
         filterLevel={filterLevel}
         setFilterLevel={setFilterLevel}

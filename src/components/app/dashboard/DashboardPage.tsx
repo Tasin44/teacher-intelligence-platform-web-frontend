@@ -1,4 +1,5 @@
 "use client";
+import React, { useState, useEffect } from 'react';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import DashboardStats from './DashboardStats';
 import ClassPerformanceChart from './ClassPerformanceChart';
@@ -10,13 +11,14 @@ import { useEduPulse } from '@/lib/context/EduPulseContext';
 const DashboardPage = () => {
   const { loggedInTeacher } = useEduPulse();
 
-  const getFormattedDate = () => {
+  const [dateStr, setDateStr] = useState('');
+  useEffect(() => {
     const options: Intl.DateTimeFormatOptions = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-    return new Date().toLocaleDateString('en-US', options);
-  };
+    setDateStr(new Date().toLocaleDateString('en-US', options));
+  }, []);
 
   const title = `Good morning, ${loggedInTeacher?.name || 'Teacher'} 👋`;
-  const subtitle = `${getFormattedDate()} — ${loggedInTeacher?.grade || ''}`;
+  const subtitle = `${dateStr ? dateStr + ' — ' : ''}${loggedInTeacher?.grade || ''}`;
 
   return (
     <DashboardChildrenLayout title={title} subtitle={subtitle}>

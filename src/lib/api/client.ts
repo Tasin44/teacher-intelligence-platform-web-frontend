@@ -73,9 +73,41 @@ async function request<T>(
   return body.data;
 }
 
+async function requestFull<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<ApiResponse<T>> {
+  const token = getAccessToken();
+  const headers: Record<string, string> = { ...(options.headers as Record<string, string>) };
+
+  if (!headers['Content-Type'] && typeof options.body === 'string') {
+    headers['Content-Type'] = 'application/json';
+  }
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${BASE_URL}${path}`, { ...options, headers });
+  let body: ApiResponse<T>;
+  try {
+    body = await response.json();
+  } catch {
+    throw new ApiError(`Server returned non-JSON response (${response.status})`, response.status);
+  }
+
+  if (!response.ok || !body.success) {
+    throw new ApiError(body.message, body.statusCode ?? response.status, body.data);
+  }
+
+  return body;
+}
+
 export const apiClient = {
   get: <T>(path: string) =>
     request<T>(path, { method: 'GET' }),
+
+  getFull: <T>(path: string) =>
+    requestFull<T>(path, { method: 'GET' }),
 
   post: <T>(path: string, body: unknown) =>
     request<T>(path, {

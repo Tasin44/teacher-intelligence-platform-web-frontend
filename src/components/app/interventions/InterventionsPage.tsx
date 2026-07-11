@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, X } from 'lucide-react';
 import { Student, Intervention, ReteachPlan } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import StudentsNeedingInterventionAssistanceCard from './StudentsNeedingInterventionAssistanceCard';
@@ -62,6 +62,8 @@ const InterventionsPage = ({
   const [viewingReteachPlan, setViewingReteachPlan] = useState<ReteachPlan | null>(null);
   const [successToast, setSuccessToast] = useState(false);
   const [successToastMessage, setSuccessToastMessage] = useState('');
+  const [errorToast, setErrorToast] = useState(false);
+  const [errorToastMessage, setErrorToastMessage] = useState('');
 
   // Sync state if props change
   useEffect(() => {
@@ -108,9 +110,10 @@ const InterventionsPage = ({
       
       setIsAddOpen(false);
       showToast(`Successfully created intervention plan for targeted student!`);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to create intervention", err);
-      alert("Failed to create intervention.");
+      const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
+      showErrorToast(displayMsg || "Failed to create intervention.");
     }
   };
 
@@ -139,7 +142,8 @@ const InterventionsPage = ({
       showToast(`Successfully modified active intervention plan!`);
     } catch (err) {
       console.error("Failed to modify intervention plan", err);
-      alert("Failed to modify plan.");
+      const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
+      showErrorToast(displayMsg || "Failed to modify plan.");
     }
   };
 
@@ -147,6 +151,12 @@ const InterventionsPage = ({
     setSuccessToastMessage(message);
     setSuccessToast(true);
     setTimeout(() => setSuccessToast(false), 4000);
+  };
+
+  const showErrorToast = (message: string) => {
+    setErrorToastMessage(message);
+    setErrorToast(true);
+    setTimeout(() => setErrorToast(false), 4000);
   };
 
   const actionButtons = (
@@ -169,6 +179,14 @@ const InterventionsPage = ({
         <div className="fixed top-5 right-5 bg-emerald-500 border border-emerald-400 text-slate-900 font-extrabold px-4 py-3 rounded-lg flex items-center gap-2 shadow-2xl z-90 animate-bounce">
           <Check size={18} strokeWidth={3} />
           <span>{successToastMessage}</span>
+        </div>
+      )}
+      
+      {/* Error Toast Notification */}
+      {errorToast && (
+        <div className="fixed top-5 right-5 bg-rose-500 border border-rose-400 text-slate-900 font-extrabold px-4 py-3 rounded-lg flex items-center gap-2 shadow-2xl z-90 animate-bounce">
+          <X size={18} strokeWidth={3} />
+          <span>{errorToastMessage}</span>
         </div>
       )}
 

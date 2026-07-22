@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { X, Calendar, Edit } from 'lucide-react';
+import { X, Calendar, Edit, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { Student } from '@/types';
 import { Button } from '../ui/button';
 import { ApiAssignment, downloadAssignmentPdf, sendAssignmentEmail } from '@/lib/api/assignment.api';
@@ -19,6 +19,8 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
     const [questions, setQuestions] = useState<string[]>([]);
     const [editingIdx, setEditingIdx] = useState<number | null>(null);
     const [editValue, setEditValue] = useState('');
+    const [popup, setPopup] = useState<{type: 'success' | 'error', message: string} | null>(null);
+    const [isSending, setIsSending] = useState(false);
 
     useEffect(() => {
         if (viewingAssignment) {
@@ -297,18 +299,29 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                     <Button
                         onClick={async () => {
                             if (viewingAssignment) {
+                                setIsSending(true);
                                 try {
                                     await sendAssignmentEmail(viewingAssignment.assignment_id);
-                                    alert("Assignment sent successfully.");
+                                    setPopup({ type: 'success', message: 'Assignment sent successfully.' });
                                 } catch (err) {
                                     console.error(err);
-                                    alert("Failed to send assignment email.");
+                                    setPopup({ type: 'error', message: 'Failed to send assignment email.' });
+                                } finally {
+                                    setIsSending(false);
                                 }
                             }
                         }}
-                        className="bg-white border border-gray-400 !text-black hover:bg-gray-100 shadow-sm"
+                        disabled={isSending}
+                        className="bg-white border border-gray-400 !text-black hover:bg-gray-100 shadow-sm min-w-[120px]"
                     >
-                        Send via Email
+                        {isSending ? (
+                            <>
+                                <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                                Sending...
+                            </>
+                        ) : (
+                            'Send via Email'
+                        )}
                     </Button>
 
                     <Button
@@ -332,6 +345,32 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                     </Button>
                 </div>
             </div>
+
+            {/* Status Popup */}
+            {popup && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex flex-col items-center text-center">
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${popup.type === 'success' ? 'bg-emerald-100 text-emerald-500' : 'bg-rose-100 text-rose-500'}`}>
+                                {popup.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">
+                                {popup.type === 'success' ? 'Success' : 'Error'}
+                            </h3>
+                            <p className="text-sm text-slate-600 mb-6">
+                                {popup.message}
+                            </p>
+                            <Button 
+                                onClick={() => setPopup(null)}
+                                type="button"
+                                className="w-full h-11 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold cursor-pointer border-0 shadow-md"
+                            >
+                                Understood
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

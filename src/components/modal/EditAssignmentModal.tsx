@@ -5,6 +5,7 @@ import { Assignment } from '@/types';
 import { Button } from '../ui/button';
 
 import { ApiAssignment } from '@/lib/api/assignment.api';
+import { getAllGroups, ApiGroup } from '@/lib/api/grouping.api';
 
 interface EditAssignmentModalProps {
     isOpen: boolean;
@@ -37,6 +38,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
     const [formStandards, setFormStandards] = useState('CCSS.Math.3.OA.A.1');
     const [formInstructions, setFormInstructions] = useState('');
     const [formQuestionCount, setFormQuestionCount] = useState(10);
+    const [availableGroups, setAvailableGroups] = useState<ApiGroup[]>([]);
 
     useEffect(() => {
         if (isOpen) {
@@ -62,6 +64,15 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                 setFormInstructions('Students will paint visual grid blocks corresponding to target fractions (1/2, 1/4, 1/8).');
                 setFormQuestionCount(10);
             }
+            
+            // Fetch available groups
+            getAllGroups().then((groups) => {
+                setAvailableGroups(groups);
+                // If creating new and no group selected, default to the first group if available
+                if (!selectedAssignment && groups.length > 0) {
+                    setFormTargetGroupId(groups[0].group_id.toString());
+                }
+            }).catch(console.error);
         }
     }, [selectedAssignment, isOpen]);
 
@@ -152,15 +163,30 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                         {formTargetType !== 'all_groups' && (
                             <div className="flex flex-col gap-1.5">
                                 <label className="font-bold text-slate-400">
-                                    {formTargetType === 'individual_student' ? 'Student Roll' : 'Group ID'}
+                                    {formTargetType === 'individual_student' ? 'Student Roll' : 'Group'}
                                 </label>
-                                <input
-                                    type="text"
-                                    placeholder={formTargetType === 'individual_student' ? "e.g. R001" : "e.g. 1"}
-                                    value={formTargetType === 'individual_student' ? formTargetStudentRoll : formTargetGroupId}
-                                    onChange={(e) => formTargetType === 'individual_student' ? setFormTargetStudentRoll(e.target.value) : setFormTargetGroupId(e.target.value)}
-                                    className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-2 text-xs text-slate-205 focus:outline-none focus:border-orange-500 font-medium"
-                                />
+                                {formTargetType === 'individual_student' ? (
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. R001"
+                                        value={formTargetStudentRoll}
+                                        onChange={(e) => setFormTargetStudentRoll(e.target.value)}
+                                        className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-medium"
+                                    />
+                                ) : (
+                                    <select
+                                        value={formTargetGroupId}
+                                        onChange={(e) => setFormTargetGroupId(e.target.value)}
+                                        className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-medium"
+                                    >
+                                        <option value="" disabled>Select a group</option>
+                                        {availableGroups.map(group => (
+                                            <option key={group.group_id} value={group.group_id.toString()}>
+                                                {group.group_name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
                             </div>
                         )}
 

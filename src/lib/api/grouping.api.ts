@@ -44,6 +44,10 @@ export function getGroups() {
   return apiClient.get<PaginatedGroups>('/api/groups');
 }
 
+export function getAllGroups() {
+  return apiClient.get<ApiGroup[]>('/api/groups/all');
+}
+
 export function updateGroup(groupId: number, data: Partial<ApiGroup>) {
   return apiClient.patch<ApiGroup>(`/api/groups/${groupId}/`, data);
 }

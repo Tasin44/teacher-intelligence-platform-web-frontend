@@ -1,67 +1,67 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { X, Sparkles, CheckCircle } from 'lucide-react';
-import { Student, Intervention } from '@/types';
+import { X, Sparkles, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Intervention } from '@/lib/api/interventions.api';
 
 interface EditActiveInterventionPlanModalProps {
   isOpen: boolean;
   intervention: Intervention | null;
-  students: Student[];
   onClose: () => void;
-  onSave: (updatedFields: {
-    strategy: '1:1 Support' | 'Small Group' | 'Peer Support';
-    activities: string[];
-    startDate: string;
-    endDate: string;
-    progress: number;
-    status: 'Active' | 'Completed';
-  }) => void;
+  onSave: (id: number, updatedFields: Partial<Intervention>) => Promise<void>;
 }
 
 const EditActiveInterventionPlanModal = ({
   isOpen,
   intervention,
-  students,
   onClose,
   onSave
 }: EditActiveInterventionPlanModalProps) => {
-  const [studentName, setStudentName] = useState('');
-  const [strategy, setStrategy] = useState<'1:1 Support' | 'Small Group' | 'Peer Support'>('1:1 Support');
-  const [duration, setDuration] = useState('June 16 → June 30, 2026');
-  const [status, setStatus] = useState<'Active' | 'Completed'>('Active');
-  const [progress, setProgress] = useState<number>(10);
-  const [activities, setActivities] = useState('');
+  const [interventionType, setInterventionType] = useState('');
+  const [reason, setReason] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [frequency, setFrequency] = useState('');
+  const [notes, setNotes] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (isOpen && intervention) {
-      if (intervention.targetType === 'group') {
-        setStudentName(`Group: ${intervention.targetName || 'Target Group'}`);
-      } else {
-        const student = students.find((s) => s.id === intervention.studentId);
-        setStudentName(student ? `${student.name} (${student.riskLevel})` : 'Target Student');
-      }
-      setStrategy(intervention.strategy);
-      setDuration(`${intervention.startDate} → ${intervention.endDate}`);
-      setStatus(intervention.status);
-      setProgress(intervention.progress);
-      setActivities(intervention.activities.join('\n'));
+      setInterventionType(intervention.intervention_type || '');
+      setReason(intervention.reason || '');
+      setStartDate(intervention.start_date || '');
+      setFrequency(intervention.frequency || '');
+      setNotes(intervention.notes || '');
     }
-  }, [isOpen, intervention, students]);
+  }, [isOpen, intervention]);
 
   if (!isOpen || !intervention) return null;
 
-  const handleSaveClick = () => {
-    const dates = duration.split('→').map((d) => d.trim());
-    onSave({
-      strategy,
-      activities: activities.split('\n').filter((x) => x.trim() !== ''),
-      startDate: dates[0] || intervention.startDate,
-      endDate: dates[1] || intervention.endDate,
-      progress,
-      status
-    });
+  const targetLabel = intervention.student_name
+    ? `${intervention.student_name} (${intervention.student_roll_out || ''})`
+    : intervention.group_name || 'Target';
+
+  const handleSaveClick = async () => {
+    setIsSaving(true);
+    try {
+      const payload: Partial<Intervention> = {
+        intervention_type: interventionType,
+        reason,
+        start_date: startDate,
+        frequency,
+        notes,
+      };
+      // pass through student/group identifiers for the serializer
+      if (intervention.target_type === 'individual_student') {
+        (payload as any).student_roll = intervention.student_roll_out;
+      } else {
+        // group — we don't change it but backend expects group_id on patch
+        (payload as any).group_id = (intervention as any).group_id ?? null;
+      }
+      await onSave(intervention.intervention_id, payload);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -80,80 +80,99 @@ const EditActiveInterventionPlanModal = ({
         </h3>
 
         <div className="space-y-4 text-xs">
+          {/* Target (read-only) */}
           <div className="flex flex-col gap-1.5 text-left">
-            <label className="font-bold text-slate-400">Target Student Name</label>
+            <label className="font-bold text-slate-400">Target</label>
             <input
               type="text"
               disabled
-              value={studentName}
+              value={targetLabel}
               className="bg-[#0F1117]/60 border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-400 font-semibold disabled:opacity-60 focus:outline-none"
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="font-bold text-slate-400">Active Duration Timelines</label>
-              <input
-                type="text"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-medium"
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5 text-left">
-              <label className="font-bold text-slate-400">Intervention Status Setting</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as any)}
-                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500 font-semibold"
-              >
-                <option value="Active">Active Intervention Plan</option>
-                <option value="Completed">Completed / Resolved Plan</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Progress Slider */}
-          <div className="bg-[#0F1117]/50 rounded-xl p-3 border border-[#2A2D3A] space-y-2 text-left">
-            <div className="flex justify-between items-center text-xs font-semibold">
-              <span className="text-slate-400">Tactical Progress Checked Goal</span>
-              <strong className="text-orange-400 font-mono text-xs">{progress}% Score</strong>
-            </div>
+          {/* Intervention Type */}
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="font-bold text-slate-400">Intervention Type</label>
             <input
-              type="range"
-              min="0"
-              max="100"
-              step="5"
-              value={progress}
-              onChange={(e) => setProgress(Number(e.target.value))}
-              className="w-full accent-orange-500 cursor-pointer"
+              type="text"
+              value={interventionType}
+              onChange={(e) => setInterventionType(e.target.value)}
+              placeholder="e.g. Reading Comprehension Tutoring"
+              className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
             />
           </div>
 
+          {/* Reason */}
           <div className="flex flex-col gap-1.5 text-left">
-            <label className="font-bold text-slate-400">Required Tactical Exercises (one per line)</label>
+            <label className="font-bold text-slate-400">Reason</label>
             <textarea
-              rows={5}
-              value={activities}
-              onChange={(e) => setActivities(e.target.value)}
+              rows={2}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Why is this intervention needed?"
+              className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-orange-500 resize-none leading-relaxed"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Start Date */}
+            <div className="flex flex-col gap-1.5 text-left">
+              <label className="font-bold text-slate-400">Start Date</label>
+              <input
+                type="text"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                placeholder="YYYY-MM-DD"
+                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+              />
+            </div>
+
+            {/* Frequency */}
+            <div className="flex flex-col gap-1.5 text-left">
+              <label className="font-bold text-slate-400">Frequency</label>
+              <input
+                type="text"
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                placeholder="e.g. Twice a week for 30 minutes"
+                className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-semibold"
+              />
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div className="flex flex-col gap-1.5 text-left">
+            <label className="font-bold text-slate-400">Notes / Activities</label>
+            <textarea
+              rows={4}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Enter notes or activities..."
               className="w-full bg-[#0F1117] border border-[#2A2D3A] rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-orange-500 resize-none leading-relaxed"
             />
           </div>
         </div>
 
-        <div className="mt-5 pt-4.5 border-t border-[#2A2D3A]/60 flex justify-end gap-3">
+        <div className="mt-5 pt-4 border-t border-[#2A2D3A]/60 flex justify-end gap-3">
           <button
             onClick={onClose}
             className="px-4 py-2 hover:bg-slate-800 text-slate-400 hover:text-slate-200 font-semibold text-xs rounded-lg transition bg-transparent border-0 cursor-pointer"
           >
             Cancel
           </button>
-          <Button
-            onClick={handleSaveClick}
-          >
-            <CheckCircle size={14} strokeWidth={2.5} />
-            Save Intervention Plan
+          <Button onClick={handleSaveClick} disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <Loader2 size={14} className="animate-spin mr-2" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <CheckCircle size={14} strokeWidth={2.5} />
+                Save Intervention Plan
+              </>
+            )}
           </Button>
         </div>
       </div>

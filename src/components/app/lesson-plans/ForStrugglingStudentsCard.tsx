@@ -4,10 +4,10 @@ import { LessonSuggestion } from '@/types';
 interface ForStrugglingStudentsCardProps {
     suggestion: LessonSuggestion;
     onApply: (suggestion: LessonSuggestion) => void;
-    onDismiss?: () => void;
 }
 
 const tagStyles: Record<string, { bg: string, text: string, duration: string }> = {
+    'Remediation': { bg: '#FFF1F2', text: '#E11D48', duration: '15 mins' },
     'Scaffolding': { bg: '#FAF5FF', text: '#9333EA', duration: '20 mins' },
     'Visual Aid': { bg: '#EFF6FF', text: '#2563EB', duration: '15 mins' },
     'Simplified Text': { bg: '#FFF7ED', text: '#EA580C', duration: '10 mins' },
@@ -18,16 +18,9 @@ const tagStyles: Record<string, { bg: string, text: string, duration: string }> 
 
 const ForStrugglingStudentsCard = ({
     suggestion,
-    onApply,
-    onDismiss
+    onApply
 }: ForStrugglingStudentsCardProps) => {
-    const handleDismissClick = () => {
-        if (onDismiss) {
-            onDismiss();
-        } else {
-            alert('Suggestion dismissed.');
-        }
-    };
+
 
     const styleInfo = tagStyles[suggestion.tag] || { bg: '#F1F5F9', text: '#475569', duration: '15 mins' };
 
@@ -60,13 +53,7 @@ const ForStrugglingStudentsCard = ({
             </div>
 
             <div className="flex gap-2 justify-end pt-1">
-                <button
-                    onClick={handleDismissClick}
-                    className="px-5 py-2 bg-brand-bg border border-slate-200 text-slate-650 hover:bg-slate-50 text-xs font-bold rounded transition cursor-pointer"
-                    style={{ backgroundColor: '#F8FAFC', borderColor: '#E2E8F0', color: '#475569' }}
-                >
-                    DISMISS
-                </button>
+
                 <button
                     onClick={() => onApply(suggestion)}
                     className="px-5 py-2 bg-accent-orange text-white text-xs font-bold rounded hover:opacity-90 transition cursor-pointer border-0"

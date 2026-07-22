@@ -186,7 +186,21 @@ const ParentCommsPage = ({
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(generatedMessage);
+    const text = generatedMessage;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    } else {
+      // Fallback for non-HTTPS (e.g. local IP)
+      const el = document.createElement('textarea');
+      el.value = text;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.focus();
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+    }
     setToastText('Successfully copied draft message to clipboard!');
     setSuccessToast(true);
     setTimeout(() => setSuccessToast(false), 3000);

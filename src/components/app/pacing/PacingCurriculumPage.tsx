@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { AlertOctagon, CheckCircle, Sparkles, CheckSquare, Square, Search } from 'lucide-react';
+import { AlertOctagon, CheckCircle, Sparkles, CheckSquare, Square, Search, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Student, PacingSuggestion, StandardsCoverage } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import Card from '@/components/shared/Card';
@@ -32,6 +32,7 @@ const PacingCurriculumPage = ({
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [pacingState, setPacingState] = useState<'Behind' | 'On Track'>('Behind');
+  const [popup, setPopup] = useState<{type: 'success' | 'error', message: string} | null>(null);
 
   // Load assignments and existing recommendations on mount
   React.useEffect(() => {
@@ -75,10 +76,10 @@ const PacingCurriculumPage = ({
       setActiveRecommendation(generated);
       setRecommendations(prev => [generated, ...prev.filter(r => r.pacing_id !== generated.pacing_id)]);
       setPacingState('On Track');
-      alert(`AI Engine has re-analyzed pacing metrics and recalibrated actual pacing guidelines against the core calendar!`);
+      setPopup({ type: 'success', message: 'AI Engine has re-analyzed pacing metrics and recalibrated actual pacing guidelines against the core calendar!' });
     } catch (err) {
       console.error("Failed to generate pacing", err);
-      alert("Failed to analyze pacing for this topic.");
+      setPopup({ type: 'error', message: 'Failed to analyze pacing for this topic. Please try again.' });
     } finally {
       setIsAnalyzing(false);
     }
@@ -103,109 +104,136 @@ const PacingCurriculumPage = ({
   const coveragePercent = coverageList.length > 0 ? Math.round((coveredCount / coverageList.length) * 100) : 0;
 
   return (
-    <DashboardChildrenLayout
-      title="Pacing & Curriculum"
-      subtitle="Track curriculum pace and get AI-powered adjustment recommendations"
-    >
-      {/* Section 2 — Input + Status Bar */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-center gap-2">
-        <div className="w-full md:w-[55%] relative flex items-center">
-          <label className="text-xs font-bold text-slate-400 tracking-wider uppercase font-heading shrink-0 mr-4">
-            Current Lesson / Unit Topic
-          </label>
-          <div className="flex-1 relative">
-            <select
-              value={topicId}
-              onChange={(e) => setTopicId(e.target.value)}
-              className="w-full bg-[#F4F6F9]/40 border border-slate-200 rounded-full pl-5 pr-10 py-3 text-xs text-slate-700 focus:outline-none focus:border-orange-500 font-medium appearance-none cursor-pointer shadow-sm"
-            >
-              {assignments.map(a => (
-                <option key={a.assignment_id} value={a.assignment_id}>{a.title}</option>
-              ))}
-            </select>
-            <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-              </svg>
+    <>
+      <DashboardChildrenLayout
+        title="Pacing & Curriculum"
+        subtitle="Track curriculum pace and get AI-powered adjustment recommendations"
+      >
+        {/* Section 2 — Input + Status Bar */}
+        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-center gap-2">
+          <div className="w-full md:w-[55%] relative flex items-center">
+            <label className="text-xs font-bold text-slate-400 tracking-wider uppercase font-heading shrink-0 mr-4">
+              Current Lesson / Unit Topic
+            </label>
+            <div className="flex-1 relative">
+              <select
+                value={topicId}
+                onChange={(e) => setTopicId(e.target.value)}
+                className="w-full bg-[#F4F6F9]/40 border border-slate-200 rounded-full pl-5 pr-10 py-3 text-xs text-slate-700 focus:outline-none focus:border-orange-500 font-medium appearance-none cursor-pointer shadow-sm"
+              >
+                {assignments.map(a => (
+                  <option key={a.assignment_id} value={a.assignment_id}>{a.title}</option>
+                ))}
+              </select>
+              <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+              </div>
             </div>
+          </div>
+
+          {/* Right Status layout */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 justify-end w-full md:w-auto mt-4 md:mt-0">
+            <button
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className="bg-accent-orange hover:bg-orange-600 disabled:opacity-40 text-white font-extrabold px-5 py-2.5 rounded-full text-xs tracking-wide transition shadow-lg shadow-orange-500/10 cursor-pointer border-0 flex items-center gap-2 shrink-0 h-10"
+              id="btn-analyze-pacing"
+            >
+              <Sparkles size={13} fill="#FFF" stroke="#FFF" />
+              {isAnalyzing ? 'Re-analyzing...' : 'Analyze Pacing'}
+            </button>
           </div>
         </div>
 
-        {/* Right Status layout */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 justify-end w-full md:w-auto mt-4 md:mt-0">
-          <button
-            onClick={handleAnalyze}
-            disabled={isAnalyzing}
-            className="bg-accent-orange hover:bg-orange-600 disabled:opacity-40 text-white font-extrabold px-5 py-2.5 rounded-full text-xs tracking-wide transition shadow-lg shadow-orange-500/10 cursor-pointer border-0 flex items-center gap-2 shrink-0 h-10"
-            id="btn-analyze-pacing"
-          >
-            <Sparkles size={13} fill="#FFF" stroke="#FFF" />
-            {isAnalyzing ? 'Re-analyzing...' : 'Analyze Pacing'}
-          </button>
-        </div>
-      </div>
+        {/* Section 4 — Two Columns: Adjustment Suggestions vs Standards Checklist */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          {/* Left Column 60%: Curriculum Assessment Suggestions */}
+          <div className="lg:col-span-7">
+            <CurriculumAdjustmentRecommendations
+              adjustmentText={activeRecommendation?.curriculum_adjustment}
+            />
+          </div>
 
-      {/* Section 4 — Two Columns: Adjustment Suggestions vs Standards Checklist */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column 60%: Curriculum Assessment Suggestions */}
-        <div className="lg:col-span-7">
-          <CurriculumAdjustmentRecommendations
-            adjustmentText={activeRecommendation?.curriculum_adjustment}
-          />
-        </div>
-
-        {/* Right Column 40%: Standards Coverage Tracker */}
-        <div className="lg:col-span-5">
-          <Card
-            title="Standards Coverage Checklist"
-            subtitle="Grade 4 fundamental math & syllabus thresholds checked"
-            className="flex flex-col justify-between h-[420px]"
-          >
-            <div className="max-h-48 overflow-y-auto space-y-2 pr-1.5" id="pacing-checklist">
-              {coverageList.map((st) => (
-                <div
-                  key={st.standard}
-                  className="bg-[#0F1117]/60 p-2.5 rounded-lg border border-[#2A2D3A]/40 flex items-start gap-2.5 hover:border-slate-700/60 transition cursor-pointer"
-                  onClick={() => handleToggle(st.standard)}
-                >
-                  <button className="text-orange-500 mt-0.5 cursor-pointer bg-transparent border-0 p-0">
-                    {st.covered ? (
-                      <CheckSquare size={15} strokeWidth={2.5} />
-                    ) : (
-                      <Square size={15} />
-                    )}
-                  </button>
-                  <div className="flex-1 text-[11px] select-none min-w-0">
-                    <div className="flex justify-between items-center mb-0.5">
-                      <strong className="text-slate-205 font-bold font-mono">{st.standard}</strong>
-                      <span className={`text-[8px] font-bold uppercase ${st.covered ? 'text-emerald-400' : 'text-slate-500'}`}>
-                        {st.covered ? 'Mastered' : 'In Progress'}
-                      </span>
+          {/* Right Column 40%: Standards Coverage Tracker */}
+          <div className="lg:col-span-5">
+            <Card
+              title="Standards Coverage Checklist"
+              subtitle="Grade 4 fundamental math & syllabus thresholds checked"
+              className="flex flex-col justify-between h-[420px]"
+            >
+              <div className="max-h-48 overflow-y-auto space-y-2 pr-1.5" id="pacing-checklist">
+                {coverageList.map((st) => (
+                  <div
+                    key={st.standard}
+                    className="bg-[#0F1117]/60 p-2.5 rounded-lg border border-[#2A2D3A]/40 flex items-start gap-2.5 hover:border-slate-700/60 transition cursor-pointer"
+                    onClick={() => handleToggle(st.standard)}
+                  >
+                    <button className="text-orange-500 mt-0.5 cursor-pointer bg-transparent border-0 p-0">
+                      {st.covered ? (
+                        <CheckSquare size={15} strokeWidth={2.5} />
+                      ) : (
+                        <Square size={15} />
+                      )}
+                    </button>
+                    <div className="flex-1 text-[11px] select-none min-w-0">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <strong className="text-slate-205 font-bold font-mono">{st.standard}</strong>
+                        <span className={`text-[8px] font-bold uppercase ${st.covered ? 'text-emerald-400' : 'text-slate-500'}`}>
+                          {st.covered ? 'Mastered' : 'In Progress'}
+                        </span>
+                      </div>
+                      <p className="text-slate-400 leading-snug truncate" title={st.notes}>
+                        {st.notes}
+                      </p>
                     </div>
-                    <p className="text-slate-400 leading-snug truncate" title={st.notes}>
-                      {st.notes}
-                    </p>
                   </div>
-                </div>
-              ))}
-              {coverageList.length === 0 && (
-                <div className="text-slate-500 italic text-xs p-2">No standards covered.</div>
-              )}
-            </div>
+                ))}
+                {coverageList.length === 0 && (
+                  <div className="text-slate-500 italic text-xs p-2">No standards covered.</div>
+                )}
+              </div>
 
-            <div className="pt-4 border-t border-[#2A2D3A]/45 mt-4 text-xs font-semibold select-none">
-              <div className="flex justify-between mb-1.5">
-                <span className="text-slate-400">Cumulative syllabus coverage:</span>
-                <strong className="text-orange-500 font-mono text-sm leading-none">{coveredCount} of {coverageList.length} ({coveragePercent}%)</strong>
+              <div className="pt-4 border-t border-[#2A2D3A]/45 mt-4 text-xs font-semibold select-none">
+                <div className="flex justify-between mb-1.5">
+                  <span className="text-slate-400">Cumulative syllabus coverage:</span>
+                  <strong className="text-orange-500 font-mono text-sm leading-none">{coveredCount} of {coverageList.length} ({coveragePercent}%)</strong>
+                </div>
+                <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1 select-none">
+                  <div className="h-full bg-accent-orange rounded-full transition-all duration-750" style={{ width: `${coveragePercent}%` }}></div>
+                </div>
               </div>
-              <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1 select-none">
-                <div className="h-full bg-accent-orange rounded-full transition-all duration-750" style={{ width: `${coveragePercent}%` }}></div>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
-      </div>
-    </DashboardChildrenLayout>
+      </DashboardChildrenLayout>
+
+      {/* Pacing Result Popup */}
+      {popup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex flex-col items-center text-center">
+              <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${popup.type === 'success' ? 'bg-emerald-100 text-emerald-500' : 'bg-rose-100 text-rose-500'}`}>
+                {popup.type === 'success' ? <CheckCircle2 size={28} /> : <AlertCircle size={28} />}
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                {popup.type === 'success' ? '✨ Pacing Analysis Complete' : 'Analysis Failed'}
+              </h3>
+              <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+                {popup.message}
+              </p>
+              <button
+                onClick={() => setPopup(null)}
+                className="w-full h-11 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold cursor-pointer border-0 shadow-md transition"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

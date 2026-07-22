@@ -14,7 +14,7 @@ const Card = ({ title, subtitle, children, className, actionElements }: TProps) 
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-lg font-bold font-heading text-slate-100 mb-1">{title}</h2>
-                    <p className="text-xs text-slate-400 mb-5">{subtitle}</p>
+                    <p className="text-xs text-slate-400 mb-3">{subtitle}</p>
                 </div>
                 {actionElements}
             </div>

@@ -9,45 +9,18 @@ interface ScoreOverTimeChartProps {
 }
 
 const ScoreOverTimeChart = ({ studentName, weeklyScores = [] }: ScoreOverTimeChartProps) => {
-    // X coordinates for Week 1 through 8 (we use 4 weeks since the API has 4 weeks, but let's interpolate or use available)
     const xCoords = [20, 105, 190, 275, 360, 445, 530, 615];
 
-    // Math points (Orange) - mapping weeklyScores avg_score
-    const mathPoints = weeklyScores.slice(0, 8).map((score, idx) => ({
+    // Dynamic score points from API
+    const scorePoints = weeklyScores.slice(0, 8).map((score, idx) => ({
         x: xCoords[idx] || 0,
-        y: score.avg_score ? 150 - (score.avg_score * 1.5) : 150 // simple inverted scaling
+        y: score.avg_score ? 150 - (score.avg_score * 1.5) : 150
     }));
 
-    // Reading points (Green)
-    const readingPoints = [
-        { x: xCoords[0], y: 68 },
-        { x: xCoords[1], y: 60 },
-        { x: xCoords[2], y: 62 },
-        { x: xCoords[3], y: 52 },
-        { x: xCoords[4], y: 48 },
-        { x: xCoords[5], y: 42 },
-        { x: xCoords[6], y: 40 },
-        { x: xCoords[7], y: 35 },
-    ];
-
-    // Science points (Blue)
-    const sciencePoints = [
-        { x: xCoords[0], y: 85 },
-        { x: xCoords[1], y: 82 },
-        { x: xCoords[2], y: 70 },
-        { x: xCoords[3], y: 80 },
-        { x: xCoords[4], y: 62 },
-        { x: xCoords[5], y: 66 },
-        { x: xCoords[6], y: 52 },
-        { x: xCoords[7], y: 48 },
-    ];
-
-    const mathPath = mathPoints.map(p => `${p.x},${p.y}`).join(' ');
-    const readingPath = readingPoints.map(p => `${p.x},${p.y}`).join(' ');
-    const sciencePath = sciencePoints.map(p => `${p.x},${p.y}`).join(' ');
+    const scorePath = scorePoints.map(p => `${p.x},${p.y}`).join(' ');
 
     return (
-        <Card title={`Score Over Time (${studentName})`} subtitle="Interactive weekly diagnostic benchmarks across fundamental modules" className="h-[390px]">
+        <Card title={`Score Over Time (${studentName})`} subtitle="Interactive weekly diagnostic benchmarks" className="h-[390px]">
 
             {/* SVG Canvas wrapper */}
             <div className="relative w-full mt-4 flex-1 flex flex-col justify-center">
@@ -69,25 +42,20 @@ const ScoreOverTimeChart = ({ studentName, weeklyScores = [] }: ScoreOverTimeCha
                             <line x1="0" y1="95" x2="635" y2="95" stroke="#F1F5F9" strokeWidth="1.5" />
                             <line x1="0" y1="140" x2="635" y2="140" stroke="#E2E8F0" strokeWidth="1.5" />
 
-                            {/* Draw polylines */}
-                            <polyline fill="none" stroke="#F97316" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={mathPath} />
-                            <polyline fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={readingPath} />
-                            <polyline fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" points={sciencePath} />
+                            {/* Score line */}
+                            {scorePoints.length > 1 && (
+                                <polyline fill="none" stroke="#F97316" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" points={scorePath} />
+                            )}
 
-                            {/* Math markers */}
-                            {mathPoints.map((p, idx) => (
-                                <circle key={`m-${idx}`} cx={p.x} cy={p.y} r="3.5" fill="#F97316" stroke="#FFF" strokeWidth="1" className="cursor-pointer hover:r-5 transition-all" />
+                            {/* Score markers */}
+                            {scorePoints.map((p, idx) => (
+                                <circle key={`s-${idx}`} cx={p.x} cy={p.y} r="3.5" fill="#F97316" stroke="#FFF" strokeWidth="1" className="cursor-pointer" />
                             ))}
 
-                            {/* Reading markers */}
-                            {readingPoints.map((p, idx) => (
-                                <circle key={`r-${idx}`} cx={p.x} cy={p.y} r="3.5" fill="#10B981" stroke="#FFF" strokeWidth="1" className="cursor-pointer hover:r-5 transition-all" />
-                            ))}
-
-                            {/* Science markers */}
-                            {sciencePoints.map((p, idx) => (
-                                <circle key={`s-${idx}`} cx={p.x} cy={p.y} r="3.5" fill="#3B82F6" stroke="#FFF" strokeWidth="1" className="cursor-pointer hover:r-5 transition-all" />
-                            ))}
+                            {/* Empty state line */}
+                            {scorePoints.length === 0 && (
+                                <text x="317" y="80" textAnchor="middle" fill="#CBD5E1" fontSize="12" fontWeight="600">No weekly score data yet</text>
+                            )}
                         </svg>
 
                         {/* X Axis Labels */}
@@ -99,39 +67,8 @@ const ScoreOverTimeChart = ({ studentName, weeklyScores = [] }: ScoreOverTimeCha
                     </div>
                 </div>
             </div>
-
-            {/* Legend below the chart */}
-            <div className="flex justify-center gap-6 text-xs font-bold mt-4" id="subject-chart-legend">
-                <div className="flex items-center gap-1.5">
-                    <span className="flex items-center justify-center">
-                        <svg width="24" height="8" className="inline-block">
-                            <line x1="0" y1="4" x2="24" y2="4" stroke="#F97316" strokeWidth="1.5" />
-                            <circle cx="12" cy="4" r="2.5" fill="#F97316" stroke="#FFF" strokeWidth="0.75" />
-                        </svg>
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-extrabold uppercase">Math</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                    <span className="flex items-center justify-center">
-                        <svg width="24" height="8" className="inline-block">
-                            <line x1="0" y1="4" x2="24" y2="4" stroke="#10B981" strokeWidth="1.5" />
-                            <circle cx="12" cy="4" r="2.5" fill="#10B981" stroke="#FFF" strokeWidth="0.75" />
-                        </svg>
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-extrabold uppercase">Reading</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                    <span className="flex items-center justify-center">
-                        <svg width="24" height="8" className="inline-block">
-                            <line x1="0" y1="4" x2="24" y2="4" stroke="#3B82F6" strokeWidth="1.5" />
-                            <circle cx="12" cy="4" r="2.5" fill="#3B82F6" stroke="#FFF" strokeWidth="0.75" />
-                        </svg>
-                    </span>
-                    <span className="text-[11px] text-slate-500 font-extrabold uppercase">Science</span>
-                </div>
-            </div>
         </Card>
     );
 };
 
-export default ScoreOverTimeChart;
+export default ScoreOverTimeChart;

@@ -45,34 +45,25 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
 
     const handleSaveClick = () => {
         if (type === 'individual student') {
-            const matchedStudent = students.find(s => s.name.toLowerCase() === studentName.toLowerCase());
-            const matchedStudentId = matchedStudent ? matchedStudent.id : (students[0]?.id || 's1');
-
             onSave({
-                studentId: matchedStudentId,
-                strategy: (interventionType || '1:1 Support') as any,
-                activities: notes ? [notes] : ['Daily Support'],
-                startDate: startDate || '2026-06-16',
-                endDate: startDate || '2026-06-30',
-                progress: 0,
-                status: 'Active',
-                targetType: 'student',
-                targetName: studentName,
-                studentRoll: studentRoll
-            });
+                target_type: 'individual_student',
+                student_roll: studentRoll,
+                intervention_type: interventionType,
+                reason,
+                start_date: startDate,
+                frequency,
+                notes,
+            } as any);
         } else {
             onSave({
-                studentId: students[0]?.id || 's1', // schema fallback
-                strategy: (interventionType || 'Small Group') as any,
-                activities: notes ? [notes] : ['Daily Support'],
-                startDate: startDate || '2026-06-16',
-                endDate: startDate || '2026-06-30',
-                progress: 0,
-                status: 'Active',
-                targetType: 'group',
-                targetName: groupName,
-                groupId: groupId
-            });
+                target_type: 'individual_group',
+                group_id: groupId ? Number(groupId) : null,
+                intervention_type: interventionType,
+                reason,
+                start_date: startDate,
+                frequency,
+                notes,
+            } as any);
         }
     };
 

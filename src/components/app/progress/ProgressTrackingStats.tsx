@@ -16,7 +16,7 @@ const ProgressTrackingStats = ({ overallProgress, classAttendance }: ProgressTra
             Avg Score
           </span>
           <h3 className="text-3xl font-extrabold text-[#10B981] mt-2 font-sans tracking-tight">
-            {overallProgress ? overallProgress.avg_score + '%' : '--'}
+            {overallProgress ? (overallProgress.avg_score ?? 0) + '%' : '--'}
           </h3>
           <p className="text-xs text-slate-500 mt-1 font-medium">
             Risk: {overallProgress ? overallProgress.risk_status.replace('_', ' ') : '--'}

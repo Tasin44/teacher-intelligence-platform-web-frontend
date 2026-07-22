@@ -37,8 +37,9 @@ export function generateLessonRecommendation(assignmentId: number) {
   return apiClient.post<LessonRecommendation>(`/api/lesson-recommendations/generate/${assignmentId}`, {});
 }
 
-export function getLessonRecommendations() {
-  return apiClient.get<LessonRecommendation[]>('/api/lesson-recommendations/');
+export function getLessonRecommendations(assignmentId?: number) {
+  const query = assignmentId ? `?assignment_id=${assignmentId}` : '';
+  return apiClient.get<LessonRecommendation[]>(`/api/lesson-recommendations/${query}`);
 }
 
 export function applyLessonRecommendation(id: number, payload: { applied_target_type: 'student' | 'group', applied_student_id?: number, applied_group_id?: number }) {

@@ -16,7 +16,7 @@ const CurriculumAdjustmentRecommendations = ({
       className="flex flex-col justify-between h-[420px]"
       actionElements={<Sparkles size={16} className="text-orange-500 animate-pulse" />}
     >
-      <div className="space-y-4 max-h-64 overflow-y-auto pr-1 text-slate-300 text-sm leading-relaxed" id="suggestions-box">
+      <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1 text-slate-300 text-sm leading-relaxed" id="suggestions-box">
         {adjustmentText ? (
           <div className="whitespace-pre-wrap">{adjustmentText}</div>
         ) : (

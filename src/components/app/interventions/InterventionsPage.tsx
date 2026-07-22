@@ -28,8 +28,8 @@ const InterventionsPage = ({
   onAddIntervention,
   onUpdateIntervention
 }: InterventionsScreenProps) => {
-  const [interventions, setInterventions] = useState<Intervention[]>(initialInterventionsList);
-  const [flaggedStudents, setFlaggedStudents] = useState<StudentNeedingAssistance[]>([]);
+  const [interventions, setInterventions] = useState<any[]>([]);
+  const [flaggedStudents, setFlaggedStudents] = useState<StudentNeedingAssistance>([]);
 
   // Fetch flagged students and active interventions on mount
   useEffect(() => {
@@ -65,10 +65,6 @@ const InterventionsPage = ({
   const [errorToast, setErrorToast] = useState(false);
   const [errorToastMessage, setErrorToastMessage] = useState('');
 
-  // Sync state if props change
-  useEffect(() => {
-    setInterventions(initialInterventionsList);
-  }, [initialInterventionsList]);
 
   const updateInterventionsWithCallback = (newList: Intervention[]) => {
     setInterventions(newList);
@@ -93,57 +89,33 @@ const InterventionsPage = ({
 
   const handleCreatePlan = async (newPlanData: any) => {
     try {
-      // Create via API
-      const created = await createIntervention({
-        target_type: 'individual_student',
-        student_roll: newPlanData.studentRoll || 'R001', // Should come from form, defaulting if missing
-        intervention_type: newPlanData.strategy,
-        reason: newPlanData.reason || 'Not specified',
-        start_date: newPlanData.startDate,
-        frequency: 'weekly', // dummy frequency
-        notes: newPlanData.activities?.join(', ') || ''
-      });
-      
-      const updatedList = [created, ...interventions];
+      const created = await createIntervention(newPlanData);
+      const updatedList = [created, ...interventions] as any[];
       updateInterventionsWithCallback(updatedList);
-      if (onAddIntervention) onAddIntervention(created);
-      
+      if (onAddIntervention) onAddIntervention(created as any);
       setIsAddOpen(false);
-      showToast(`Successfully created intervention plan for targeted student!`);
+      showToast('Successfully created intervention plan!');
     } catch (err: any) {
-      console.error("Failed to create intervention", err);
+      console.error('Failed to create intervention', err);
       const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
-      showErrorToast(displayMsg || "Failed to create intervention.");
+      showErrorToast(displayMsg || 'Failed to create intervention.');
     }
   };
 
-  const handleSavePlan = async (updatedFields: any) => {
-    if (!editingIntervention) return;
+  const handleSavePlan = async (id: number, updatedFields: any) => {
     try {
-      const patched = await updateIntervention(editingIntervention.intervention_id || Number(editingIntervention.id), {
-        intervention_type: updatedFields.strategy,
-        notes: updatedFields.activities?.join(', ') || '',
-        start_date: updatedFields.startDate
-      });
-      
-      const updatedList = interventions.map((item) => {
-        if (item.intervention_id === editingIntervention.intervention_id || item.id === editingIntervention.id) {
-          return {
-            ...item,
-            ...patched,
-            ...updatedFields
-          };
-        }
-        return item;
-      });
+      const patched = await updateIntervention(id, updatedFields);
+      const updatedList = interventions.map((item: any) =>
+        item.intervention_id === id ? { ...item, ...patched } : item
+      );
       updateInterventionsWithCallback(updatedList);
       setIsEditOpen(false);
       setEditingIntervention(null);
-      showToast(`Successfully modified active intervention plan!`);
-    } catch (err) {
-      console.error("Failed to modify intervention plan", err);
+      showToast('Successfully modified active intervention plan!');
+    } catch (err: any) {
+      console.error('Failed to modify intervention plan', err);
       const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
-      showErrorToast(displayMsg || "Failed to modify plan.");
+      showErrorToast(displayMsg || 'Failed to modify plan.');
     }
   };
 
@@ -258,8 +230,7 @@ const InterventionsPage = ({
       {/* Edit Intervention Modal */}
       <EditActiveInterventionPlanModal
         isOpen={isEditOpen}
-        intervention={editingIntervention}
-        students={students}
+        intervention={editingIntervention as any}
         onClose={() => setIsEditOpen(false)}
         onSave={handleSavePlan}
       />

@@ -97,11 +97,12 @@ const ActiveInterventionPlanCard = ({ intervention, student, onModifyPlan }: Act
                     </span>
                 )}
 
+
                 <button
                     onClick={() => onModifyPlan(intervention)}
-                    className="text-xs text-slate-400 hover:text-slate-205 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-0 font-semibold"
+                    className="text-xs text-slate-400 hover:text-orange-400 hover:underline flex items-center gap-1 cursor-pointer bg-transparent border-0 font-semibold"
                 >
-                    <Edit2 size={12} className="text-slate-505" />
+                    <Edit2 size={12} className="text-slate-500" />
                     Modify Plan
                 </button>
             </div>

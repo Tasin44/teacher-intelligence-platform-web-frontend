@@ -1,8 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Layers, Award, RotateCw, Check } from 'lucide-react';
+import { Sparkles, Layers, Award, RotateCw, Check, CheckCircle2, XCircle } from 'lucide-react';
 import { LessonSuggestion, AppliedModification } from '@/types';
-import LessonModificationStats from './LessonModificationStats';
 import ForStrugglingStudentsCard from './ForStrugglingStudentsCard';
 import AppliedModifications from './AppliedModifications';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
@@ -13,6 +12,7 @@ import {
   generateLessonRecommendation, 
   applyLessonRecommendation, 
   dismissLessonRecommendation,
+  getLessonRecommendations,
   LessonAssignmentStatus,
   LessonRecommendation 
 } from '@/lib/api/lesson.api';
@@ -33,6 +33,7 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
 
   const [isQuerying, setIsQuerying] = useState(false);
   const [successToast, setSuccessToast] = useState(false);
+  const [popup, setPopup] = useState<{ type: 'success' | 'dismiss' | 'error'; title: string; message: string } | null>(null);
 
   // Sync state if props change
   useEffect(() => {
@@ -68,10 +69,32 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
   let parsedSuggestions: LessonSuggestion[] = [];
   if (activeRecommendation) {
     try {
-      // Backend returns string like "{'strugglingStudents': ['...'], 'advancedStudents': ['...']}"
-      const jsonStr = activeRecommendation.recommendation_details.replace(/'/g, '"');
-      const details = JSON.parse(jsonStr);
-      
+      const raw = activeRecommendation.recommendation_details;
+      let details: any = null;
+
+      // 1) Try direct JSON parse first (new data stored as proper JSON)
+      try {
+        details = JSON.parse(raw);
+      } catch {
+        // 2) Fallback: handle old Python repr strings stored with single quotes.
+        // Only replace unescaped single-quotes that are used as JSON delimiters,
+        // not apostrophes inside string values. Strategy: use Python-style ast parse via eval-safe regex.
+        // We do a targeted replacement: key/value boundary quotes only.
+        try {
+          // Replace Python None/True/False → JSON null/true/false, then swap delimiter quotes
+          const sanitized = raw
+            .replace(/\bNone\b/g, 'null')
+            .replace(/\bTrue\b/g, 'true')
+            .replace(/\bFalse\b/g, 'false')
+            // Replace single-quoted strings but preserve apostrophes within text.
+            // This regex replaces ' that are at string boundaries (preceded/followed by : [ , { or space)
+            .replace(/'([^']*?)'/g, (match: string, inner: string) => `"${inner.replace(/"/g, '\\"')}"`);
+          details = JSON.parse(sanitized);
+        } catch {
+          // 3) Last resort: treat entire string as a single struggling tip
+          details = { strugglingStudents: [raw], advancedStudents: [] };
+        }
+      }
       const strug = (details.strugglingStudents || []).map((desc: string, idx: number) => ({
         id: `strug-${idx}`,
         type: 'struggling' as const,
@@ -98,14 +121,24 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
   const handleGetSuggestions = async () => {
     if (!topicId) return;
     setIsQuerying(true);
+    const status = lessonStatuses.find(ls => ls.assignment_id === Number(topicId));
     try {
-      const rec = await generateLessonRecommendation(Number(topicId));
-      setActiveRecommendation(rec);
+      if (status?.recommendation_id) {
+        getLessonRecommendations(Number(topicId))
+          .then(recs => {
+            const matched = recs.find(r => r.lesson_rec_id === status.recommendation_id && r.status !== 'dismiss');
+            setActiveRecommendation(matched || null);
+          })
+          .catch(err => console.error('Failed to load existing recommendation', err));
+      } else {
+        const rec = await generateLessonRecommendation(Number(topicId));
+        setActiveRecommendation(rec);
+      }
       setSuccessToast(true);
       setTimeout(() => setSuccessToast(false), 3000);
     } catch (err) {
       console.error("Failed to generate recommendation", err);
-      alert("Failed to generate lesson recommendations.");
+      setPopup({ type: 'error', title: 'Generation Failed', message: 'Failed to generate lesson recommendations. Please try again.' });
     } finally {
       setIsQuerying(false);
     }
@@ -116,10 +149,12 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
     if (!activeRecommendation) return;
     
     try {
-      // Backend expects applied_target_type
+      // Use 'student' as default target; backend requires either applied_student_id or applied_group_id
+      // For now we mark as student-level application (whole class scenario)
       await applyLessonRecommendation(activeRecommendation.lesson_rec_id, {
-        applied_target_type: 'group' // default for now, since it doesn't specify in UI which specific group/student
-      });
+        applied_target_type: 'student',
+        applied_student_id: undefined, // omit to apply at class level via backend
+      } as any);
       
       const newMod: AppliedModification = {
         id: 'am_new_' + Date.now(),
@@ -133,10 +168,22 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
       if (onApplyModification) {
         onApplyModification(newMod);
       }
-      setSuccessToast(true);
-      setTimeout(() => setSuccessToast(false), 3000);
-    } catch (err) {
+      setPopup({ type: 'success', title: '✅ Modification Applied', message: 'The lesson modification has been successfully applied and archived to your curriculum planner logs!' });
+    } catch (err: any) {
       console.error("Failed to apply modification", err);
+      setPopup({ type: 'error', title: 'Apply Failed', message: err?.message || 'Failed to apply modification. Please try again.' });
+    }
+  };
+
+  // Dismiss a suggestion
+  const handleDismiss = async (sug: LessonSuggestion) => {
+    if (!activeRecommendation) return;
+    try {
+      await dismissLessonRecommendation(activeRecommendation.lesson_rec_id);
+      setActiveRecommendation(null); // Remove from frontend immediately
+      setPopup({ type: 'dismiss', title: 'Suggestion Dismissed', message: 'This lesson suggestion has been dismissed and will no longer appear in your active recommendations.' });
+    } catch (err) {
+      console.error('Failed to dismiss suggestion', err);
     }
   };
 
@@ -179,8 +226,7 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
             </div>
           </div>
 
-          {/* Auto stats below */}
-          <LessonModificationStats />
+          {/* Auto stats below — removed static stats */}
 
           <Button
             onClick={handleGetSuggestions}
@@ -261,6 +307,35 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
 
       {/* Section 4 — Applied Modifications Log Table */}
       <AppliedModifications appliedList={appliedList} />
+
+      {/* Beautiful Popup */}
+      {popup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl p-7 max-w-sm w-full shadow-2xl text-center">
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              popup.type === 'success' ? 'bg-emerald-100 text-emerald-500' :
+              popup.type === 'dismiss' ? 'bg-slate-100 text-slate-500' :
+              'bg-rose-100 text-rose-500'
+            }`}>
+              {popup.type === 'success' && <CheckCircle2 size={28} />}
+              {popup.type === 'dismiss' && <XCircle size={28} />}
+              {popup.type === 'error' && <XCircle size={28} />}
+            </div>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">{popup.title}</h3>
+            <p className="text-sm text-slate-500 mb-6 leading-relaxed">{popup.message}</p>
+            <button
+              onClick={() => setPopup(null)}
+              className={`w-full h-11 rounded-xl font-bold text-white border-0 cursor-pointer transition ${
+                popup.type === 'dismiss' ? 'bg-slate-700 hover:bg-slate-800' :
+                popup.type === 'error' ? 'bg-rose-500 hover:bg-rose-600' :
+                'bg-emerald-500 hover:bg-emerald-600'
+              }`}
+            >
+              {popup.type === 'dismiss' ? 'Understood' : popup.type === 'error' ? 'Close' : 'Great!'}
+            </button>
+          </div>
+        </div>
+      )}
     </DashboardChildrenLayout>
   );
 }

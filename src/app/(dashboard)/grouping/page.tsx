@@ -20,7 +20,6 @@ const page = () => {
           id: `hist-${index}`,
           date: item.date,
           groupsCreatedCount: item.groups_formed,
-          trigger: 'AI Recommendation — Multi-factor Score Diagnostic',
         }));
         setHistory(mappedHistory.length > 0 ? mappedHistory : initialGroupHistory);
       } catch (error) {

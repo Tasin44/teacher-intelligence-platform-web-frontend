@@ -1,12 +1,35 @@
 "use client";
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useEduPulse } from '@/lib/context/EduPulseContext';
 import StudentGroupingPage from '@/components/app/grouping/StudentGroupingPage';
 import { initialGroupHistory } from '@/lib/data';
+import { getGenerationHistory } from '@/lib/api/grouping.api';
+import { GroupHistory } from '@/types';
 
 const page = () => {
   const router = useRouter();
   const { students, groups, setGroups, regenerateGroups, setSelectedStudentId } = useEduPulse();
+  const [history, setHistory] = useState<GroupHistory[]>([]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const data = await getGenerationHistory();
+        const mappedHistory: GroupHistory[] = data.map((item, index) => ({
+          id: `hist-${index}`,
+          date: item.date,
+          groupsCreatedCount: item.groups_formed,
+          trigger: 'AI Recommendation — Multi-factor Score Diagnostic',
+        }));
+        setHistory(mappedHistory.length > 0 ? mappedHistory : initialGroupHistory);
+      } catch (error) {
+        console.error("Failed to fetch generation history:", error);
+        setHistory(initialGroupHistory);
+      }
+    };
+    fetchHistory();
+  }, []);
 
   const handleNavigate = (screen: string, subtab?: string) => {
     let path = screen === 'dashboard' ? '/' : `/${screen}`;
@@ -20,7 +43,7 @@ const page = () => {
     <StudentGroupingPage
       students={students}
       groups={groups}
-      history={initialGroupHistory}
+      history={history.length > 0 ? history : initialGroupHistory}
       onRegenerateGroups={regenerateGroups}
       onUpdateGroups={setGroups}
       onNavigate={handleNavigate}

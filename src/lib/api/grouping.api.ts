@@ -47,3 +47,12 @@ export function getGroups() {
 export function updateGroup(groupId: number, data: Partial<ApiGroup>) {
   return apiClient.patch<ApiGroup>(`/api/groups/${groupId}/`, data);
 }
+
+export interface GroupGenerationHistoryItem {
+  date: string;
+  groups_formed: number;
+}
+
+export function getGenerationHistory() {
+  return apiClient.get<GroupGenerationHistoryItem[]>('/api/groups/generate/history');
+}

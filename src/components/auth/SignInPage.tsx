@@ -9,7 +9,7 @@ import { profileToTeacher } from '@/lib/context/EduPulseContext'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { loginRequest } from '@/lib/api/auth.api'
 import { ApiError } from '@/lib/api/client'
@@ -20,6 +20,7 @@ const SignInPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [apiError, setApiError] = useState<string | null>(null);
+    const [showPendingPopup, setShowPendingPopup] = useState(false);
 
     const { register, handleSubmit, formState: { errors } } = useForm<TSignInInput>({
         resolver: zodResolver(signInSchema),
@@ -43,7 +44,7 @@ const SignInPage = () => {
             const teacher = profileToTeacher(result.teacher);
             
             if (teacher.approval_status === 'pending') {
-                setApiError('Your account is pending approval by an administrator.');
+                setShowPendingPopup(true);
                 setIsLoading(false);
                 return;
             }
@@ -56,7 +57,12 @@ const SignInPage = () => {
                 // Backend sends non_field_errors as the key for general login failures
                 const errData = err.data as Record<string, string[]> | null;
                 if (errData?.non_field_errors) {
-                    setApiError(errData.non_field_errors[0]);
+                    const msg = errData.non_field_errors[0];
+                    if (msg === 'Account is pending admin approval.' || msg.toLowerCase().includes('pending')) {
+                        setShowPendingPopup(true);
+                    } else {
+                        setApiError(msg);
+                    }
                 } else {
                     setApiError(err.message);
                 }
@@ -161,6 +167,30 @@ const SignInPage = () => {
                     </Link>
                 </p>
             </div>
+
+            {/* Pending Approval Popup */}
+            {showPendingPopup && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+                    <div className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex flex-col items-center text-center">
+                            <div className="w-12 h-12 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mb-4">
+                                <Clock size={24} />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">Approval Pending</h3>
+                            <p className="text-sm text-slate-600 mb-6">
+                                Your account is currently pending approval by an administrator. You will be able to log in once your account has been approved.
+                            </p>
+                            <Button 
+                                onClick={() => setShowPendingPopup(false)}
+                                type="button"
+                                className="w-full h-11 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold cursor-pointer"
+                            >
+                                Understood
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

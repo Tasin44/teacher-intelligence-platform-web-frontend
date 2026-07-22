@@ -92,18 +92,8 @@ const VerifyOtpPage = () => {
 
                 clearSignupEmail();
 
-                // Log the teacher in with their tokens
-                const teacher = profileToTeacher(result.teacher);
-                
-                if (teacher.approval_status === 'pending') {
-                    setError('Your account is pending approval by an administrator. You cannot log in yet.');
-                    setIsLoading(false);
-                    return;
-                }
-
-                login(teacher, result.tokens);
-
-                router.push('/');
+                // Redirect to login page after successful OTP verification
+                router.push('/auth/sign-in');
 
             } else {
                 // forgot-password mode

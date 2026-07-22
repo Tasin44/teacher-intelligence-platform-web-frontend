@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Bot, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, Boxes, FileSpreadsheet, HeartHandshake, BookOpen, TrendingUp, MessageSquare, Calendar, Settings, LogOut, Bell, Bot, ChevronLeft, ChevronRight, Menu, X, User } from 'lucide-react';
 import { EduPulseProvider, useEduPulse } from '@/lib/context/EduPulseContext';
 import AddStudentModal from '@/components/modal/AddStudentModal';
 
@@ -13,14 +13,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { loggedInTeacher, logout } = useEduPulse();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   // Sync collapsed state with localStorage on mount
   useEffect(() => {
+    setIsClient(true);
     const saved = localStorage.getItem('edupulse_sidebar_collapsed');
     if (saved === 'true') {
       setIsCollapsed(true);
     }
-  }, []);
+
+    const teacherSession = localStorage.getItem('edupulse_logged_teacher');
+    if (!teacherSession) {
+      setIsAuthenticated(false);
+      router.push('/auth/sign-up');
+    }
+  }, [router]);
 
   const handleToggleCollapse = () => {
     const nextState = !isCollapsed;
@@ -29,12 +38,16 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   const teacher = loggedInTeacher || {
-    name: 'Ms. Johnson',
-    email: 'johnson@oakwood.edu',
-    school: 'Oakwood Elementary School',
-    grade: 'Grade 4',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'
+    name: '',
+    email: '',
+    school: '',
+    grade: '',
+    avatar: ''
   };
+
+  if (isClient && !isAuthenticated) {
+    return null;
+  }
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
@@ -140,13 +153,19 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         {/* Bottom Panel */}
         {isCollapsed ? (
           <div className="p-4 border-t border-[#2A2D3A] flex-col items-center gap-4 bg-slate-900/10 transition-all duration-300 lg:flex hidden" id="sidebar-teacher-profile-collapsed">
-            <Link href="/settings" title="Teacher Settings">
-              <img
-                src={teacher.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'}
-                alt="Teacher"
-                referrerPolicy="no-referrer"
-                className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] hover:border-orange-500/40 transition shrink-0"
-              />
+            <Link href="/settings" title="Teacher Settings" className="flex items-center justify-center">
+              {teacher.avatar ? (
+                <img
+                  src={teacher.avatar}
+                  alt="Teacher"
+                  referrerPolicy="no-referrer"
+                  className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] hover:border-orange-500/40 transition shrink-0"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full border border-[#2A2D3A] hover:border-orange-500/40 transition shrink-0 bg-slate-800 flex items-center justify-center text-slate-500">
+                  <User size={16} />
+                </div>
+              )}
             </Link>
             <button
               onClick={() => {
@@ -163,12 +182,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         
         <div className={`p-4 border-t border-[#2A2D3A] items-center justify-between bg-slate-900/10 transition-all duration-300 ${isCollapsed ? 'lg:hidden flex' : 'flex'}`} id="sidebar-teacher-profile">
           <div className="flex items-center gap-3">
-            <img
-              src={teacher.avatar || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150'}
-              alt="Teacher"
-              referrerPolicy="no-referrer"
-              className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] shrink-0"
-            />
+            {teacher.avatar ? (
+              <img
+                src={teacher.avatar}
+                alt="Teacher"
+                referrerPolicy="no-referrer"
+                className="w-9 h-9 rounded-full object-cover border border-[#2A2D3A] shrink-0"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full border border-[#2A2D3A] shrink-0 bg-slate-800 flex items-center justify-center text-slate-500">
+                <User size={16} />
+              </div>
+            )}
             <div className="leading-tight whitespace-nowrap overflow-hidden">
               <span className="font-bold text-xs text-white block">{teacher.name}</span>
               <span className="text-[10px] text-slate-500 block truncate">{teacher.grade} • {teacher.school.split(' ')[0]}</span>
@@ -219,15 +244,19 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             <div className="relative">
               <Link
                 href="/settings"
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border border-[#2A2D3A] hover:border-orange-500/40 transition inline-block p-0 cursor-pointer animate-fadeIn"
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden border border-[#2A2D3A] hover:border-orange-500/40 transition inline-flex items-center justify-center p-0 cursor-pointer animate-fadeIn bg-slate-800 text-slate-500"
                 title="Teacher Settings"
               >
-                <img
-                  src={loggedInTeacher?.avatar || "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150"}
-                  alt="Teacher Profile"
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover"
-                />
+                {loggedInTeacher?.avatar ? (
+                  <img
+                    src={loggedInTeacher.avatar}
+                    alt="Teacher Profile"
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={18} />
+                )}
               </Link>
             </div>
           </div>

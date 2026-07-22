@@ -41,6 +41,13 @@ const SignInPage = () => {
 
             // Map backend teacher → local Teacher shape and save tokens
             const teacher = profileToTeacher(result.teacher);
+            
+            if (teacher.approval_status === 'pending') {
+                setApiError('Your account is pending approval by an administrator.');
+                setIsLoading(false);
+                return;
+            }
+
             login(teacher, result.tokens);
 
             router.push('/');

@@ -58,3 +58,7 @@ export function getMonthlyAttendance(studentId: number, year: number, month: num
     `/api/attendance/student/${studentId}/monthly?year=${year}&month=${month}`
   );
 }
+
+export function getOffDays() {
+  return apiClient.get<OffDayResponse[]>('/api/attendance/off-day');
+}

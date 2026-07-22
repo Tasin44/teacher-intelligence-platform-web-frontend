@@ -3,7 +3,8 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { User } from 'lucide-react';
 import { Student } from '@/types';
 import TakeAttendanceModal from './TakeAttendanceModal';
-import { getMonthlyAttendance, markAttendance, AttendanceStatus } from '@/lib/api/attendance.api';
+import { getMonthlyAttendance, markAttendance, getOffDays, createOffDay, AttendanceStatus } from '@/lib/api/attendance.api';
+import { ApiError } from '@/lib/api/client';
 
 interface AttendanceTabProps {
   currentStudent: Student;
@@ -35,6 +36,22 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
   const [attendanceOverrides, setAttendanceOverrides] = useState<Record<number, 'Present' | 'Absent' | 'Late' | 'Weekend'>>({});
   const [apiData, setApiData] = useState<Record<number, 'Present' | 'Absent' | 'Late' | 'Weekend'>>({});
   const [apiCalculatedRate, setApiCalculatedRate] = useState<number | null>(null);
+  const [fetchedOffDays, setFetchedOffDays] = useState<Set<string>>(new Set());
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchOffDaysData = async () => {
+      try {
+        const res = await getOffDays();
+        const offDaySet = new Set<string>();
+        res.forEach(d => offDaySet.add(d.off_date));
+        setFetchedOffDays(offDaySet);
+      } catch (err) {
+        console.error("Failed to fetch off days", err);
+      }
+    };
+    fetchOffDaysData();
+  }, []);
 
   useEffect(() => {
     const fetchMonthlyData = async () => {
@@ -87,9 +104,14 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
       const dayOfWeek = new Date(selectedYear, selectedMonth, d).getDay();
       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
       
+      const formattedDate = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const isOffDay = fetchedOffDays.has(formattedDate);
+      
       let status: 'Present' | 'Absent' | 'Late' | 'Weekend' | 'None' = 'None';
       if (attendanceOverrides[d]) {
           status = attendanceOverrides[d];
+      } else if (isOffDay) {
+          status = 'Weekend';
       } else if (apiData[d]) {
           status = apiData[d];
       }
@@ -254,6 +276,8 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
           dateStr={dateStr}
           initialStatus={selectedDay.status === 'None' ? 'Present' : selectedDay.status as any}
           onSave={async (status, remarks) => {
+            const formattedDate = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(selectedDay.day).padStart(2, '0')}`;
+            
             // Optimistic UI update
             setAttendanceOverrides((prev) => ({
               ...prev,
@@ -262,23 +286,66 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
             setIsModalOpen(false);
             
             // API Call
-            if (currentStudent.student_roll && status !== 'Weekend') {
-              try {
+            try {
+              if (status === 'Weekend') {
+                await createOffDay({ off_date: formattedDate });
+                setFetchedOffDays(prev => new Set(prev).add(formattedDate));
+              } else if (currentStudent.student_roll) {
                 const apiStatus = status === 'Present' ? 'present' : status === 'Absent' ? 'absent' : 'late';
-                const formattedDate = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(selectedDay.day).padStart(2, '0')}`;
                 await markAttendance({
                   student_roll: currentStudent.student_roll,
                   attendance_date: formattedDate,
                   status: apiStatus as AttendanceStatus
                 });
-              } catch (err) {
-                console.error('Failed to save attendance', err);
-                // Could revert optimistic update on failure if needed
+              }
+            } catch (err) {
+              // Revert optimistic update
+              setAttendanceOverrides((prev) => {
+                const next = { ...prev };
+                delete next[selectedDay.day];
+                return next;
+              });
+              
+              if (err instanceof ApiError) {
+                const errData = err.data as Record<string, string[]> | null;
+                if (errData?.attendance_date) {
+                    setApiError(errData.attendance_date[0]);
+                } else if (errData?.off_date) {
+                    setApiError(errData.off_date[0]);
+                } else {
+                    setApiError(err.message);
+                }
+              } else {
+                setApiError('Failed to save attendance. Please try again.');
               }
             }
             setSelectedDay(null);
           }}
         />
+      )}
+
+      {/* Error Popup */}
+      {apiError && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+            <div className="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex flex-col items-center text-center">
+                    <div className="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mb-4">
+                        <span className="text-2xl font-bold">!</span>
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Notice</h3>
+                    <p className="text-sm text-slate-600 mb-6">
+                        {apiError}
+                    </p>
+                    <button 
+                        onClick={() => setApiError(null)}
+                        type="button"
+                        className="w-full h-11 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold cursor-pointer transition"
+                    >
+                        Understood
+                    </button>
+                </div>
+            </div>
+        </div>
       )}
     </div>
   );

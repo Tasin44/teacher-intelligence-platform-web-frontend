@@ -259,46 +259,10 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                             {questions.map((question, qIdx) => (
                                 <div key={qIdx} className="bg-[#1E2130] p-3 rounded-lg border border-[#2A2D3A]/60 flex items-start justify-between gap-3 group">
                                     <div className="flex-1">
-                                        {editingIdx === qIdx ? (
-                                            <textarea
-                                                value={editValue}
-                                                onChange={(e) => setEditValue(e.target.value)}
-                                                className="w-full bg-[#0F1117] border border-orange-500 rounded-lg p-2 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium resize-y"
-                                                rows={2}
-                                            />
-                                        ) : (
-                                            <p className="text-slate-200 text-xs font-medium leading-relaxed">
-                                                <span className="text-orange-500 font-bold mr-1.5">Q{qIdx + 1}.</span>
-                                                {question}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-1.5 shrink-0">
-                                        {editingIdx === qIdx ? (
-                                            <div className="flex gap-1">
-                                                <button
-                                                    onClick={() => handleSaveQuestion(qIdx)}
-                                                    className="px-2.5 py-1 bg-orange-500 text-white rounded text-[10px] font-bold hover:bg-orange-600 transition cursor-pointer border-0"
-                                                >
-                                                    Save
-                                                </button>
-                                                <button
-                                                    onClick={() => setEditingIdx(null)}
-                                                    className="px-2.5 py-1 bg-slate-800 hover:bg-slate-750 text-slate-350 rounded text-[10px] font-bold transition cursor-pointer border-0"
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                onClick={() => handleStartEdit(qIdx, question)}
-                                                className="opacity-0 group-hover:opacity-100 focus:opacity-100 p-1 hover:bg-slate-800 text-slate-400 hover:text-slate-250 rounded transition cursor-pointer bg-transparent border-0 flex items-center gap-1"
-                                                title="Edit Question"
-                                            >
-                                                <Edit size={12} className="text-orange-500" />
-                                                <span className="text-[10px] font-bold">Edit</span>
-                                            </button>
-                                        )}
+                                        <p className="text-slate-200 text-xs font-medium leading-relaxed">
+                                            <span className="text-orange-500 font-bold mr-1.5">Q{qIdx + 1}.</span>
+                                            {question}
+                                        </p>
                                     </div>
                                 </div>
                             ))}

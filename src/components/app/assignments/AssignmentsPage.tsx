@@ -10,7 +10,7 @@ import EditAssignmentModal from '@/components/modal/EditAssignmentModal';
 import AssignmentDetailsModal from '@/components/modal/AssignmentDetailsModal';
 import { Button } from '@/components/ui/button';
 import SubmissionsListModal from '@/components/modal/SubmissionsListModal';
-import { ApiAssignment, getAssignments, searchAssignments, createAssignment, CreateAssignmentPayload } from '@/lib/api/assignment.api';
+import { ApiAssignment, getAssignments, searchAssignments, createAssignment, updateAssignment, CreateAssignmentPayload } from '@/lib/api/assignment.api';
 
 interface AssignmentsScreenProps {
   students: Student[];
@@ -86,7 +86,7 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
         console.error("Failed to search assignments", err);
       }
     };
-    
+
     // Add small debounce
     const timer = setTimeout(() => {
       handleSearch();
@@ -139,26 +139,32 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
     instructions: string;
     questionCount: number;
   }) => {
+    const payload: Partial<CreateAssignmentPayload> = {
+      title: formData.title,
+      subject: formData.subject,
+      target_type: formData.targetType,
+      target_student_roll: formData.targetStudentRoll,
+      target_group_id: formData.targetGroupId,
+      ai_difficulty: formData.difficulty,
+      ccss_code: formData.standards,
+      due_date: formData.dueDate,
+      instructions: formData.instructions,
+      number_of_questions: formData.questionCount
+    };
+
     if (selectedAssignment) {
-      // API currently doesn't have an update assignment endpoint in our swagger, 
-      // but if it did, we'd call it here. For now just reset.
-      console.warn("Edit assignment not fully implemented on backend");
+      try {
+        await updateAssignment(selectedAssignment.assignment_id, payload);
+        await loadAssignments(); // refetch
+      } catch (err: any) {
+        console.error("Failed to update assignment", err);
+        const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
+        showErrorToast(displayMsg || "Failed to update assignment");
+      }
     } else {
       // Create new
       try {
-        const payload: CreateAssignmentPayload = {
-          title: formData.title,
-          subject: formData.subject,
-          target_type: formData.targetType,
-          target_student_roll: formData.targetStudentRoll,
-          target_group_id: formData.targetGroupId,
-          ai_difficulty: formData.difficulty,
-          ccss_code: formData.standards,
-          due_date: formData.dueDate,
-          instructions: formData.instructions,
-          number_of_questions: formData.questionCount
-        };
-        await createAssignment(payload);
+        await createAssignment(payload as CreateAssignmentPayload);
         await loadAssignments(); // refetch
       } catch (err: any) {
         console.error("Failed to create assignment", err);
@@ -175,9 +181,9 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
       // We don't have a concept of type 'Assignment' vs 'Homework' in the API right now, 
       // but we can fake it or just show all.
       // For now, let's just let the search API handle the searchQuery. We can still apply client-side filtering for group/level.
-      
+
       const levelBadge = card.ai_difficulty === 'Low' ? 'Below' : card.ai_difficulty === 'High' ? 'Advanced' : 'On Track';
-      
+
       // Filter level
       if (filterLevel !== 'all' && levelBadge !== filterLevel) return false;
 
@@ -192,8 +198,8 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
     <div className="flex items-center gap-3">
       <Button
         onClick={() => {
-            setSubmissionsAssignmentId(null);
-            setIsSubmissionsModalOpen(true);
+          setSubmissionsAssignmentId(null);
+          setIsSubmissionsModalOpen(true);
         }}
         className="bg-white border border-gray-400 !text-black hover:bg-gray-100 shadow-sm"
       >
@@ -267,8 +273,8 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
       <SubmissionsListModal
         isOpen={isSubmissionsModalOpen}
         onClose={() => {
-            setIsSubmissionsModalOpen(false);
-            setSubmissionsAssignmentId(null);
+          setIsSubmissionsModalOpen(false);
+          setSubmissionsAssignmentId(null);
         }}
         assignmentId={submissionsAssignmentId}
       />

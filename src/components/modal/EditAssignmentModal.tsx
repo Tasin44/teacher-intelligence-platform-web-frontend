@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 
 import { ApiAssignment } from '@/lib/api/assignment.api';
 import { getAllGroups, ApiGroup } from '@/lib/api/grouping.api';
+import { getStudents, ApiStudent } from '@/lib/api/student.api';
 
 interface EditAssignmentModalProps {
     isOpen: boolean;
@@ -39,6 +40,7 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
     const [formInstructions, setFormInstructions] = useState('');
     const [formQuestionCount, setFormQuestionCount] = useState(10);
     const [availableGroups, setAvailableGroups] = useState<ApiGroup[]>([]);
+    const [availableStudents, setAvailableStudents] = useState<ApiStudent[]>([]);
 
     useEffect(() => {
         if (isOpen) {
@@ -71,6 +73,14 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                 // If creating new and no group selected, default to the first group if available
                 if (!selectedAssignment && groups.length > 0) {
                     setFormTargetGroupId(groups[0].group_id.toString());
+                }
+            }).catch(console.error);
+
+            // Fetch available students
+            getStudents().then((res) => {
+                setAvailableStudents(res.results);
+                if (!selectedAssignment && res.results.length > 0) {
+                    setFormTargetStudentRoll(res.results[0].student_roll);
                 }
             }).catch(console.error);
         }
@@ -166,13 +176,18 @@ const EditAssignmentModal = ({ isOpen, selectedAssignment, onClose, onSave }: Ed
                                     {formTargetType === 'individual_student' ? 'Student Roll' : 'Group'}
                                 </label>
                                 {formTargetType === 'individual_student' ? (
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. R001"
+                                    <select
                                         value={formTargetStudentRoll}
                                         onChange={(e) => setFormTargetStudentRoll(e.target.value)}
-                                        className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-medium"
-                                    />
+                                        className="bg-[#0F1117] border border-[#2A2D3A] rounded-lg px-2 py-2 text-xs text-slate-200 focus:outline-none focus:border-orange-500 font-medium"
+                                    >
+                                        <option value="" disabled>Select a student</option>
+                                        {availableStudents.map(student => (
+                                            <option key={student.student_id} value={student.student_roll}>
+                                                {student.student_name} ({student.student_roll})
+                                            </option>
+                                        ))}
+                                    </select>
                                 ) : (
                                     <select
                                         value={formTargetGroupId}

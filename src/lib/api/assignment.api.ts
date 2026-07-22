@@ -49,6 +49,10 @@ export function createAssignment(payload: CreateAssignmentPayload) {
   return apiClient.post<ApiAssignment>('/api/assignments/', payload);
 }
 
+export function updateAssignment(id: number, payload: Partial<CreateAssignmentPayload>) {
+  return apiClient.patch<ApiAssignment>(`/api/assignments/${id}/`, payload);
+}
+
 export function getAssignments() {
   return apiClient.get<PaginatedAssignments>('/api/assignments');
 }

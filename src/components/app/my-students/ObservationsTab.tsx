@@ -30,7 +30,7 @@ export default function ObservationsTab({ currentStudent, onSuccess }: Observati
   const loadObservations = async () => {
     setIsLoadingRecords(true);
     try {
-      const data = await getObservations();
+      const data = await getObservations(currentStudent.student_roll);
       setApiObservations(data.results);
     } catch { /* silently fail */ }
     finally { setIsLoadingRecords(false); }

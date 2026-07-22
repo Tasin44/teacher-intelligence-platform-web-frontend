@@ -26,7 +26,7 @@ export default function BehaviorTab({ currentStudent, onSuccess }: BehaviorTabPr
     const loadBehavior = async () => {
         setIsLoadingRecords(true);
         try {
-            const data = await getBehaviorFeedback();
+            const data = await getBehaviorFeedback(currentStudent.student_roll);
             setApiBehavior(data.results);
         } catch { /* silently fail */ }
         finally { setIsLoadingRecords(false); }

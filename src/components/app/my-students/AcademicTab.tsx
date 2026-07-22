@@ -53,7 +53,7 @@ const AcademicTab = ({
     const loadFeedback = async () => {
         setIsLoadingRecords(true);
         try {
-            const data = await getFeedback();
+            const data = await getFeedback(currentStudent.student_roll);
             setApiFeedback(data.results);
         } catch {
             // silently fail — may not have records yet

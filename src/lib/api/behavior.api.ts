@@ -36,6 +36,7 @@ export function createBehaviorFeedback(payload: CreateBehaviorPayload) {
   return apiClient.post<ApiBehaviorFeedback>('/api/behavior-feedback/', payload);
 }
 
-export function getBehaviorFeedback() {
-  return apiClient.get<PaginatedBehaviorFeedback>('/api/behavior-feedback');
+export function getBehaviorFeedback(student_roll?: string) {
+  const query = student_roll ? `?student_roll=${encodeURIComponent(student_roll)}` : '';
+  return apiClient.get<PaginatedBehaviorFeedback>(`/api/behavior-feedback${query}`);
 }

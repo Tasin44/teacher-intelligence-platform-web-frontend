@@ -34,6 +34,7 @@ export function createObservation(payload: CreateObservationPayload) {
   return apiClient.post<ApiObservation>('/api/observations/', payload);
 }
 
-export function getObservations() {
-  return apiClient.get<PaginatedObservations>('/api/observations');
+export function getObservations(student_roll?: string) {
+  const query = student_roll ? `?student_roll=${encodeURIComponent(student_roll)}` : '';
+  return apiClient.get<PaginatedObservations>(`/api/observations${query}`);
 }

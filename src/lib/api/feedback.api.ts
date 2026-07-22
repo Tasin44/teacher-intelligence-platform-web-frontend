@@ -38,6 +38,7 @@ export function createFeedback(payload: CreateFeedbackPayload) {
   return apiClient.post<ApiFeedback>('/api/feedback/', payload);
 }
 
-export function getFeedback() {
-  return apiClient.get<PaginatedFeedback>('/api/feedback');
+export function getFeedback(student_roll?: string) {
+  const query = student_roll ? `?student_roll=${encodeURIComponent(student_roll)}` : '';
+  return apiClient.get<PaginatedFeedback>(`/api/feedback${query}`);
 }

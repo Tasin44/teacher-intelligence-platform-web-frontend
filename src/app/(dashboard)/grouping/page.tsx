@@ -20,11 +20,12 @@ const page = () => {
           id: `hist-${index}`,
           date: item.date,
           groupsCreatedCount: item.groups_formed,
+          trigger: "Manual",
         }));
-        setHistory(mappedHistory.length > 0 ? mappedHistory : initialGroupHistory);
+        setHistory(mappedHistory);
       } catch (error) {
         console.error("Failed to fetch generation history:", error);
-        setHistory(initialGroupHistory);
+        setHistory([]);
       }
     };
     fetchHistory();
@@ -41,8 +42,7 @@ const page = () => {
   return (
     <StudentGroupingPage
       students={students}
-      groups={groups}
-      history={history.length > 0 ? history : initialGroupHistory}
+      history={history}
       onRegenerateGroups={regenerateGroups}
       onUpdateGroups={setGroups}
       onNavigate={handleNavigate}

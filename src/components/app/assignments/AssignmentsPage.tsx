@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Sparkles, X } from 'lucide-react';
+import { Sparkles, X, CheckCircle } from 'lucide-react';
 import { Student, Group } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import AssignmentsSearchAndFilter from './AssignmentsSearchAndFilter';
@@ -48,7 +48,23 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
   const showErrorToast = (message: string) => {
     setErrorToastMessage(message);
     setErrorToast(true);
-    setTimeout(() => setErrorToast(false), 4000);
+    setTimeout(() => {
+      setErrorToast(false);
+      setErrorToastMessage('');
+    }, 4000);
+  };
+
+  // Success Toast Control
+  const [successToast, setSuccessToast] = useState(false);
+  const [successToastMessage, setSuccessToastMessage] = useState('');
+
+  const showSuccessToast = (message: string) => {
+    setSuccessToastMessage(message);
+    setSuccessToast(true);
+    setTimeout(() => {
+      setSuccessToast(false);
+      setSuccessToastMessage('');
+    }, 4000);
   };
 
   // Fetch initial assignments
@@ -156,6 +172,7 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
       try {
         await updateAssignment(selectedAssignment.assignment_id, payload);
         await loadAssignments(); // refetch
+        showSuccessToast("Assignment updated successfully");
       } catch (err: any) {
         console.error("Failed to update assignment", err);
         const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
@@ -166,6 +183,7 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
       try {
         await createAssignment(payload as CreateAssignmentPayload);
         await loadAssignments(); // refetch
+        showSuccessToast("Assignment generated successfully");
       } catch (err: any) {
         console.error("Failed to create assignment", err);
         const displayMsg = err.message?.includes(' :: ') ? err.message.split(' :: ')[1] : err.message;
@@ -225,6 +243,12 @@ const AssignmentsPage = ({ students, groups, isCreateModalOpenByDefault = false,
         <div className="fixed top-5 right-5 bg-rose-500 border border-rose-400 text-slate-900 font-extrabold px-4 py-3 rounded-lg flex items-center gap-2 shadow-2xl z-[90] animate-bounce">
           <X size={18} strokeWidth={3} />
           <span>{errorToastMessage}</span>
+        </div>
+      )}
+      {successToast && (
+        <div className="fixed top-5 right-5 bg-emerald-500 border border-emerald-400 text-slate-900 font-extrabold px-4 py-3 rounded-lg flex items-center gap-2 shadow-2xl z-[90] animate-bounce">
+          <CheckCircle size={18} strokeWidth={3} />
+          <span>{successToastMessage}</span>
         </div>
       )}
 

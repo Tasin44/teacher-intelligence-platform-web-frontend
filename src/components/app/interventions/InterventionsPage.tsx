@@ -29,7 +29,7 @@ const InterventionsPage = ({
   onUpdateIntervention
 }: InterventionsScreenProps) => {
   const [interventions, setInterventions] = useState<any[]>([]);
-  const [flaggedStudents, setFlaggedStudents] = useState<StudentNeedingAssistance>([]);
+  const [flaggedStudents, setFlaggedStudents] = useState<StudentNeedingAssistance[]>([]);
 
   // Fetch flagged students and active interventions on mount
   useEffect(() => {
@@ -208,13 +208,25 @@ const InterventionsPage = ({
         <h3 className="text-base font-bold text-slate-100 font-heading">Group Reteach Plans</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5" id="reteach-grid">
-          {reteachPlans.map((plan) => (
-            <GroupReteachPlanCard
-              key={plan.id}
-              plan={plan}
-              onViewPlan={setViewingReteachPlan}
-            />
-          ))}
+          {(() => {
+            const dynamicReteachPlans = interventions
+              .filter(i => i.target_type === 'individual_group')
+              .map(i => ({
+                id: i.intervention_id?.toString() || Math.random().toString(),
+                standard: i.intervention_type || 'Targeted Skill',
+                studentCount: 5, // Fallback since API doesn't provide group size
+                method: i.reason || 'Custom Intervention'
+              }));
+            const plansToRender = dynamicReteachPlans.length > 0 ? dynamicReteachPlans : reteachPlans;
+            
+            return plansToRender.map((plan) => (
+              <GroupReteachPlanCard
+                key={plan.id}
+                plan={plan}
+                onViewPlan={setViewingReteachPlan}
+              />
+            ));
+          })()}
         </div>
       </div>
 

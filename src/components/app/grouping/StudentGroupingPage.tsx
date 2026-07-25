@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { Check, Loader2 } from 'lucide-react';
-import { Student, GroupHistory } from '@/types';
+import { Student, GroupHistory, Group } from '@/types';
 import DashboardChildrenLayout from '@/components/shared/DashboardChildrenLayout';
 import StudentGroupingStats from './StudentGroupingStats';
 import GroupCard from './GroupCard';

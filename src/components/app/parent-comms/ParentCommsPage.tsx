@@ -103,22 +103,22 @@ const ParentCommsPage = ({
 
   const viewingStudent = useMemo(() => {
     if (!viewingHistoryItem) return null;
-    return students.find((s) => s.id === viewingHistoryItem.studentId) || students[0];
+    return students.find((s) => s.id === (viewingHistoryItem as any).studentId || s.id === (viewingHistoryItem as any).student_id) || students[0];
   }, [students, viewingHistoryItem]);
 
   const viewingMessageBody = useMemo(() => {
     if (!viewingHistoryItem || !viewingStudent) return '';
-    return getHistoricalMessageBody(viewingHistoryItem, viewingStudent);
+    return getHistoricalMessageBody(viewingHistoryItem as any, viewingStudent);
   }, [viewingHistoryItem, viewingStudent]);
 
   const currentStudent = useMemo(() => {
     // If studentSearch matches a roll exactly, use it. Else fall back to selectedStudentId
-    let found = students.find(s => s.rollNumber?.toLowerCase() === studentSearch.toLowerCase());
+    let found = students.find(s => s.student_roll?.toLowerCase() === studentSearch.toLowerCase());
     if (!found) found = students.find((s) => s.id === selectedStudentId);
     return found || students[0];
   }, [students, selectedStudentId, studentSearch]);
 
-  const targetEmail = searchedStudent?.parent_email || currentStudent?.parentEmail || activeDraft?.parent_email || 'Enter query...';
+  const targetEmail = searchedStudent?.parent_email || (currentStudent as any)?.parentEmail || activeDraft?.parent_email || 'Enter query...';
   const targetName = searchedStudent ? `${searchedStudent.student_name} (Parent: ${searchedStudent.parent_name})` : '';
 
   const handleGenerate = async () => {
@@ -132,7 +132,7 @@ const ParentCommsPage = ({
       const typeStr = classificationMap[commsType] || 'progress_update';
       
       const payload = {
-        student_roll: searchedStudent?.student_roll || studentSearch.trim() || currentStudent?.rollNumber || '',
+        student_roll: searchedStudent?.student_roll || studentSearch.trim() || currentStudent?.student_roll || '',
         classification: typeStr,
         tone: tone.toLowerCase()
       };

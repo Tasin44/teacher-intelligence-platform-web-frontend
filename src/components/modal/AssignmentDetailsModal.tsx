@@ -155,6 +155,7 @@ const AssignmentDetailsModal = ({ isOpen, viewingAssignment, students, onClose, 
                 ...viewingAssignment,
                 questions: updatedQuestions.map((text, i) => ({
                     question_id: i + 1,
+                    question_order: i + 1,
                     question_text: text,
                     question_type: 'multiple_choice',
                     options: {},

@@ -12,9 +12,11 @@ const page = () => {
     grade: string;
     avatar: string;
   }) => {
-    setLoggedInTeacher(updated);
+    if (!loggedInTeacher) return;
+    const newTeacher = { ...loggedInTeacher, ...updated };
+    setLoggedInTeacher(newTeacher);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('edupulse_logged_teacher', JSON.stringify(updated));
+      localStorage.setItem('edupulse_logged_teacher', JSON.stringify(newTeacher));
     }
   };
 

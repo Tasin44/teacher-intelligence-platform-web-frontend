@@ -33,7 +33,7 @@ export interface GroupStats {
 }
 
 export function generateGroups() {
-  return apiClient.post<ApiGroup[]>('/api/groups/generate');
+  return apiClient.post<ApiGroup[]>('/api/groups/generate', {});
 }
 
 export function getGroupStats() {

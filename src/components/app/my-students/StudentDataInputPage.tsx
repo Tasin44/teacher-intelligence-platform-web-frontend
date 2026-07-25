@@ -94,14 +94,17 @@ const StudentDataInputPage = ({
 
   // Selected Student's records
   const studentAcademicRecords = useMemo(() => {
+    if (!currentStudent) return [];
     return academicRecords.filter((r) => r.studentId === currentStudent.id);
   }, [academicRecords, currentStudent]);
 
   const studentBehaviorLogs = useMemo(() => {
+    if (!currentStudent) return [];
     return behaviorLogs.filter((l) => l.studentId === currentStudent.id);
   }, [behaviorLogs, currentStudent]);
 
   const studentObservations = useMemo(() => {
+    if (!currentStudent) return [];
     return observationsList.filter((obs) => obs.studentId === currentStudent.id);
   }, [observationsList, currentStudent]);
 
@@ -158,14 +161,24 @@ const StudentDataInputPage = ({
             </button>
           </div>
           {/* Section 2 — Student Selector Card */}
-      <ProfileAndFilter
-        students={students}
-        currentStudent={currentStudent}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSelectStudent={onSelectStudent}
-        filteredStudents={filteredStudentsForSearch}
-      />
+      {students.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-12 bg-[#1E2130] rounded-xl border border-[#2A2D3A] shadow-lg mt-6">
+          <h3 className="text-xl text-slate-200 font-bold mb-3">No Students Yet</h3>
+          <p className="text-slate-400 mb-8 text-center max-w-md leading-relaxed">Your classroom is currently empty. Get started by adding a student to begin tracking their academic progress, behavior, and observations.</p>
+          <Button onClick={onOpenAddStudent} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-6 px-8 rounded-xl shadow-md shadow-orange-500/20 text-md">
+            <Plus className="w-5 h-5 mr-2" /> Add Your First Student
+          </Button>
+        </div>
+      ) : (
+        <>
+          <ProfileAndFilter
+            students={students}
+            currentStudent={currentStudent}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onSelectStudent={onSelectStudent}
+            filteredStudents={filteredStudentsForSearch}
+          />
 
       {/* Section 3 — Tabs Selector */}
       <div className="flex border-b border-[#2A2D3A] overflow-x-auto scrollbar-none whitespace-nowrap w-full" id="diagnostic-tabs-row">
@@ -204,9 +217,7 @@ const StudentDataInputPage = ({
         {activeTab === 'behavior' && (
           <BehaviorTab
             currentStudent={currentStudent}
-            behaviorLogs={studentBehaviorLogs}
-            onAddBehaviorLog={onAddBehaviorLog}
-            onSuccess={triggerSuccessToast}
+            onSuccess={setSuccessToastMessage}
           />
         )}
 
@@ -219,12 +230,12 @@ const StudentDataInputPage = ({
         {activeTab === 'observations' && (
           <ObservationsTab
             currentStudent={currentStudent}
-            observations={studentObservations}
-            onAddObservation={handleAddObservation}
           />
         )}
       </div>
-        </>
+          </>
+        )}
+      </>
       )}
     </DashboardChildrenLayout>
   );

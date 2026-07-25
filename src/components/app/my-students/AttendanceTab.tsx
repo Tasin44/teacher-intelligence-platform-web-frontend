@@ -274,7 +274,7 @@ export default function AttendanceTab({ currentStudent }: AttendanceTabProps) {
           }}
           student={currentStudent}
           dateStr={dateStr}
-          initialStatus={selectedDay.status === 'None' ? 'Present' : selectedDay.status as any}
+          initialStatus={(selectedDay.status as any) === 'None' ? 'Present' : (selectedDay.status as any)}
           onSave={async (status, remarks) => {
             const formattedDate = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(selectedDay.day).padStart(2, '0')}`;
             

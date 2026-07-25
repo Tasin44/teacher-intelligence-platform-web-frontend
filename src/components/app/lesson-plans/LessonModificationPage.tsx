@@ -24,7 +24,7 @@ interface LessonModificationScreenProps {
 }
 
 const LessonModificationPage = ({ suggestions = [], appliedModifications: initialAppliedMods = [], onApplyModification }: LessonModificationScreenProps) => {
-  const [appliedList, setAppliedList] = useState<AppliedModification[]>(initialAppliedMods);
+  const [appliedList, setAppliedList] = useState<AppliedModification[]>([]);
   
   const [assignments, setAssignments] = useState<ApiAssignment[]>([]);
   const [topicId, setTopicId] = useState<string>(''); // Holds assignment_id
@@ -35,17 +35,18 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
   const [successToast, setSuccessToast] = useState(false);
   const [popup, setPopup] = useState<{ type: 'success' | 'dismiss' | 'error'; title: string; message: string } | null>(null);
 
-  // Sync state if props change
-  useEffect(() => {
-    setAppliedList(initialAppliedMods);
-  }, [initialAppliedMods]);
+  // We will now fetch applied modifications dynamically in initData, so we can ignore initialAppliedMods unless fallback is needed.
+  // useEffect(() => {
+  //   setAppliedList(initialAppliedMods);
+  // }, [initialAppliedMods]);
 
   useEffect(() => {
     const initData = async () => {
       try {
-        const [assignmentsRes, statusRes] = await Promise.all([
+        const [assignmentsRes, statusRes, recsRes] = await Promise.all([
           getAssignments() as any,
-          getAssignmentLessonStatus()
+          getAssignmentLessonStatus(),
+          getLessonRecommendations()
         ]);
         
         let assignmentList = [];
@@ -54,6 +55,36 @@ const LessonModificationPage = ({ suggestions = [], appliedModifications: initia
         
         setAssignments(assignmentList);
         setLessonStatuses(statusRes);
+        
+        let recList: any[] = [];
+        if (Array.isArray(recsRes)) recList = recsRes;
+        else if ((recsRes as any)?.results) recList = (recsRes as any).results;
+        
+        const appliedMods = recList
+          .filter((r: any) => r.status === 'applied')
+          .map((r: any) => {
+            let modDetails = 'Modification Applied';
+            try {
+              // Try to parse the recommendation details to get a concise snippet
+              const parsed = JSON.parse(r.recommendation_details.replace(/\bNone\b/g, 'null').replace(/\bTrue\b/g, 'true').replace(/\bFalse\b/g, 'false').replace(/'([^']*?)'/g, (m: string, inner: string) => `"${inner.replace(/"/g, '\\"')}"`));
+              if (parsed.strugglingStudents && parsed.strugglingStudents.length > 0) {
+                 modDetails = parsed.strugglingStudents[0];
+              } else if (parsed.advancedStudents && parsed.advancedStudents.length > 0) {
+                 modDetails = parsed.advancedStudents[0];
+              }
+            } catch {
+              modDetails = r.recommendation_details;
+            }
+            return {
+              id: r.lesson_rec_id.toString(),
+              date: r.recommendation_date.split('T')[0],
+              lessonName: r.assignment_title || 'Lesson Unit',
+              modType: modDetails,
+              appliedFor: r.applied_student_name || r.applied_group_name || 'Target',
+              status: 'Applied' as const
+            };
+          });
+        setAppliedList(appliedMods);
         
         if (assignmentList.length > 0) {
           setTopicId(assignmentList[0].assignment_id.toString());

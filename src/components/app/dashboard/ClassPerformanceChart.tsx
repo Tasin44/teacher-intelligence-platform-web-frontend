@@ -35,7 +35,7 @@ const ClassPerformanceChart = () => {
                                 dataKey="subject"
                                 axisLine={false}
                                 tickLine={false}
-                                tick={{ fill: '#94A3B8', fontSize: 12, fontFamily: 'var(--font-sans)', textTransform: 'capitalize' }}
+                                tick={{ fill: '#94A3B8', fontSize: 12, fontFamily: 'var(--font-sans)' }}
                             />
                             <Tooltip
                                 cursor={{ fill: 'transparent' }}
@@ -47,7 +47,7 @@ const ClassPerformanceChart = () => {
                                     fontFamily: 'var(--font-sans)',
                                     fontSize: '12px'
                                 }}
-                                formatter={(value: number) => [`${value.toFixed(1)}%`, 'Avg Score']}
+                                formatter={(value: any) => [typeof value === 'number' ? `${value.toFixed(1)}%` : `${value}%`, 'Avg Score']}
                             />
                             <Bar dataKey="avg_score" fill="#10B981" radius={[6, 6, 0, 0]} maxBarSize={30} />
                         </BarChart>

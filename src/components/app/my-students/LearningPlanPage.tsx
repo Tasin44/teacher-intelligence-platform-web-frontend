@@ -76,6 +76,10 @@ const LearningPlanPage = ({
       };
     }
 
+    if (!currentStudent) {
+      return { strengths: [], gaps: [], activities: [], shortGoals: [], longGoals: [] };
+    }
+
     const risk = currentStudent.riskLevel;
     if (risk === 'At Risk') {
       return {
@@ -178,6 +182,13 @@ const LearningPlanPage = ({
       }
     >
 
+      {students.length === 0 ? (
+        <div className="flex flex-col items-center justify-center p-12 bg-[#1E2130] rounded-xl border border-[#2A2D3A] shadow-lg mt-6">
+          <h3 className="text-xl text-slate-200 font-bold mb-3">No Students Yet</h3>
+          <p className="text-slate-400 mb-8 text-center max-w-md leading-relaxed">Your classroom is currently empty. Add a student to generate their Individualized Education Plan (IEP).</p>
+        </div>
+      ) : (
+        <>
       {/* Section 2 — Student Summary Card */}
       <div className="bg-[#1E2130] p-6 rounded-xl border border-[#2A2D3A] flex flex-col md:flex-row justify-between items-center gap-6" id="student-summary-card">
         {/* Left info */}
@@ -275,7 +286,9 @@ const LearningPlanPage = ({
             : 'June 15, 2026 at 4:32 PM'} via Student Diagnostics Core
         </span>
 
-      </div>
+        </div>
+        </>
+      )}
     </DashboardChildrenLayout>
   );
 }

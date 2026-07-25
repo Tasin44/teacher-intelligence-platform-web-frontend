@@ -30,7 +30,7 @@ const AddInterventionModal = ({ isOpen, students, defaultStudentId, onClose, onS
             const currentStudent = students.find(s => s.id === defaultStudentId) || students[0];
             setType('individual student');
             setStudentName(currentStudent?.name || '');
-            setStudentRoll('');
+            setStudentRoll(currentStudent?.student_roll || '');
             setGroupName('');
             setGroupId('');
             setInterventionType('extra tutoring');

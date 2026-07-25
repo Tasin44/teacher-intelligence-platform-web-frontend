@@ -78,7 +78,7 @@ const GroupDetailsModal = ({ isOpen, group, students, onClose, onSelectStudent, 
                                         <img src={student.avatar} alt={student.name} className="w-10 h-10 rounded-full object-cover border border-[#2A2D3A]" />
                                         <div>
                                             <h5 className="text-sm font-bold text-slate-200">{student.name}</h5>
-                                            <p className="text-xs text-slate-500 font-medium">Roll: {student.roll} • Grade: {student.grade}</p>
+                                            <p className="text-xs text-slate-500 font-medium">Roll: {student.student_roll} • Grade: {student.grade}</p>
                                         </div>
                                     </div>
                                     <button 

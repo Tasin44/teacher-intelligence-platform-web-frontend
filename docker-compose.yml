@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: host
+    container_name: nextjs_frontend
+    ports:
+      - "3005:3005"
+    restart: always
+    environment:
+      - NODE_ENV=production

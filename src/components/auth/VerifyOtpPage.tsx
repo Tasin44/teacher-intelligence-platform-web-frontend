@@ -216,18 +216,7 @@ const VerifyOtpPage = () => {
                 </Button>
             </form>
 
-            {/* Resend */}
-            <div className="text-center mt-6 text-xs text-slate-500">
-                Didn&apos;t get the code?{' '}
-                <button
-                    id="otp-resend"
-                    onClick={handleResend}
-                    disabled={isResending}
-                    className="text-[#3B82F6] font-bold hover:underline bg-transparent border-0 cursor-pointer p-0 disabled:opacity-60"
-                >
-                    {isResending ? 'Sending…' : 'Resend'}
-                </button>
-            </div>
+
         </div>
     )
 }

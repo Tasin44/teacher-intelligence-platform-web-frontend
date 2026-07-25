@@ -325,7 +325,7 @@ export const EduPulseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const refreshStudents = useCallback(async () => {
     try {
       const data = await getStudents();
-      if (data.results.length > 0) {
+      if (data && Array.isArray(data.results)) {
         setStudents(data.results.map(apiStudentToStudent));
       }
     } catch {

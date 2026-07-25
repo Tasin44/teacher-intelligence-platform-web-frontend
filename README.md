@@ -1,5 +1,15 @@
 # 🧠 EduPulse AI - Teacher Intelligence Platform
 
+🚀 **Live Demo:** [https://edu.teachersaipet.com/](https://edu.teachersaipet.com/)
+
+### 📸 Application Previews
+<div align="center">
+  <img src="./screenshots/dashboard.png" alt="Class Analysis Hub Dashboard" width="48%" />
+  <img src="./screenshots/assignments.png" alt="AI Lesson Assignments Modal" width="48%" />
+  <img src="./screenshots/interventions.png" alt="Reteach & Tiered Intervention" width="48%" />
+  <img src="./screenshots/parent-comms.png" alt="Unified Family Messaging" width="48%" />
+</div>
+
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
